@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Тренды 2026</title>
+    <style>
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+        background: transparent;
+        font-family: Manrope, "Segoe UI Variable Text", "Segoe UI", Arial, sans-serif;
+      }
+
+      #c37 {
+        width: 100%;
+        height: 100%;
+        font-family: Manrope, "Segoe UI Variable Text", "Segoe UI", Arial, sans-serif;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="c37"></div>
+    <script src="./trend-deck-legacy.js"></script>
+    <script>
+      (() => {
+        const labels = [
+          ['btn-tab-daily', 'Карта'],
+          ['btn-tab-collection', 'Коллекция'],
+          ['btn-tab-authors', 'Авторы']
+        ];
+
+        const ensureDailyTitle = () => {
+          const root = document.getElementById('c37');
+          if (!root) return null;
+
+          let title = document.getElementById('trend-daily-title');
+          if (!title) {
+            title = document.createElement('div');
+            title.id = 'trend-daily-title';
+            title.textContent = 'Карта тренда';
+            root.appendChild(title);
+          }
+
+          const onboarding = document.getElementById('onboarding-view');
+          const dailyTab = document.getElementById('btn-tab-daily');
+          const isOnboarding = onboarding?.classList.contains('visible');
+          const isDaily = dailyTab?.classList.contains('active');
+          title.classList.toggle('is-visible', Boolean(isDaily && !isOnboarding));
+          return title;
+        };
+
+        const setButtonText = (button, label) => {
+          if (!button) return;
+          button.childNodes.forEach((node) => {
+            if (node.nodeType === Node.TEXT_NODE) node.nodeValue = label;
+          });
+        };
+
+        const cleanTrendNav = () => {
+          labels.forEach(([id, label]) => setButtonText(document.getElementById(id), label));
+          ensureDailyTitle();
+
+          const share = document.getElementById('share-btn');
+          if (share) {
+            const nav = share.closest('.nav');
+            if (nav && nav.firstElementChild !== share) {
+              nav.insertBefore(share, nav.firstElementChild);
+            }
+            share.classList.add('nav-home-btn');
+
+            if (!share.dataset.miroHome) {
+              share.dataset.miroHome = 'true';
+              share.innerHTML = '<span class="material-icons-round" aria-hidden="true">home</span><span>Главная</span>';
+              share.addEventListener('click', (event) => {
+                event.preventDefault();
+                event.stopImmediatePropagation();
+                window.parent?.postMessage({ type: 'mirofaktura:navigate', page: 'home' }, '*');
+              }, true);
+            }
+          }
+        };
+
+        cleanTrendNav();
+        const titleObserverTarget = document.getElementById('c37');
+        if (titleObserverTarget) {
+          const titleObserver = new MutationObserver(() => ensureDailyTitle());
+          titleObserver.observe(titleObserverTarget, {
+            subtree: true,
+            attributes: true,
+            attributeFilter: ['class', 'style']
+          });
+        }
+        const navTimer = window.setInterval(cleanTrendNav, 80);
+        window.setTimeout(() => {
+          window.clearInterval(navTimer);
+          cleanTrendNav();
+        }, 1800);
+      })();
+    </script>
+    <style>
+      #c37 {
+        font-family: Manrope, "Segoe UI Variable Text", "Segoe UI", Arial, sans-serif !important;
+        background:
+          radial-gradient(circle at 78% 8%, rgba(40, 212, 206, 0.26), transparent 34%),
+          radial-gradient(circle at 18% 72%, rgba(255, 216, 74, 0.13), transparent 34%),
+          linear-gradient(165deg, rgba(218, 252, 247, 0.92), rgba(247, 251, 239, 0.94) 58%, rgba(249, 239, 213, 0.86)) !important;
+        border-radius: 0 !important;
+      }
+
+      #c37::before,
+      #c37::after {
+        opacity: 0.14 !important;
+        filter: blur(72px) !important;
+      }
+
+      #c37 .material-icons-round {
+        font-family: "Material Icons Round" !important;
+        font-weight: normal !important;
+        font-style: normal !important;
+        line-height: 1 !important;
+        letter-spacing: normal !important;
+        text-transform: none !important;
+        white-space: nowrap !important;
+        word-wrap: normal !important;
+        direction: ltr !important;
+        -webkit-font-feature-settings: "liga" !important;
+        font-feature-settings: "liga" !important;
+        -webkit-font-smoothing: antialiased !important;
+      }
+
+      #c37 #top-header-nav,
+      #c37 #btn-legal-open {
+        display: none !important;
+      }
+
+      #c37 .fullscreen-view {
+        padding-top: 26px !important;
+      }
+
+      #c37 #onboarding-view {
+        padding: 28px !important;
+        background:
+          radial-gradient(circle at 82% 12%, rgba(40, 212, 206, 0.2), transparent 34%),
+          radial-gradient(circle at 18% 64%, rgba(255, 216, 74, 0.1), transparent 36%) !important;
+      }
+
+      #c37 #trend-daily-title {
+        position: absolute;
+        top: 52px;
+        left: 50%;
+        z-index: 62;
+        width: max-content;
+        max-width: calc(100% - 64px);
+        padding: 0;
+        transform: translate(-50%, -4px);
+        color: #087f7c;
+        background: transparent;
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+        font-size: 15px;
+        font-weight: 900;
+        line-height: 1.2;
+        letter-spacing: 0.11em;
+        text-align: center;
+        text-transform: uppercase;
+        text-shadow: none;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.18s ease, transform 0.18s ease;
+      }
+
+      #c37 #trend-daily-title.is-visible {
+        opacity: 1;
+        transform: translate(-50%, 0);
+      }
+
+      #c37 #mrf-preloader {
+        position: fixed !important;
+        inset: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        z-index: 2147483647 !important;
+        opacity: 1;
+        pointer-events: auto !important;
+        background:
+          radial-gradient(circle at 74% 14%, rgba(40, 212, 206, 0.22), transparent 34%),
+          radial-gradient(circle at 18% 78%, rgba(255, 216, 74, 0.12), transparent 34%),
+          linear-gradient(165deg, #dafcf7, #f7fbef 58%, #f9efd5) !important;
+      }
+
+      #c37 .mrf-preloader-logo {
+        filter: drop-shadow(0 16px 26px rgba(17, 58, 54, 0.08)) !important;
+      }
+
+      #c37 .onboard-btn,
+      #c37 .ask-ai-main-btn,
+      #c37 .consult-btn {
+        border-radius: 999px !important;
+        background:
+          radial-gradient(circle at 18% 28%, rgba(255, 216, 74, 0.42), transparent 30%),
+          linear-gradient(135deg, #0a3f3b 0%, #07847f 58%, #18b8b2 100%) !important;
+        color: #f8fffc !important;
+        box-shadow: 0 16px 28px rgba(7, 57, 54, 0.16) !important;
+      }
+
+      #c37 .onboard-btn:hover,
+      #c37 .ask-ai-main-btn:hover,
+      #c37 .consult-btn:hover,
+      #c37 .onboard-btn:focus-visible,
+      #c37 .ask-ai-main-btn:focus-visible,
+      #c37 .consult-btn:focus-visible {
+        transform: translateY(-1px) !important;
+        box-shadow: 0 18px 30px rgba(7, 57, 54, 0.2) !important;
+      }
+
+      #c37 .nav {
+        left: 16px !important;
+        right: 16px !important;
+        bottom: 16px !important;
+        width: auto !important;
+        height: auto !important;
+        max-width: none !important;
+        transform: none !important;
+        padding: 8px !important;
+        border-radius: 28px !important;
+        background: rgba(255, 255, 249, 0.82) !important;
+        border: 1px solid rgba(255, 255, 255, 0.86) !important;
+        box-shadow: 0 18px 34px rgba(35, 58, 54, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.86) !important;
+        backdrop-filter: blur(20px) !important;
+        -webkit-backdrop-filter: blur(20px) !important;
+        gap: 2px !important;
+      }
+
+      #c37 .nav-item,
+      #c37 .nav-share-btn {
+        flex: 1 1 0 !important;
+        min-width: 0 !important;
+        min-height: 58px !important;
+        border: 0 !important;
+        border-radius: 22px !important;
+        color: rgba(9, 38, 35, 0.58) !important;
+        background: transparent !important;
+        font-size: 10px !important;
+        letter-spacing: 0 !important;
+        box-shadow: none !important;
+        animation: none !important;
+        transform: none !important;
+        margin: 0 !important;
+        padding: 6px 4px !important;
+        text-transform: none !important;
+        transition: background 0.18s ease, color 0.18s ease, opacity 0.18s ease !important;
+      }
+
+      #c37 .nav-item.active,
+      #c37 .nav-item:hover,
+      #c37 .nav-share-btn:hover,
+      #c37 .nav-share-btn:focus-visible {
+        color: #087f7c !important;
+        background:
+          radial-gradient(circle at 18% 18%, rgba(255, 216, 74, 0.16), transparent 36%),
+          rgba(226, 253, 248, 0.68) !important;
+        transform: none !important;
+      }
+
+      #c37 .nav-item.active::after {
+        display: none !important;
+      }
+
+      #c37 .nav-item .material-icons-round,
+      #c37 .nav-share-btn .material-icons-round {
+        font-size: 22px !important;
+        line-height: 1 !important;
+        margin: 0 0 4px !important;
+      }
+
+      #c37 .nav-share-btn {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+      }
+
+      #c37 .nav-share-btn span:last-child {
+        font-size: 10px !important;
+        font-weight: 800 !important;
+        line-height: 1.1 !important;
+      }
+
+      #c37 #gameover-view > div,
+      #c37 .authors-container,
+      #c37 #library-view > div {
+        max-width: calc(100% - 32px) !important;
+        box-sizing: border-box !important;
+      }
+
+      #c37 .modal-content,
+      #c37 .author-card {
+        border-radius: 24px !important;
+        border-color: rgba(0, 139, 139, 0.16) !important;
+        background: rgba(255, 255, 249, 0.86) !important;
+        box-shadow: 0 16px 34px rgba(17, 58, 54, 0.12) !important;
+      }
+
+      #c37 #authors-view .author-name {
+        color: #0a3f3b !important;
+      }
+
+      #c37 #authors-view [style*="#00D2D3"] {
+        color: #087f7c !important;
+        border-color: rgba(0, 139, 139, 0.24) !important;
+      }
+
+      #c37 [style*="color:#00D2D3"],
+      #c37 [style*="color: #00D2D3"] {
+        color: #087f7c !important;
+      }
+
+      #c37 [style*="border-left:3px solid #00D2D3"],
+      #c37 [style*="border: 1px dashed #00D2D3"],
+      #c37 [style*="border-top:1px dashed #00D2D3"] {
+        border-color: rgba(8, 127, 124, 0.28) !important;
+      }
+
+      #c37 [style*="background:#00D2D3"],
+      #c37 [style*="background: #00D2D3"] {
+        background:
+          radial-gradient(circle at 18% 28%, rgba(255, 216, 74, 0.42), transparent 30%),
+          linear-gradient(135deg, #0a3f3b 0%, #07847f 58%, #18b8b2 100%) !important;
+      }
+
+      #c37 #authors-view [style*="rgba(0,210,211"] {
+        background: rgba(0, 139, 139, 0.08) !important;
+        border-color: rgba(0, 139, 139, 0.2) !important;
+      }
+
+      #c37 [style*="rgba(0,210,211"] {
+        background: rgba(8, 127, 124, 0.08) !important;
+        border-color: rgba(8, 127, 124, 0.18) !important;
+        box-shadow: none !important;
+      }
+
+      #c37 #authors-view,
+      #c37 #gameover-view,
+      #c37 #library-view {
+        background:
+          radial-gradient(circle at 74% 14%, rgba(40, 212, 206, 0.14), transparent 34%),
+          radial-gradient(circle at 14% 82%, rgba(255, 216, 74, 0.1), transparent 36%) !important;
+      }
+
+      #c37 .authors-container > div[style*="background:#FFF"],
+      #c37 #gameover-view > div[style*="background:#FFF"] {
+        background:
+          radial-gradient(circle at 86% 8%, rgba(40, 212, 206, 0.1), transparent 34%),
+          rgba(255, 255, 249, 0.78) !important;
+        border-color: rgba(255, 255, 255, 0.82) !important;
+        box-shadow: 0 18px 34px rgba(17, 58, 54, 0.1) !important;
+        backdrop-filter: blur(18px) !important;
+        -webkit-backdrop-filter: blur(18px) !important;
+      }
+    </style>
+  </body>
+</html>
