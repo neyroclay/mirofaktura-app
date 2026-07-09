@@ -1,7 +1,13 @@
 (function () {
   const app = document.getElementById('app');
   const MAX_CHANNEL_URL = 'https://max.ru/id590417093305_biz';
-  const SUBSCRIPTION_WEBHOOK_URL = 'https://cb.multy.ai/api/v1/hook/app/2f32b4f26850fdf91e348ef6ffb9fcb0';
+  const SUBSCRIPTION_WEBHOOK_URL = window.MIROFAKTURA_SUBSCRIPTION_WEBHOOK_URL || '';
+  const ACCESS_MODE = (() => {
+    const params = new URLSearchParams(window.location.search);
+    const mode = String(window.MIROFAKTURA_ACCESS_MODE || params.get('access') || params.get('mode') || '').toLowerCase();
+    return ['gated', 'closed', 'protected'].includes(mode) ? 'gated' : 'open';
+  })();
+  const IS_OPEN_ACCESS = ACCESS_MODE === 'open';
   const assets = {
     logo: './assets/logo-black-yellow.png',
     stepanStart: './assets/stepan-start.png',
@@ -883,8 +889,11 @@
   }
 
   async function isSubscribedInMax() {
+    if (IS_OPEN_ACCESS) return { ok: true, reason: 'open-access' };
+
     const maxUserId = getMaxUserId();
     if (!maxUserId) return { ok: false, reason: 'missing-id' };
+    if (!SUBSCRIPTION_WEBHOOK_URL) return { ok: false, reason: 'error' };
 
     try {
       const response = await fetch(SUBSCRIPTION_WEBHOOK_URL, {
@@ -915,7 +924,7 @@
     state.pendingMaterial = material;
     state.pendingGateTarget = 'material';
 
-    if (isLocalPreview()) {
+    if (IS_OPEN_ACCESS || isLocalPreview()) {
       state.material = material;
       state.page = 'material';
       state.gateStatus = 'idle';
@@ -944,7 +953,7 @@
     state.pendingMaterial = '';
     state.pendingGateTarget = 'library';
 
-    if (isLocalPreview()) {
+    if (IS_OPEN_ACCESS || isLocalPreview()) {
       state.page = 'library';
       state.gateStatus = 'idle';
       render();
@@ -988,7 +997,7 @@
 
         <div class="home-links">
           <button class="home-link" type="button" data-action="openLibrary">
-            <span><strong>Кладовая Мирофактуры</strong><span>Карты, чек-листы и короткие инструменты по продуктам, продажам и трафику.</span><small class="access-note">Материалы открываются после проверки подписки на канал</small></span>
+            <span><strong>Кладовая Мирофактуры</strong><span>Карты, чек-листы и короткие инструменты по продуктам, продажам и трафику.</span></span>
           </button>
           <button class="home-link" type="button" data-action="openTrends">
             <span><strong>Тренды</strong><span>Вытянуть карты трендов 2026 и сохранить идеи для проверки.</span></span>
@@ -1080,7 +1089,6 @@
         <div class="result-panel">
           <h2>${material.title}</h2>
           <p>${material.text}</p>
-          <small class="access-note">Материал откроется после проверки подписки на канал</small>
         </div>
 
         <button class="primary-btn" type="button" data-action="openMaterial" data-material="${resultKey()}">Открыть материал</button>
@@ -1092,6 +1100,25 @@
   function renderGate() {
     const isLibraryGate = state.pendingGateTarget === 'library';
     const material = materials[state.pendingMaterial] || materials[resultKey()];
+    if (IS_OPEN_ACCESS) {
+      return screen(`
+        <article class="result-card gate-card">
+          <p class="brand-label">Открытая версия</p>
+          <h1>Материалы уже доступны</h1>
+
+          <div class="result-panel">
+            <p class="brand-label">${isLibraryGate ? 'Кладовая Мирофактуры' : material.tag}</p>
+            <h2>${isLibraryGate ? 'Материалы и инструменты' : material.title}</h2>
+            <p>${isLibraryGate ? 'Откройте кладовую и выберите материал, который сейчас ближе к вашей задаче.' : material.text}</p>
+          </div>
+
+          <button class="primary-btn" type="button" data-action="${isLibraryGate ? 'openLibrary' : 'openMaterial'}" ${isLibraryGate ? '' : `data-material="${state.pendingMaterial || resultKey()}"`}>${isLibraryGate ? 'Открыть кладовую' : 'Открыть материал'}</button>
+          <button class="soft-btn" type="button" data-action="openMax">Подписаться на канал</button>
+          <button class="soft-btn" type="button" data-page="home">В мастерскую</button>
+        </article>
+      `, 'gate-screen');
+    }
+
     const isChecking = state.gateStatus === 'checking';
     const title = state.gateStatus === 'missing-id'
       ? 'Откройте приложение из бота'
@@ -1144,7 +1171,6 @@
         <p class="brand-label">Инструменты</p>
         <h1>Кладовая</h1>
         <p class="lead">Карты, чек-листы и небольшие инструменты по продуктам, продажам и трафику. Если не хочется просматривать всё вручную, начните с диагностики.</p>
-        <small class="access-note">Полные материалы доступны после проверки подписки на канал</small>
         <div class="library-actions">
           <button class="primary-btn" type="button" data-action="startQuiz">Сделать первый ход</button>
           <button class="soft-btn" type="button" data-page="home">В мастерскую</button>

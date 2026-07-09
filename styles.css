@@ -385,28 +385,6 @@ h1 {
   font-weight: 590;
 }
 
-.access-note {
-  display: inline-flex;
-  width: fit-content;
-  max-width: 100%;
-  margin-top: 12px;
-  padding: 7px 12px;
-  border: 1px solid rgba(0, 136, 132, 0.18);
-  border-radius: 999px;
-  background:
-    radial-gradient(circle at 12% 34%, rgba(255, 216, 74, 0.34), transparent 34%),
-    rgba(234, 255, 251, 0.62);
-  color: #076966;
-  font-size: 13px;
-  line-height: 1.25;
-  font-weight: 760;
-}
-
-.result-panel .access-note,
-.library-title .access-note {
-  margin-top: 14px;
-}
-
 .home-link:hover,
 .home-link:focus-visible {
   border-bottom-color: transparent;
