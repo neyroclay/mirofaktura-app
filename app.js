@@ -1,6 +1,40 @@
 (function () {
   const app = document.getElementById('app');
   const MAX_CHANNEL_URL = 'https://max.ru/id590417093305_biz';
+  const TELEGRAM_BOT_URL = 'https://t.me/mirofactura_bot';
+  const PLATFORM_ALIASES = {
+    max: 'max',
+    tg: 'telegram',
+    telegram: 'telegram',
+  };
+  const APP_PLATFORM = (() => {
+    const params = new URLSearchParams(window.location.search);
+    const raw = String(
+      window.MIROFAKTURA_PLATFORM
+      || params.get('platform')
+      || params.get('messenger')
+      || ''
+    ).toLowerCase();
+    return PLATFORM_ALIASES[raw] || 'max';
+  })();
+  const PLATFORM = {
+    max: {
+      key: 'max',
+      messenger: 'MAX',
+      entryUrl: MAX_CHANNEL_URL,
+      channelUrl: MAX_CHANNEL_URL,
+      channelLabel: '\u041a\u0430\u043d\u0430\u043b \u0432 MAX',
+      channelText: '\u0420\u0430\u0437\u0431\u043e\u0440\u044b, \u043c\u0430\u0442\u0435\u0440\u0438\u0430\u043b\u044b \u0438 \u043d\u043e\u0432\u043e\u0441\u0442\u0438 \u041c\u0438\u0440\u043e\u0444\u0430\u043a\u0442\u0443\u0440\u044b.',
+    },
+    telegram: {
+      key: 'telegram',
+      messenger: 'Telegram',
+      entryUrl: TELEGRAM_BOT_URL,
+      channelUrl: TELEGRAM_BOT_URL,
+      channelLabel: 'Telegram',
+      channelText: '\u0411\u043e\u0442 \u0438 \u043a\u0430\u043d\u0430\u043b\u044b \u0430\u0432\u0442\u043e\u0440\u043e\u0432 \u041c\u0438\u0440\u043e\u0444\u0430\u043a\u0442\u0443\u0440\u044b.',
+    },
+  }[APP_PLATFORM];
   const SUBSCRIPTION_WEBHOOK_URL = window.MIROFAKTURA_SUBSCRIPTION_WEBHOOK_URL || '';
   const ACCESS_MODE = (() => {
     const params = new URLSearchParams(window.location.search);
@@ -888,6 +922,20 @@
       || '';
   }
 
+  function getPlatformUserId() {
+    const params = new URLSearchParams(window.location.search);
+    const keys = PLATFORM.key === 'telegram'
+      ? ['telegram_user_id', 'telegramUserId', 'tg_user_id', 'tgUserId', 'user_id', 'userId']
+      : ['max_user_id', 'maxUserId', 'max_user', 'user_id', 'userId'];
+
+    for (const key of keys) {
+      const value = params.get(key);
+      if (value) return value;
+    }
+
+    return '';
+  }
+
   async function isSubscribedInMax() {
     if (IS_OPEN_ACCESS) return { ok: true, reason: 'open-access' };
 
@@ -1003,7 +1051,7 @@
             <span><strong>Тренды</strong><span>Вытянуть карты трендов 2026 и сохранить идеи для проверки.</span></span>
           </button>
           <button class="home-link" type="button" data-action="openMax">
-            <span><strong>Канал в MAX</strong><span>Разборы, новые материалы и вход в приложение.</span></span>
+            <span><strong>${PLATFORM.channelLabel}</strong><span>${PLATFORM.channelText}</span></span>
           </button>
           <button class="home-link" type="button" data-action="openContacts">
             <span><strong>Авторы</strong><span>Кто делает материалы, разборы и инструменты Мирофактуры.</span></span>
@@ -1783,7 +1831,20 @@
     const isLocalPreview = window.location.protocol === 'file:'
       || window.location.hostname === 'localhost'
       || window.location.hostname === '127.0.0.1';
-    return `./trends-deck.html${isLocalPreview ? '?fresh=1' : ''}`;
+    const params = new URLSearchParams({
+      platform: PLATFORM.key,
+      messenger: PLATFORM.messenger,
+      source: 'mirofaktura-app',
+    });
+    const platformUserId = getPlatformUserId();
+
+    if (platformUserId) {
+      params.set(PLATFORM.key === 'telegram' ? 'telegram_user_id' : 'max_user_id', platformUserId);
+    }
+
+    if (isLocalPreview) params.set('fresh', '1');
+
+    return `./trends-deck.html?${params.toString()}`;
   }
 
   function renderTrends() {
@@ -1868,7 +1929,7 @@
     }
 
     if (action === 'openMax') {
-      window.open(MAX_CHANNEL_URL, '_blank', 'noopener');
+      window.open(PLATFORM.channelUrl, '_blank', 'noopener');
       return;
     }
 
@@ -2029,13 +2090,14 @@
 
     if (action === 'share') {
       const text = 'Мирофактура: диагностика, материалы и тренды для продуктов, продаж и трафика';
+      const shareUrl = PLATFORM.entryUrl;
       if (navigator.share) {
         try {
-          await navigator.share({ title: 'Мирофактура', text, url: location.href });
+          await navigator.share({ title: 'Мирофактура', text, url: shareUrl });
         } catch (_) {}
       } else {
         try {
-          await navigator.clipboard.writeText(location.href);
+          await navigator.clipboard.writeText(shareUrl);
           showToast('Ссылка скопирована');
         } catch (_) {
           showToast('Ссылку можно скопировать из адресной строки');

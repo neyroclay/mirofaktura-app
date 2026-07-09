@@ -271,11 +271,29 @@
         const maxApp = window.WebApp || null;
         if (maxApp && typeof maxApp.ready === 'function') maxApp.ready();
 
-        const userObj = maxApp?.initDataUnsafe?.user || maxApp?.user || {};
         const trendParams = new URLSearchParams(window.location.search);
+        const platformParam = String(trendParams.get('platform') || trendParams.get('messenger') || '').toLowerCase();
+        const trendPlatform = (platformParam === 'tg' || platformParam === 'telegram') ? 'telegram' : 'max';
+        const trendMessenger = trendPlatform === 'telegram' ? 'Telegram' : 'MAX';
+        const trendEntryUrl = trendPlatform === 'telegram'
+            ? 'https://t.me/mirofactura_bot'
+            : 'https://max.ru/id590417093305_biz';
+        const userObj = maxApp?.initDataUnsafe?.user || maxApp?.user || {};
         const isLocalPreview = window.location.protocol === 'file:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
         const freshPreview = isLocalPreview && trendParams.get('fresh') === '1';
-        const userId = freshPreview ? 'preview-fresh' : (userObj.id || 123456789);
+        const userIdFromQuery = (() => {
+            const keys = trendPlatform === 'telegram'
+                ? ['telegram_user_id', 'telegramUserId', 'tg_user_id', 'tgUserId', 'user_id', 'userId']
+                : ['max_user_id', 'maxUserId', 'max_user', 'user_id', 'userId'];
+
+            for (const key of keys) {
+                const value = trendParams.get(key);
+                if (value) return value;
+            }
+
+            return '';
+        })();
+        const userId = freshPreview ? 'preview-fresh' : (userIdFromQuery || userObj.id || 123456789);
         const firstName = userObj.first_name || "Без имени";
         const lastName = userObj.last_name || "";
 
@@ -285,7 +303,7 @@
         let isAudioUnlocked = false, isScratching = false, scratchTimeout = null;
 
         // ВЕБХУКИ BASEROW И MULTY
-        const STORAGE_KEY      = 'oracle_10_trends_release_v23';
+        const STORAGE_KEY      = `oracle_10_trends_release_v23_${trendPlatform}`;
         const LOAD_URL = 'https://cb.multy.ai/api/v1/hook/app/7d62795bb2fc085481ae4e8c3b6f9024';
         const SAVE_URL = 'https://cb.multy.ai/api/v1/hook/app/da0e0039c43a7c3d4287702d293fa656';
 
@@ -771,7 +789,17 @@
                 return;
             }
             try {
-                const response = await fetch(LOAD_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user_id: String(userId) }) });
+                const response = await fetch(LOAD_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        item: 'trend_deck_load',
+                        user_id: String(userId),
+                        platform: trendPlatform,
+                        messenger: trendMessenger,
+                        source: 'mirofaktura-app'
+                    })
+                });
                 const data = await response.json();
                 if (data.exists === true) {
                     appData.firstLaunchTime = data.first_launch_time; 
@@ -821,10 +849,13 @@
                     method: 'POST', 
                     headers: { 'Content-Type': 'application/json' }, 
                     body: JSON.stringify({ 
+                        item: 'trend_deck_save',
                         user_id: String(userId),
                         first_name: String(firstName),
                         last_name: String(lastName),
-                        messenger: "MAX", 
+                        messenger: trendMessenger,
+                        platform: trendPlatform,
+                        source: 'mirofaktura-app',
                         first_launch_time: String(appData.firstLaunchTime), 
                         last_date: appData.lastDate || "", 
                         collected_cards: cardsString,
@@ -1067,7 +1098,17 @@
                 isFinishingProcess = true;
 
                 try {
-                    const response = await fetch(LOAD_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user_id: String(userId) }) });
+                    const response = await fetch(LOAD_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            item: 'trend_deck_load',
+                            user_id: String(userId),
+                            platform: trendPlatform,
+                            messenger: trendMessenger,
+                            source: 'mirofaktura-app'
+                        })
+                    });
                     const data = await response.json();
                     if (data && data.exists === true) {
                         appData.bonusCards = Number(data.bonus_cards) || 0;
@@ -1159,7 +1200,7 @@
 
             // НОВАЯ ЛОГИКА ШЕРИНГА (Web Share API)
             async function triggerShare() {
-                const shareUrl = 'https://max.ru/id590417093305_bot?start=' + userId; 
+                const shareUrl = `${trendEntryUrl}?start=${encodeURIComponent(String(userId))}`;
                 const text = `Мне выпал стратегический тренд 2026: ${currentCardData.title}\n\nЗагляни в будущее и собери свою коллекцию инсайтов 👇`;
                 const fullText = text + '\n' + shareUrl;
 
