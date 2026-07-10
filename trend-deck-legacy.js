@@ -556,7 +556,7 @@
                     <div id="read-trend-text" class="read-scroll-area"></div>
                     <div id="read-trend-source" style="color:#8A9999;font-size:11px;margin-bottom:20px;font-style:italic;text-align:left;border-top:1px solid #E0E0E0;padding-top:15px;display:none;"></div>
                     <div style="display:flex;flex-direction:column;align-items:center;gap:12px;width:100%;">
-                        <button id="btn-read-apply" class="ask-ai-main-btn">Как применить тренд?</button>
+                        <button id="btn-read-apply" type="button" class="ask-ai-main-btn">Как применить тренд?</button>
                     </div>
                 </div>
             </div>
@@ -603,8 +603,8 @@
                 <div class="modal-content" style="text-align:center;padding:25px;">
                     <div id="custom-dialog-text" style="color:#1F2E2E;font-size:15px;font-weight:800;margin-bottom:25px;line-height:1.4;"></div>
                     <div style="display:flex; flex-direction:column; gap:10px; justify-content:center; width:100%;">
-                        <button id="btn-dialog-ok"     class="ask-ai-main-btn" style="width:100%;">Да</button>
-                        <button id="btn-dialog-cancel" class="ask-ai-main-btn" style="background:#F4F7F8;color:#8A9999;width:100%;box-shadow:none;">Отмена</button>
+                        <button id="btn-dialog-ok" type="button" class="ask-ai-main-btn" style="width:100%;">Да</button>
+                        <button id="btn-dialog-cancel" type="button" class="ask-ai-main-btn" style="background:#F4F7F8;color:#8A9999;width:100%;box-shadow:none;">Отмена</button>
                     </div>
                 </div>
             </div>
@@ -648,14 +648,14 @@
                     
                     <div style="text-align:center;color:#1F2E2E;font-weight:800;margin-bottom:20px;letter-spacing:2px;font-size:14px;">АВТОРЫ ПРОЕКТА</div>
                     <a href="#" class="author-card" onclick="window.app_openBotLink(event, 'https://max.ru/u/f9LHodD0cOJ7KLcSGQ2-nIru39qLMDByEa3oTWgNABebA15thaMVXVpHB-w')">
-                        <img src="${AUTHOR_1_IMG}" class="author-img">
+                        <img src="${AUTHOR_1_IMG}" class="author-img" alt="Елизавета Викулова">
                         <div class="author-info">
                             <div class="author-name">Елизавета Викулова</div>
                             <div class="author-desc">Эксперт по цифровизации маркетинга, фанат геймификации.</div>
                         </div>
                     </a>
                     <a href="#" class="author-card" onclick="window.app_openBotLink(event, 'https://max.ru/u/f9LHodD0cOL6WZFmWoaBowA5ZAdNLubiIRJlhbrL5vxjlmvr16DBtsGJcLY')">
-                        <img src="${AUTHOR_2_IMG}" class="author-img">
+                        <img src="${AUTHOR_2_IMG}" class="author-img" alt="Елена Попова">
                         <div class="author-info">
                             <div class="author-name">Елена Попова</div>
                             <div class="author-desc">Эксперт по созданию впечатлений в маркетинге и вау-эффектам.</div>
@@ -711,7 +711,7 @@
                         </div>
                     </div>
 
-                    <button class="onboard-btn" id="btn-start-onboard" style="margin-top:35px;width:100%;max-width:280px;font-size:13px;letter-spacing:1px;">ВЫТЯНУТЬ КАРТУ</button>
+                    <button class="onboard-btn" type="button" id="btn-start-onboard" style="margin-top:35px;width:100%;max-width:280px;font-size:13px;letter-spacing:1px;">ВЫТЯНУТЬ КАРТУ</button>
                     <div id="btn-legal-open" style="font-size:11px; color:#8A9999; margin-top:20px; text-decoration:underline; cursor:pointer; text-transform:uppercase; font-weight:700;">Политика и соглашения</div>
                 </div>
             </div>
@@ -724,7 +724,7 @@
                 
                 <div id="done-ui" style="display:none;flex-direction:column;align-items:center; width:100%; max-width:280px; margin: 0 auto;">
                     
-                    <button id="btn-next-bonus" class="ask-ai-main-btn" style="display:none; margin-bottom:15px; font-size:14px; padding:14px; width:100%;">🎁 Открыть бонусную карту</button>
+                    <button id="btn-next-bonus" type="button" class="ask-ai-main-btn" style="display:none; margin-bottom:15px; font-size:14px; padding:14px; width:100%;">🎁 Открыть бонусную карту</button>
 
                     <div class="timer-box" id="daily-timer" style="display:none; width:100%; box-sizing:border-box;">
                         <div style="color:#8A9999;font-size:11px;">НОВАЯ КАРТА ЧЕРЕЗ</div>
@@ -734,7 +734,7 @@
                     <div id="invite-banner" style="background:#FFF; padding:20px 15px; border-radius:24px; margin-bottom:15px; box-shadow:0 10px 30px rgba(0,210,211,0.15); width:100%; box-sizing:border-box; display:none; text-align:center; border: 1px solid rgba(0,210,211,0.2);">
                         <div style="font-weight:900; font-size:16px; color:#1F2E2E; margin-bottom:12px; text-transform:uppercase; letter-spacing:0.5px;" id="invite-title">Расширьте картину будущего</div>
                         <div style="font-size:13px; color:#5C6B6B; margin-bottom:18px; line-height:1.5;" id="invite-desc"></div>
-                        <button id="btn-invite-friend" class="ask-ai-main-btn" style="width:100%; background:#1F2E2E; color:#FFF; box-shadow:0 4px 15px rgba(0,0,0,0.2); padding:14px; font-size:14px;"><span class="material-icons-round" style="font-size:18px;">person_add</span> Пригласить друга</button>
+                        <button id="btn-invite-friend" type="button" class="ask-ai-main-btn" style="width:100%; background:#1F2E2E; color:#FFF; box-shadow:0 4px 15px rgba(0,0,0,0.2); padding:14px; font-size:14px;"><span class="material-icons-round" style="font-size:18px;">person_add</span> Пригласить друга</button>
                     </div>
 
                     <div class="collection-hint">Карта сохранена в <span id="link-to-collection" style="color:#00D2D3;cursor:pointer;">КОЛЛЕКЦИИ</span></div>
@@ -742,10 +742,10 @@
             </div>
             
             <div class="nav">
+                <div class="nav-item" id="btn-tab-home"><span class="material-icons-round" style="font-size:22px;">home</span>ГЛАВНАЯ</div>
                 <div class="nav-item active" id="btn-tab-daily"><span class="material-icons-round" style="font-size:22px;">style</span>КАРТА ДНЯ</div>
                 <div class="nav-item" id="btn-tab-collection"><span class="material-icons-round" style="font-size:22px;">collections</span>КОЛЛЕКЦИЯ</div>
                 <div class="nav-item" id="btn-tab-authors"><span class="material-icons-round" style="font-size:22px;">group</span>АВТОРЫ</div>
-                <div class="nav-share-btn" id="share-btn"><span style="font-size:10px;font-weight:800;">ПОДЕЛИТЬСЯ</span></div>
             </div>
         `;
         container.appendChild(uiLayer);
@@ -996,8 +996,9 @@
                window.hidePreloader();
                return;
            }
-           renderer.setSize(width, height); renderer.setPixelRatio(window.devicePixelRatio);
+           renderer.setSize(width, height); renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
            canvasDiv.appendChild(renderer.domElement); const canvas = renderer.domElement;
+            canvas.style.touchAction = 'none';
 
             canvas.addEventListener('touchmove', function(e) { if (e.cancelable) e.preventDefault(); }, { passive: false });
             scene.add(new THREE.AmbientLight(0xffffff, 0.7)); const dir = new THREE.DirectionalLight(0xffffff, 0.8); dir.position.set(5, 5, 10); scene.add(dir);
@@ -1034,8 +1035,10 @@
                 const draw = () => {
                     bCtx.clearRect(0, 0, 512, 768); if (cachedBackImg) bCtx.drawImage(cachedBackImg, 0, 0, 512, 768);
                     const btnW=280, btnH=60, btnX=40; bCtx.save(); const sc = isBtnHovered ? 1.02 : 1; bCtx.translate(btnX+btnW/2, 675+btnH/2); bCtx.scale(sc, sc); bCtx.translate(-(btnX+btnW/2), -(675+btnH/2));
-                    bCtx.shadowColor='rgba(0,210,211,0.3)'; bCtx.shadowBlur=15; bCtx.shadowOffsetY=4; bCtx.beginPath(); if (bCtx.roundRect) bCtx.roundRect(btnX, 675, btnW, btnH, 30); else bCtx.rect(btnX, 675, btnW, btnH);
-                    bCtx.fillStyle='#00D2D3'; bCtx.fill(); bCtx.shadowColor='transparent'; bCtx.font='bold 20px sans-serif'; bCtx.fillStyle='white'; bCtx.textAlign='center'; bCtx.textBaseline='middle'; bCtx.fillText('Открыть текст', btnX+btnW/2, 675+btnH/2);
+                    const btnGradient = bCtx.createLinearGradient(btnX, 675, btnX + btnW, 675);
+                    btnGradient.addColorStop(0, '#ffe78a'); btnGradient.addColorStop(0.42, '#e9fbf4'); btnGradient.addColorStop(1, '#c8f4ef');
+                    bCtx.shadowColor='rgba(7,57,54,0.18)'; bCtx.shadowBlur=14; bCtx.shadowOffsetY=4; bCtx.beginPath(); if (bCtx.roundRect) bCtx.roundRect(btnX, 675, btnW, btnH, 30); else bCtx.rect(btnX, 675, btnW, btnH);
+                    bCtx.fillStyle=btnGradient; bCtx.fill(); bCtx.shadowColor='transparent'; bCtx.strokeStyle='rgba(255,255,255,0.78)'; bCtx.lineWidth=2; bCtx.stroke(); bCtx.font='800 20px system-ui, sans-serif'; bCtx.fillStyle='#073936'; bCtx.textAlign='center'; bCtx.textBaseline='middle'; bCtx.fillText('Открыть текст', btnX+btnW/2, 675+btnH/2);
                     bCtx.restore(); backTex.needsUpdate = true;
                 };
                 if (cachedBackImg && cachedBackImg.dataset.id === String(card.id)) { draw(); return; }
@@ -1079,8 +1082,8 @@
             const raycaster = new THREE.Raycaster(), mouse = new THREE.Vector2(); let isDragging=false, touchStartX=0, touchStartY=0, isTap=false, targetRotX=0, targetRotY=0, baseRotationY=0;
 
             function getMouse(e) { const r = canvas.getBoundingClientRect(); let cx, cy; if (e.changedTouches?.length) { cx=e.changedTouches[0].clientX; cy=e.changedTouches[0].clientY; } else if (e.touches?.length) { cx=e.touches[0].clientX; cy=e.touches[0].clientY; } else { cx=e.clientX; cy=e.clientY; } return { x:((cx-r.left)/r.width)*2-1, y:-((cy-r.top)/r.height)*2+1 }; }
-            function onDown(e) { isDragging=true; isTap=true; if (!isAudioUnlocked) { winSound.muted=true; scratchSound.muted=true; const p1=scratchSound.play(); if(p1) p1.then(()=>{scratchSound.pause();scratchSound.muted=false;}).catch(()=>{}); const p2=winSound.play(); if(p2) p2.then(()=>{winSound.pause();winSound.currentTime=0;winSound.muted=false;}).catch(()=>{}); isAudioUnlocked=true; } touchStartX = e.touches?e.touches[0].clientX:e.clientX; touchStartY = e.touches?e.touches[0].clientY:e.clientY; interact(e); }
-            function onMove(e) { updateParallax(e); if (isDragging) { const cx=e.touches?e.touches[0].clientX:e.clientX; const cy=e.touches?e.touches[0].clientY:e.clientY; if (Math.abs(cx-touchStartX)>15 || Math.abs(cy-touchStartY)>15) isTap=false; interact(e); } else { checkHover(e); } }
+            function onDown(e) { if (e.cancelable) e.preventDefault(); isDragging=true; isTap=true; if (!isAudioUnlocked) { winSound.muted=true; scratchSound.muted=true; const p1=scratchSound.play(); if(p1) p1.then(()=>{scratchSound.pause();scratchSound.muted=false;}).catch(()=>{}); const p2=winSound.play(); if(p2) p2.then(()=>{winSound.pause();winSound.currentTime=0;winSound.muted=false;}).catch(()=>{}); isAudioUnlocked=true; } touchStartX = e.touches?e.touches[0].clientX:e.clientX; touchStartY = e.touches?e.touches[0].clientY:e.clientY; interact(e); }
+            function onMove(e) { updateParallax(e); if (isDragging) { if (e.cancelable) e.preventDefault(); const cx=e.touches?e.touches[0].clientX:e.clientX; const cy=e.touches?e.touches[0].clientY:e.clientY; if (Math.abs(cx-touchStartX)>15 || Math.abs(cy-touchStartY)>15) isTap=false; interact(e); } else { checkHover(e); } }
             function onUp(e) { isDragging=false; if (isScratching) { scratchSound.pause(); isScratching=false; } clearTimeout(scratchTimeout); if (isTap) { if ((isDailyDone && appData.bonusCards <= 0) || !clayMesh) { const m = getMouse(e); if (!isNaN(m.x)) { raycaster.setFromCamera(m, camera); if (isFlipped) { const hits = raycaster.intersectObject(backMesh); if (hits.length && hits[0].uv.y>0.04 && hits[0].uv.y<0.12) { window.app_openReadModal(currentCardData.id); isTap=false; return; } } const hits = raycaster.intersectObjects([frontMesh, backMesh]); if (hits.length) flipCard(); } } } isTap=false; }
             function checkHover(e) { const m=getMouse(e); if(isNaN(m.x)) return; mouse.set(m.x,m.y); raycaster.setFromCamera(mouse,camera); if (!clayMesh) { let hov=false; if (isFlipped) { const h=raycaster.intersectObject(backMesh); if(h.length&&h[0].uv.y>0.04&&h[0].uv.y<0.12) hov=true; } if (hov!==isBtnHovered) { isBtnHovered=hov; updateBackSide(currentCardData); } canvas.style.cursor='pointer'; return; } const h=raycaster.intersectObject(clayMesh); canvas.style.cursor=h.length?'crosshair':'default'; }
             function interact(e) { if (document.getElementById('library-view').classList.contains('visible') || document.getElementById('authors-view').style.display==='flex' || document.getElementById('onboarding-view').classList.contains('visible') || document.getElementById('read-trend-modal').classList.contains('visible') || document.getElementById('legal-text-modal').classList.contains('visible') ) return; const m=getMouse(e); if(isNaN(m.x)) return; mouse.set(m.x,m.y); raycaster.setFromCamera(mouse,camera); if (clayMesh && (!isDailyDone || appData.bonusCards > 0)) { const h=raycaster.intersectObject(clayMesh); if (h.length) dig(h[0].uv.x, h[0].uv.y); } }
@@ -1244,7 +1247,9 @@
                 fallbackCopy();
             }
 
-            document.getElementById('share-btn').addEventListener('click', triggerShare);
+            document.getElementById('btn-tab-home').addEventListener('click', () => {
+                window.parent?.postMessage({ type: 'mirofaktura:navigate', page: 'home' }, '*');
+            });
             document.getElementById('btn-invite-friend').addEventListener('click', triggerShare);
             document.getElementById('btn-gameover-invite').addEventListener('click', triggerShare);
 
@@ -1257,7 +1262,7 @@
                     const unlocked=appData.collected.includes(card.id); const delay=i*0.03;
                     if (unlocked) {
                         const el=document.createElement('div'); el.className='lib-card-container'; el.style.animationDelay=`${delay}s`;
-                        el.innerHTML=`<div class="lib-card-inner"><div class="lib-card-face" style="background-image:url('${card.imgFront}')"></div><div class="lib-card-face lib-card-back" style="background-image:url('${card.imgBack||TEXT_BACK_IMG}')"><button class="lib-read-btn" onclick="event.stopPropagation();window.app_openReadModal(${card.id})">Открыть текст</button></div></div>`;
+                        el.innerHTML=`<div class="lib-card-inner"><div class="lib-card-face" style="background-image:url('${card.imgFront}')"></div><div class="lib-card-face lib-card-back" style="background-image:url('${card.imgBack||TEXT_BACK_IMG}')"><button class="lib-read-btn" type="button" onclick="event.stopPropagation();window.app_openReadModal(${card.id})">Открыть текст</button></div></div>`;
                         el.onclick=function(e){ if(!e.target.classList.contains('lib-read-btn')) this.classList.toggle('flipped'); }; grid.appendChild(el);
                     } else {
                         const el=document.createElement('div'); el.className='lib-card-locked'; el.style.animationDelay=`${delay}s`;
@@ -1348,7 +1353,7 @@
             }
 
             setInterval(updateTimer, 1000);
-            canvas.addEventListener('pointerdown', onDown); window.addEventListener('pointermove', onMove); window.addEventListener('pointerup', onUp);
+            canvas.addEventListener('pointerdown', onDown, { passive:false }); window.addEventListener('pointermove', onMove, { passive:false }); window.addEventListener('pointerup', onUp); window.addEventListener('pointercancel', onUp);
             window.addEventListener('resize', ()=>{
                 const w=container.clientWidth, h=container.clientHeight, a=w/h; camera.aspect=a; camera.updateProjectionMatrix(); renderer.setSize(w,h);
                 if (a>0.6) { camera.position.z=8.2; cardGroup.position.y=0.9; } else if (isIPad) { camera.position.z=7.5; cardGroup.position.y=0.7; } else if (w<768) { camera.position.z=7.5; cardGroup.position.y=0.4; } else { camera.position.z=6; cardGroup.position.y=0.3; }

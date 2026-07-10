@@ -4,10 +4,18 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Мирофактура</title>
-    <link rel="stylesheet" href="./styles.css">
+    <link rel="preload" href="./assets/logo-black-yellow.webp" as="image" type="image/webp">
+    <link rel="preload" href="./assets/stepan-start.webp" as="image" type="image/webp">
+    <link rel="stylesheet" href="./styles.css?v=20260710-result-spacing">
   </head>
   <body>
+    <div class="app-loader" id="app-loader" role="status" aria-label="Загрузка Мирофактуры">
+      <div class="app-loader__content">
+        <img src="./assets/logo-black-yellow.webp" alt="" aria-hidden="true">
+        <span class="app-loader__line" aria-hidden="true"></span>
+      </div>
+    </div>
     <div id="app"></div>
-    <script src="./app.js"></script>
+    <script src="./app.js?v=20260710-trends-home-nav"></script>
   </body>
 </html>

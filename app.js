@@ -24,7 +24,7 @@
       entryUrl: MAX_CHANNEL_URL,
       channelUrl: MAX_CHANNEL_URL,
       channelLabel: '\u041a\u0430\u043d\u0430\u043b \u0432 MAX',
-      channelText: '\u0420\u0430\u0437\u0431\u043e\u0440\u044b, \u043c\u0430\u0442\u0435\u0440\u0438\u0430\u043b\u044b \u0438 \u043d\u043e\u0432\u043e\u0441\u0442\u0438 \u041c\u0438\u0440\u043e\u0444\u0430\u043a\u0442\u0443\u0440\u044b.',
+      channelText: 'Материалы о маркетинге, продуктах и цифровых мирах.',
     },
     telegram: {
       key: 'telegram',
@@ -32,7 +32,7 @@
       entryUrl: TELEGRAM_BOT_URL,
       channelUrl: TELEGRAM_BOT_URL,
       channelLabel: 'Telegram',
-      channelText: '\u0411\u043e\u0442 \u0438 \u043a\u0430\u043d\u0430\u043b\u044b \u0430\u0432\u0442\u043e\u0440\u043e\u0432 \u041c\u0438\u0440\u043e\u0444\u0430\u043a\u0442\u0443\u0440\u044b.',
+      channelText: 'Бот Мирофактуры и каналы Елизаветы Викуловой и Елены Поповой.',
     },
   }[APP_PLATFORM];
   const SUBSCRIPTION_WEBHOOK_URL = window.MIROFAKTURA_SUBSCRIPTION_WEBHOOK_URL || '';
@@ -43,85 +43,86 @@
   })();
   const IS_OPEN_ACCESS = ACCESS_MODE === 'open';
   const assets = {
-    logo: './assets/logo-black-yellow.png',
-    stepanStart: './assets/stepan-start.png',
-    stepanProduct: './assets/stepan-product-question.png',
-    stepanChannels: './assets/stepan-clients-channels.png',
-    stepanRegularity: './assets/stepan-sales-regularity.png',
-    stepanFinal: './assets/stepan-final-map.png',
-    aristarch: './assets/aristarch-recommendations.png',
-    authors: './assets/authors-photo.jpg'
+    logo: './assets/logo-black-yellow.webp',
+    stepanStart: './assets/stepan-start.webp',
+    stepanProduct: './assets/stepan-product-question.webp',
+    stepanChannels: './assets/stepan-clients-channels.webp',
+    stepanRegularity: './assets/stepan-sales-regularity.webp',
+    stepanFinal: './assets/stepan-final-map.webp',
+    aristarch: './assets/aristarch-recommendations.webp',
+    potap: './assets/potap-digital-system.webp',
+    authors: './assets/authors-photo.webp'
   };
 
   const quiz = [
     {
-      kicker: 'Проверяем основу',
-      title: 'Есть ли у вас главный продукт?',
-      hint: 'Нам важно понять, с чем уже можно работать: с готовым предложением, идеей или набором разных форматов.',
+      kicker: 'Сначала — продукт',
+      title: 'Что вы сейчас продаёте?',
+      hint: 'Выберите вариант, который точнее описывает ситуацию сейчас.',
       image: assets.stepanProduct,
-      note: 'Степан смотрит не на идеальную картину, а на то, с чего можно начать без лишней суеты.',
+      note: 'Если предложение пока трудно описать одним предложением, это нормально. Для начала достаточно понять, что уже можно предложить клиенту.',
       answers: [
-        ['one', 'Есть один продукт', 'Услуга, консультация, курс, интенсив или основной формат.'],
-        ['many', 'Есть несколько направлений', 'Они уже связаны между собой или пока живут отдельно.'],
-        ['idea', 'Есть идея, но не продукт', 'Пока понятно не всё, но направление уже чувствуется.']
+        ['one', 'Один основной продукт', 'Услуга, консультация, курс или другой главный формат.', 'Один продукт — уже основа. Теперь проверим, приводит ли он клиента к следующему шагу.'],
+        ['many', 'Несколько продуктов или направлений', 'Они уже образуют линейку или пока продаются отдельно.', 'Несколько направлений — ещё не обязательно линейка. Посмотрим, связаны ли они для клиента или просто стоят рядом.'],
+        ['idea', 'Пока только идея', 'Направление понятно, но само предложение ещё не оформлено.', 'Идея — это ещё не предложение. Ничего страшного. Дальше проверим, для кого и через какой канал её можно превратить в продукт.']
       ]
     },
     {
-      kicker: 'Смотрим на входы',
-      title: 'Как сейчас приходят клиенты?',
-      hint: 'Выберите самый близкий вариант. Тут не нужно отвечать идеально.',
+      kicker: 'Теперь — клиенты',
+      title: 'Откуда сейчас приходят клиенты?',
+      hint: 'Выберите основной источник, даже если он работает нерегулярно.',
       image: assets.stepanChannels,
-      note: 'Если заявки приходят неровно, это не провал. Это просто место, где системе нужна опора.',
+      note: 'Неровный поток заявок не означает, что всё плохо. Сначала важно увидеть канал, который уже приводит людей, пусть и не каждый месяц.',
       answers: [
-        ['word', 'Через рекомендации', 'Сарафан работает, но его сложно планировать.'],
-        ['content', 'Через контент', 'Посты, видео, эфиры или личный канал уже помогают.'],
-        ['ads', 'Через рекламу', 'Есть платные источники или вы хотите их проверить.'],
-        ['random', 'Пока хаотично', 'Иногда приходят, иногда тишина.']
+        ['word', 'Через рекомендации', 'Сарафан работает, но его сложно планировать.', 'Рекомендации работают, но плохо поддаются планированию. Посмотрим, какой канал можно добавить к ним.'],
+        ['content', 'Через контент', 'Посты, видео, эфиры или канал уже приводят обращения.', 'Контент уже приводит людей — хорошо. Теперь важно понять, где он заканчивается просмотром, а где начинается продажа.'],
+        ['ads', 'Через рекламу', 'Платные размещения уже работают или вы начинаете их тестировать.', 'Реклама даёт цифры быстрее других каналов. Проверим, есть ли у неё понятный продукт и следующий шаг.'],
+        ['random', 'Из разных мест', 'Заявки появляются, но устойчивого источника пока нет.', 'Пока заявки приходят случайно, на этот поток трудно рассчитывать. Дальше посмотрим, какой канал можно развивать регулярно.']
       ]
     },
     {
-      kicker: 'Выбираем фокус',
-      title: 'Что хочется прояснить первым?',
-      hint: 'Квиз подберёт материал, который лучше открыть сейчас, а не когда-нибудь потом.',
+      kicker: 'Выбираем задачу',
+      title: 'Что сейчас важнее всего?',
+      hint: 'Выберите задачу, которой стоит заняться в первую очередь.',
       image: assets.stepanRegularity,
-      note: 'Хороший первый шаг не обязан закрывать всё. Он должен убрать ближайшую неопределённость.',
+      note: 'Не нужно решать всё сразу. Выберите вопрос, который сильнее всего мешает двигаться дальше сейчас.',
       answers: [
-        ['traffic', 'Где брать новую аудиторию', 'Хочется понять, какие каналы пробовать.'],
-        ['sales', 'Какие каналы продаж собрать', 'Нужно увидеть, как заявки превращаются в покупки.'],
-        ['products', 'Как связать продукты', 'Нужно разложить линейку и повторные покупки.']
+        ['traffic', 'Где искать новую аудиторию', 'Хочу выбрать каналы для первого теста.', 'Значит, ищем не все каналы сразу, а первый разумный тест.'],
+        ['sales', 'Какие каналы продаж использовать', 'Хочу увидеть все варианты и выбрать следующий.', 'Список каналов сам по себе не поможет. Нужен один вариант, который подходит вашей ситуации.'],
+        ['products', 'Как связать продукты', 'Хочу продумать линейку и повторные покупки.', 'Тогда будем смотреть, что человек покупает сначала и что ему можно предложить потом.']
       ]
     },
     {
-      kicker: 'Собираем маршрут',
-      title: 'Что важнее сделать следующим шагом?',
-      hint: 'Ответ поможет не распыляться и открыть один материал первым.',
+      kicker: 'Последний вопрос',
+      title: 'Что хотите получить в итоге?',
+      hint: 'Выберите результат, который будет полезнее прямо сейчас.',
       image: assets.stepanFinal,
-      note: 'Степан уже почти собрал карту. Осталось выбрать ход, который правда можно сделать.',
+      note: 'Готово. Аристарх сравнит ответы и покажет, с какого материала лучше начать.',
       answers: [
-        ['map', 'Разложить всё на схему', 'Чтобы стало видно, что с чем связано.'],
-        ['test', 'Проверить один канал', 'Чтобы не спорить в теории, а быстро получить данные.'],
-        ['repeat', 'Продумать повторные покупки', 'Чтобы клиентам было понятно, зачем возвращаться.']
+        ['map', 'Увидеть общую картину', 'Понять, что уже работает и чего не хватает.', 'Хорошо. Сначала соберём картину без догадок, потом выберем один следующий шаг.'],
+        ['test', 'Выбрать один канал для теста', 'Решить, что и как проверить первым.', 'Один тест даст больше пользы, чем пять каналов, запущенных одновременно.'],
+        ['repeat', 'Продумать следующую покупку', 'Связать первый продукт с понятным продолжением.', 'Тогда смотрим не только на первую продажу. Важно понять, зачем клиенту возвращаться.']
       ]
     }
   ];
 
   const materials = {
     traffic: {
-      tag: 'Где искать новую аудиторию',
+      tag: 'Новая аудитория',
       title: 'Атлас трафика 2026',
-      text: 'Карта каналов, которые можно проверить без хаоса: что подходит для быстрого теста, а что лучше не трогать сейчас.',
+      text: 'Карта каналов привлечения: что можно быстро проверить, а что потребует больше времени, денег или подготовки.',
       tone: ''
     },
     sales: {
-      tag: 'Как собрать путь к заявке',
+      tag: 'Каналы продаж',
       title: 'Карта каналов продаж',
-      text: 'Материал помогает увидеть, где человек знакомится с вами, где принимает решение и где ему проще оставить заявку.',
+      text: 'Список из 16 каналов продаж и навигатор, который поможет выбрать один канал для следующего теста.',
       tone: 'warm'
     },
     products: {
-      tag: 'Как сделать повторные покупки понятными',
+      tag: 'Повторные покупки',
       title: 'Линейки продуктов',
-      text: 'Помогает связать продукты между собой: что дать для знакомства, что продавать как основное решение и что предложить следующим шагом.',
+      text: 'Четыре модели продуктовых линеек и конструктор цепочки: от первого знакомства до следующей покупки.',
       tone: 'deep'
     }
   };
@@ -259,7 +260,7 @@
           ['launch', 'Один запуск'],
           ['long', 'Месяцы и годы'],
           ['catalog', 'Зависит от покупки'],
-          ['community', 'Через участие и интерес']
+          ['community', 'Возвращаются ради серии или участия']
         ]
       },
       {
@@ -286,14 +287,14 @@
       ['Письма и чат-боты', 'Напоминают о следующем подходящем продукте.'],
       ['Личная рекомендация', 'Помогает предложить продукт с учетом уже купленного.'],
       ['Блоки на сайте', 'Связывают продукты и помогают увеличить средний чек.'],
-      ['Учет покупок', 'Не показывайте человеку то, что он уже купил.']
+      ['История покупок', 'Не предлагайте человеку то, что он уже купил.']
     ]
   };
 
   const salesChannelsMaterial = {
     safety: [
       ['Сначала укрепите рабочий канал', 'Если один канал уже приводит клиентов, но работает нестабильно, сначала разберитесь с ним.'],
-      ['Тестируйте по одному', 'Новый канал требует процессов, первого запуска, исправления ошибок и оценки результата.'],
+      ['Тестируйте по одному', 'Новый канал требует отдельного процесса, времени на запуск и понятных критериев оценки.'],
       ['Не добавляйте «чтобы было»', 'Канал должен окупать поддержку или усиливать другие способы продаж.'],
       ['Не копируйте конкурентов вслепую', 'Если канал работает у других, это еще не значит, что он сразу сработает у вас. Сначала разберите реализацию.']
     ],
@@ -400,7 +401,7 @@
         title: 'Дистанционные продажи',
         zone: 'Коммуникация',
         short: 'Звонки, каталоги и прямые эфиры.',
-        text: 'Телефонные продажи остаются живыми, особенно с автоматизацией и ИИ. Каталог можно добавлять к заказу, а современный телемагазин легко узнать в прямых эфирах маркетплейсов.',
+        text: 'Телефонные продажи по-прежнему работают, особенно с автоматизацией и ИИ. Каталог можно добавлять к заказу, а прямые эфиры использовать как современный телемагазин.',
         tags: ['b2b', 'b2c', 'team', 'fast', 'online']
       },
       {
@@ -472,7 +473,7 @@
         title: 'Сетевой бизнес',
         zone: 'Нестандартные',
         short: 'Многоуровневая сеть продавцов с комиссией.',
-        text: 'Модель жизнеспособна для продуктов, где важны личное общение и небольшая экспертиза. Ее элементы используют и крупные современные компании.',
+        text: 'Модель подходит продуктам, где важны личное общение и небольшая экспертиза продавца. Её отдельные элементы используют и крупные компании.',
         tags: ['b2c', 'scale', 'team', 'brand', 'partners']
       },
       {
@@ -481,7 +482,7 @@
         title: 'Франчайзинг',
         zone: 'Масштаб',
         short: 'Продажа бренда, бизнес-модели и поддержки.',
-        text: 'Покупатель должен получить процессы и материалы, которыми реально можно воспользоваться и заработать. Без системной упаковки канал быстро разрушает доверие.',
+        text: 'Покупатель должен получить процессы и материалы, которыми сможет пользоваться. Плохо упакованная франшиза быстро теряет доверие.',
         tags: ['scale', 'expert', 'budget', 'b2b', 'partners']
       }
     ],
@@ -537,12 +538,12 @@
       },
       {
         id: 'budget',
-        title: 'Ресурс на первый тест',
+        title: 'Сколько можете вложить в первый тест?',
         options: [
-          ['none', 'Пока без бюджета', 'Есть время и внутренние ресурсы.'],
+          ['none', 'Пока без бюджета', 'Есть время, но нет рекламного бюджета.'],
           ['small', 'До 30 000 ₽', 'Небольшой тест на первые сигналы.'],
-          ['medium', '30 000–100 000 ₽', 'Можно сравнить несколько вариантов.'],
-          ['large', 'Больше 100 000 ₽', 'Есть ресурс для масштабного теста.']
+          ['medium', '30 000–100 000 ₽', 'Хватит на несколько объявлений или площадок.'],
+          ['large', 'Больше 100 000 ₽', 'Можно провести полноценный тест.']
         ]
       }
     ],
@@ -557,7 +558,7 @@
       {
         id: 'niche',
         number: '02',
-        title: 'Нишевые истории',
+        title: 'Нишевые каналы',
         intro: 'Здесь важны тема, площадка, репутация и личное участие.',
         channels: ['performances', 'media', 'outdoor']
       },
@@ -571,7 +572,7 @@
       {
         id: 'organic',
         number: '04',
-        title: 'Условно бесплатные',
+        title: 'Условно бесплатные каналы',
         intro: 'Не требуют оплаты за каждый переход, но требуют времени, контента и дисциплины.',
         channels: ['seo-geo', 'content', 'partnerships', 'geo', 'threads']
       }
@@ -678,7 +679,7 @@
       {
         id: 'performances',
         number: '08',
-        group: 'Нишевые истории',
+        group: 'Нишевые каналы',
         title: 'Выступления и эфиры',
         short: 'Самая тёплая аудитория часто приходит после личного контакта.',
         fit: 'Эксперты, основатели и команды с сильной практической темой.',
@@ -692,7 +693,7 @@
       {
         id: 'media',
         number: '09',
-        group: 'Нишевые истории',
+        group: 'Нишевые каналы',
         title: 'СМИ, подкасты и совместные эфиры',
         short: 'Работают на доверие и узнаваемость.',
         fit: 'Нужны инфоповод, понятная тема и способ быстро найти вас после выхода.',
@@ -706,7 +707,7 @@
       {
         id: 'outdoor',
         number: '10',
-        group: 'Нишевые истории',
+        group: 'Нишевые каналы',
         title: 'Наружная реклама',
         short: 'Инструмент заметности, а не быстрых заявок.',
         fit: 'Локальный бизнес и бренды, которым важно стать знакомыми в конкретном месте.',
@@ -762,7 +763,7 @@
       {
         id: 'seo-geo',
         number: '14',
-        group: 'Условно бесплатные',
+        group: 'Условно бесплатные каналы',
         title: 'SEO и GEO',
         short: 'Долгий источник переходов через поиск и нейросетевые ответы.',
         fit: 'Проекты с сайтом, экспертным контентом и горизонтом больше пары недель.',
@@ -776,7 +777,7 @@
       {
         id: 'content',
         number: '15',
-        group: 'Условно бесплатные',
+        group: 'Условно бесплатные каналы',
         title: 'Дзен, Pinterest и короткие видео',
         short: 'Органический охват, если команда готова регулярно делать контент.',
         fit: 'Подходит проектам, которым есть что показывать, объяснять или демонстрировать.',
@@ -790,7 +791,7 @@
       {
         id: 'partnerships',
         number: '16',
-        group: 'Условно бесплатные',
+        group: 'Условно бесплатные каналы',
         title: 'Партнёрства',
         short: 'Обмен доверием и аудиторией без крупного рекламного бюджета.',
         fit: 'Почти любой бизнес, если у партнёров есть взаимно полезные аудитории или ресурсы.',
@@ -804,7 +805,7 @@
       {
         id: 'geo',
         number: '17',
-        group: 'Условно бесплатные',
+        group: 'Условно бесплатные каналы',
         title: 'Яндекс Карты и 2ГИС',
         short: 'Обязательная база для мест, куда приезжают клиенты.',
         fit: 'Магазины, офисы, студии, клиники, салоны и локальные сервисы.',
@@ -818,7 +819,7 @@
       {
         id: 'threads',
         number: '18',
-        group: 'Условно бесплатные',
+        group: 'Условно бесплатные каналы',
         title: 'Threads',
         short: 'Может давать охваты, но не всегда нужную аудиторию.',
         fit: 'Эксперты и бренды, готовые экспериментировать с короткими текстами.',
@@ -868,7 +869,7 @@
     return `
       <header class="topbar">
         <button class="logo-button" type="button" data-page="home" aria-label="На главную">
-          <img class="logo" src="${assets.logo}" alt="Мирофактура">
+          <img class="logo" src="${assets.logo}" alt="Мирофактура" decoding="async" fetchpriority="high">
         </button>
         <button class="share-btn" type="button" data-action="share">Поделиться</button>
       </header>
@@ -878,16 +879,16 @@
   function bottomNav() {
     return `
       <nav class="bottom-nav" aria-label="Навигация">
-        <button class="nav-item ${state.page === 'home' ? 'active' : ''}" type="button" data-page="home">
+        <button class="nav-item ${state.page === 'home' ? 'active' : ''}" type="button" data-page="home" ${state.page === 'home' ? 'aria-current="page"' : ''}>
           ${icons.home}<span>Главная</span>
         </button>
-        <button class="nav-item ${['library', 'material'].includes(state.page) ? 'active' : ''}" type="button" data-action="openLibrary">
+        <button class="nav-item ${['library', 'material'].includes(state.page) ? 'active' : ''}" type="button" data-action="openLibrary" ${['library', 'material'].includes(state.page) ? 'aria-current="page"' : ''}>
           ${icons.library}<span>Кладовая</span>
         </button>
-        <button class="nav-item ${state.page === 'trends' ? 'active' : ''}" type="button" data-action="openTrends">
+        <button class="nav-item ${state.page === 'trends' ? 'active' : ''}" type="button" data-action="openTrends" ${state.page === 'trends' ? 'aria-current="page"' : ''}>
           ${icons.trends}<span>Тренды</span>
         </button>
-        <button class="nav-item ${state.page === 'contacts' ? 'active' : ''}" type="button" data-page="contacts">
+        <button class="nav-item ${state.page === 'contacts' ? 'active' : ''}" type="button" data-page="contacts" ${state.page === 'contacts' ? 'aria-current="page"' : ''}>
           ${icons.contacts}<span>Контакты</span>
         </button>
       </nav>
@@ -895,14 +896,15 @@
   }
 
   function screen(content, cls = '') {
+    const hasBottomNav = PAGES_WITH_BOTTOM_NAV.has(state.page);
     return `
       <main class="app-shell">
-        <section class="screen ${cls}">
+        <section class="screen ${hasBottomNav ? 'has-bottom-nav' : ''} ${cls}">
           ${header()}
           ${content}
-          ${PAGES_WITH_BOTTOM_NAV.has(state.page) ? bottomNav() : ''}
+          ${hasBottomNav ? bottomNav() : ''}
         </section>
-        <div class="toast ${state.toast ? 'visible' : ''}">${state.toast}</div>
+        <div class="toast ${state.toast ? 'visible' : ''}" role="status" aria-live="polite">${state.toast}</div>
       </main>
     `;
   }
@@ -1028,41 +1030,45 @@
     return screen(`
       <div class="hero">
         <div class="mascot-zone">
-          <img class="mascot" src="${assets.stepanStart}" alt="Степан, маскот Мирофактуры">
+          <img class="mascot" src="${assets.stepanStart}" alt="Степан, Цветок-Критик Мирофактуры" decoding="async" fetchpriority="high">
         </div>
 
         <div class="mascot-note">
-          <div><span class="mascot-name">Степан</span> <span class="mascot-role">маскот Мирофактуры</span></div>
-          <p class="quote">«Найдём ход, после которого станет понятнее, что делать дальше»</p>
+          <div><span class="mascot-name">Степан</span> <span class="mascot-role">Цветок-Критик · маскот Мирофактуры</span></div>
+          <p class="quote">«Где сейчас теряются клиенты? Давайте разберёмся»</p>
         </div>
 
         <div class="home-copy">
           <p class="brand-label">Мирофактура</p>
           <h1>С чего начать</h1>
-          <p class="lead">Ответьте на 4 вопроса: станет понятнее, с какого материала начать и что проверить первым.</p>
+          <p class="lead">Ответьте на четыре вопроса. В конце вас ждёт подарок от Мирофактуры — интерактивный инструмент про продукт, продажи или привлечение аудитории.</p>
           <button class="primary-btn" type="button" data-action="startQuiz">Сделать первый ход</button>
         </div>
 
         <div class="home-links">
           <button class="home-link" type="button" data-action="openLibrary">
-            <span><strong>Кладовая Мирофактуры</strong><span>Карты, чек-листы и короткие инструменты по продуктам, продажам и трафику.</span></span>
-          </button>
-          <button class="home-link" type="button" data-action="openTrends">
-            <span><strong>Тренды</strong><span>Вытянуть карты трендов 2026 и сохранить идеи для проверки.</span></span>
+            <span><strong>Кладовая Мирофактуры</strong><span>Интерактивные материалы о продуктах, продажах и привлечении аудитории.</span></span>
           </button>
           <button class="home-link" type="button" data-action="openMax">
             <span><strong>${PLATFORM.channelLabel}</strong><span>${PLATFORM.channelText}</span></span>
           </button>
           <button class="home-link" type="button" data-action="openContacts">
-            <span><strong>Авторы</strong><span>Кто делает материалы, разборы и инструменты Мирофактуры.</span></span>
+            <span><strong>Авторы</strong><span>Елена Попова и Елизавета Викулова: системный маркетинг, геймификация и новые способы вовлечения.</span></span>
           </button>
         </div>
 
         <button class="day-card" type="button" data-action="openTrends">
-          <small>Тренды 2026</small>
-          <h2>Карты для проверки идей</h2>
-          <p>Колода помогает посмотреть на продукт, трафик и продажи под другим углом и выбрать одну идею для ближайшего теста.</p>
-          <span class="day-card-action">Открыть тренды</span>
+          <span class="day-card-copy">
+            <span class="day-card-kicker">Мирофактура · 2026</span>
+            <span class="day-card-title">Колода трендов для бизнеса</span>
+            <span class="day-card-text">Найдите новую идею для продукта, маркетинга или продаж.</span>
+            <span class="day-card-action">Открыть колоду</span>
+          </span>
+          <span class="day-card-cards" aria-hidden="true">
+            <span class="day-card-cover"><img src="./assets/home-trend-creator.jpg" alt="" loading="lazy" decoding="async"></span>
+            <span class="day-card-cover"><img src="./assets/home-trend-ai-fatigue.jpg" alt="" loading="lazy" decoding="async"></span>
+            <span class="day-card-cover"><img src="./assets/home-trend-end-normal.jpg" alt="" loading="lazy" decoding="async"></span>
+          </span>
         </button>
       </div>
     `, 'home-screen');
@@ -1071,19 +1077,21 @@
   function renderQuiz() {
     const item = quiz[state.step];
     const selected = state.answers[state.step];
+    const selectedAnswer = item.answers.find(([id]) => id === selected);
+    const selectedNote = selectedAnswer?.[3] || item.note;
     const progress = Math.round(((state.step + 1) / quiz.length) * 100);
     return screen(`
-      <button class="back-link" type="button" data-page="home">← В мастерскую</button>
+      <button class="back-link" type="button" data-page="home">← На главную</button>
       <div class="quiz-head">
         <div class="quiz-meta">
           <span>Вопрос ${state.step + 1} из ${quiz.length}</span>
           <span>${progress}%</span>
         </div>
-        <div class="progress"><span style="width:${progress}%"></span></div>
+        <div class="progress" role="progressbar" aria-label="Прогресс диагностики" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${progress}"><span style="width:${progress}%"></span></div>
       </div>
 
       <div class="quiz-mascot">
-        <img src="${item.image}" alt="Степан помогает пройти квиз">
+        <img src="${item.image}" alt="Степан помогает пройти квиз" decoding="async">
       </div>
 
       <article class="question-card">
@@ -1093,7 +1101,7 @@
 
         <div class="answers">
           ${item.answers.map(([id, title, text], index) => `
-            <button class="answer ${selected === id ? 'selected' : ''}" type="button" data-answer="${id}">
+            <button class="answer ${selected === id ? 'selected' : ''}" type="button" data-answer="${id}" aria-pressed="${selected === id}">
               <b class="answer-number">${index + 1}</b>
               <span class="answer-copy"><strong>${title}</strong><small>${text}</small></span>
               <i class="check">✓</i>
@@ -1101,13 +1109,13 @@
           `).join('')}
         </div>
 
-        <div class="stepan-comment ${selected ? 'visible' : ''}" id="stepan-comment">
-          <b>Комментарий Степана</b>
-          <span>${item.note}</span>
+        <div class="stepan-comment ${selected ? 'visible' : ''}" id="stepan-comment" role="status" aria-live="polite">
+          <b>Степан</b>
+          <span>${selectedNote}</span>
         </div>
 
         <div class="quiz-actions">
-          <button class="primary-btn" type="button" data-action="nextQuestion" ${selected ? '' : 'disabled'}>${state.step === quiz.length - 1 ? 'Собрать результат' : 'Дальше'}</button>
+          <button class="primary-btn" type="button" data-action="nextQuestion" ${selected ? '' : 'disabled'}>${state.step === quiz.length - 1 ? 'Показать результат' : 'Дальше'}</button>
           <button class="soft-btn" type="button" data-action="prevQuestion" ${state.step === 0 ? 'disabled' : ''}>Назад</button>
         </div>
       </article>
@@ -1121,27 +1129,51 @@
     return 'traffic';
   }
 
+  function resultNextStep(key) {
+    const steps = {
+      traffic: 'Выберите один канал и запишите, что хотите проверить: цену обращения, отклик на формат, количество заявок или качество аудитории.',
+      sales: 'Отметьте канал, который уже работает, и выберите ещё один для теста. Не запускайте несколько новых каналов одновременно.',
+      products: 'Запишите три пункта: первый продукт, основное предложение и то, что можно предложить после него.'
+    };
+    return steps[key] || steps.traffic;
+  }
+
   function renderResult() {
-    const material = materials[resultKey()];
+    const key = resultKey();
+    const material = materials[key];
     return screen(`
       <button class="back-link" type="button" data-action="startQuiz">← Пройти заново</button>
       <div class="result-mascot">
-        <img src="${assets.aristarch}" alt="Аристарх показывает рекомендацию">
+        <img src="${assets.aristarch}" alt="Аристарх показывает рекомендацию" decoding="async">
       </div>
 
       <article class="result-card">
         <p class="brand-label">Результат диагностики</p>
-        <h1>Начните с этого материала</h1>
-        <p class="lead">Аристарх убрал лишние варианты и оставил ближайшую проверку, которую можно сделать сейчас.</p>
+        <h1>Вот с чего лучше начать</h1>
+        <p class="lead">По вашим ответам Аристарх предлагает подарок под выбранную задачу.</p>
 
         <div class="result-panel">
           <h2>${material.title}</h2>
           <p>${material.text}</p>
         </div>
-
-        <button class="primary-btn" type="button" data-action="openMaterial" data-material="${resultKey()}">Открыть материал</button>
-        <button class="soft-btn" type="button" data-page="home">В мастерскую</button>
       </article>
+
+      <div class="result-actions result-actions-primary">
+        <button class="primary-btn" type="button" data-action="openMaterial" data-material="${key}">Открыть подарок</button>
+      </div>
+
+      <div class="potap-figure">
+        <img src="${assets.potap}" alt="Потап собирает цифровую систему" loading="lazy" decoding="async">
+      </div>
+      <article class="potap-panel">
+        <p class="brand-label">Потап</p>
+        <h2>Что сделать после</h2>
+        <p>${resultNextStep(key)}</p>
+      </article>
+
+      <div class="result-actions">
+        <button class="soft-btn" type="button" data-page="home">На главную</button>
+      </div>
     `, 'result-screen');
   }
 
@@ -1151,18 +1183,18 @@
     if (IS_OPEN_ACCESS) {
       return screen(`
         <article class="result-card gate-card">
-          <p class="brand-label">Открытая версия</p>
-          <h1>Материалы уже доступны</h1>
+          <p class="brand-label">Материалы открыты</p>
+          <h1>Можно открывать</h1>
 
           <div class="result-panel">
             <p class="brand-label">${isLibraryGate ? 'Кладовая Мирофактуры' : material.tag}</p>
             <h2>${isLibraryGate ? 'Материалы и инструменты' : material.title}</h2>
-            <p>${isLibraryGate ? 'Откройте кладовую и выберите материал, который сейчас ближе к вашей задаче.' : material.text}</p>
+            <p>${isLibraryGate ? 'Выберите нужный материал или пройдите диагностику, если пока не знаете, с чего начать.' : material.text}</p>
           </div>
 
           <button class="primary-btn" type="button" data-action="${isLibraryGate ? 'openLibrary' : 'openMaterial'}" ${isLibraryGate ? '' : `data-material="${state.pendingMaterial || resultKey()}"`}>${isLibraryGate ? 'Открыть кладовую' : 'Открыть материал'}</button>
           <button class="soft-btn" type="button" data-action="openMax">Подписаться на канал</button>
-          <button class="soft-btn" type="button" data-page="home">В мастерскую</button>
+          <button class="soft-btn" type="button" data-page="home">На главную</button>
         </article>
       `, 'gate-screen');
     }
@@ -1171,23 +1203,23 @@
     const title = state.gateStatus === 'missing-id'
       ? 'Откройте приложение из бота'
       : state.gateStatus === 'error'
-        ? 'Не получилось проверить доступ'
+        ? 'Не удалось проверить подписку'
         : isChecking
           ? 'Проверяем доступ'
           : 'Подписка не найдена';
     const copy = state.gateStatus === 'missing-id'
-      ? `Чтобы открыть ${isLibraryGate ? 'кладовую' : 'материал'}, зайдите в приложение через бота. Так мы поймем, какую подписку проверять.`
+      ? 'Чтобы проверить подписку, откройте приложение из бота.'
       : state.gateStatus === 'error'
-        ? 'Проверка не прошла. Можно подписаться на канал и попробовать еще раз.'
+        ? 'Проверка не сработала. Попробуйте ещё раз через минуту.'
         : isChecking
-          ? `Сейчас проверяем подписку. Если доступ есть, ${isLibraryGate ? 'кладовая откроется' : 'материал откроется'} автоматически.`
-          : 'Подпишитесь на канал, вернитесь сюда и нажмите «Проверить доступ».';
+          ? 'Проверяем подписку. Если всё в порядке, материал откроется автоматически.'
+          : 'Подпишитесь на канал, вернитесь в приложение и нажмите «Проверить подписку».';
     const panel = isLibraryGate
       ? `
         <div class="result-panel">
           <p class="brand-label">Кладовая Мирофактуры</p>
           <h2>Материалы и инструменты</h2>
-          <p>Здесь лежат карты, чек-листы и короткие инструменты по продуктам, продажам и трафику. После проверки подписки вы сможете выбрать нужный материал.</p>
+          <p>Здесь собраны интерактивные материалы о продуктах, продажах и привлечении аудитории.</p>
         </div>
       `
       : `
@@ -1200,15 +1232,15 @@
 
     return screen(`
       <article class="result-card gate-card">
-        <p class="brand-label">Доступ к материалу</p>
+        <p class="brand-label">Проверка подписки</p>
         <h1>${title}</h1>
         <p class="lead">${copy}</p>
 
         ${panel}
 
         <button class="primary-btn" type="button" data-action="openMax">Подписаться на канал</button>
-        <button class="soft-btn" type="button" data-action="checkSubscription" ${isChecking ? 'disabled' : ''}>Проверить доступ</button>
-        <button class="soft-btn" type="button" data-page="home">В мастерскую</button>
+        <button class="soft-btn" type="button" data-action="checkSubscription" ${isChecking ? 'disabled' : ''}>Проверить подписку</button>
+        <button class="soft-btn" type="button" data-page="home">На главную</button>
       </article>
     `, 'gate-screen');
   }
@@ -1216,27 +1248,21 @@
   function renderLibrary() {
     return screen(`
       <div class="library-title">
-        <p class="brand-label">Инструменты</p>
+        <p class="brand-label">Материалы Мирофактуры</p>
         <h1>Кладовая</h1>
-        <p class="lead">Карты, чек-листы и небольшие инструменты по продуктам, продажам и трафику. Если не хочется просматривать всё вручную, начните с диагностики.</p>
+        <p class="lead">Здесь собраны интерактивные материалы Мирофактуры. Короткая диагностика подскажет, какой из них сейчас будет полезнее.</p>
         <div class="library-actions">
-          <button class="primary-btn" type="button" data-action="startQuiz">Сделать первый ход</button>
-          <button class="soft-btn" type="button" data-page="home">В мастерскую</button>
+          <button class="primary-btn" type="button" data-action="startQuiz">Подобрать материал</button>
+          <button class="soft-btn" type="button" data-page="home">На главную</button>
         </div>
       </div>
 
       <div class="aristarch">
-        <img src="${assets.aristarch}" alt="Аристарх, профессор Мирофактуры">
+        <img src="${assets.aristarch}" alt="Аристарх, Аксолотль-Профессор Мирофактуры" loading="lazy" decoding="async">
         <div class="caption">
           <b>Аристарх</b>
-          <span>профессор Мирофактуры: отвечает за подборку материалов и подсказки</span>
+          <span>Аксолотль-Профессор, архитектор и аналитик Мирофактуры. Видит систему целиком и помогает найти слабое место.</span>
         </div>
-      </div>
-
-      <div class="chips" aria-label="Разделы кладовой">
-        <span class="chip">Карты каналов</span>
-        <span class="chip">Чек-листы</span>
-        <span class="chip">Инструменты</span>
       </div>
 
       <section class="materials" aria-label="Материалы">
@@ -1281,14 +1307,14 @@
       <article class="lead-hero">
         <div>
           <p class="brand-label">Линейки продуктов</p>
-          <h1>Как сделать повторные покупки понятными</h1>
-          <p class="lead">Короткий инструмент по материалу Елены Поповой: выберите текущую ситуацию, посмотрите четыре модели и соберите черновик цепочки.</p>
+          <h1>Как связать продукты и увеличить повторные покупки</h1>
+          <p class="lead">Инструмент по материалу Елены Поповой. Оцените текущую ситуацию, выберите одну из четырёх моделей и соберите черновик своей линейки.</p>
         </div>
       </article>
 
       <section class="lead-section">
         <p class="brand-label">Быстрая диагностика</p>
-        <h2>Что сейчас с повторными покупками?</h2>
+        <h2>Как часто клиенты возвращаются?</h2>
         <p class="lead-section-copy">Выберите один вариант, который ближе всего к текущей ситуации.</p>
         <div class="lead-choice-list">
           ${productLinesMaterial.diagnostic.map((item) => `
@@ -1301,14 +1327,14 @@
         </div>
         <div class="lead-insight ${repeat ? '' : 'muted'}" id="product-line-repeat-insight" aria-live="polite">
           <span>${repeat ? 'Подсказка' : 'После выбора'}</span>
-          <p>${repeat ? repeat.result : 'Здесь появится короткий вывод: с какого следующего предложения лучше начать.'}</p>
+          <p>${repeat ? repeat.result : 'Здесь появится короткая рекомендация для вашей ситуации.'}</p>
         </div>
       </section>
 
       <section class="lead-section">
         <p class="brand-label">Подбор модели</p>
-        <h2>Какая логика ближе вашему бизнесу?</h2>
-        <p class="lead-section-copy">Ответьте на 3 коротких вопроса. После этого появится подходящая модель и ее можно сразу применить к черновику цепочки.</p>
+        <h2>Как устроены ваши продукты?</h2>
+        <p class="lead-section-copy">Ответьте на три вопроса. По ответам мы предложим модель и заполним пример цепочки.</p>
         <div class="selector-mini">
           ${productLinesMaterial.selectorQuestions.map((question, index) => `
             <article class="selector-question">
@@ -1329,14 +1355,14 @@
         <div class="lead-recommendation ${selectorComplete ? '' : 'muted'}" id="product-line-recommendation" aria-live="polite">
           <span>${selectorComplete ? 'Подходит модель' : 'Рекомендация появится здесь'}</span>
           <h3>${selectorComplete ? recommendedModel.title : 'Ответьте на 3 вопроса'}</h3>
-          <p>${selectorComplete ? recommendedModel.fit : 'Это поможет не выбирать модель наугад и сразу собрать пример цепочки.'}</p>
+          <p>${selectorComplete ? recommendedModel.fit : 'Нужны все три ответа: как устроены продукты, как долго вы работаете с клиентом и что приводит к следующей покупке.'}</p>
           ${selectorComplete ? `<button class="soft-btn" type="button" data-action="applyProductLineTemplate" data-model="${recommendedModel.id}">Собрать пример</button>` : ''}
         </div>
       </section>
 
       <section class="lead-section">
-        <p class="brand-label">Четыре подхода</p>
-        <h2>Не все линейки похожи на воронку</h2>
+        <p class="brand-label">Четыре модели</p>
+        <h2>Четыре модели продуктовой линейки</h2>
         <div class="lead-models">
           ${productLinesMaterial.models.map((model) => `
             <article class="lead-model">
@@ -1351,9 +1377,9 @@
       </section>
 
       <section class="lead-section">
-        <p class="brand-label">Полный разбор</p>
-        <h2>Что важно не пропустить</h2>
-        <p class="lead-section-copy">Здесь собраны основные части исходного материала: что означает каждая модель и из чего может состоять линейка.</p>
+        <p class="brand-label">Подробнее</p>
+        <h2>Что входит в каждую модель</h2>
+        <p class="lead-section-copy">Раскройте нужную модель, чтобы посмотреть её логику и основные элементы.</p>
         <div class="lead-detail-list">
           ${productLinesMaterial.modelDetails.map((detail, index) => `
             <details class="lead-detail" ${index === 0 ? 'open' : ''}>
@@ -1372,9 +1398,9 @@
       </section>
 
       <section class="lead-section" id="product-line-builder">
-        <p class="brand-label">Черновик маршрута</p>
-        <h2>Соберите цепочку</h2>
-        <p class="lead-section-copy">Нажмите на этапы, которые уже есть или которые хочется проверить первыми.</p>
+        <p class="brand-label">Черновик линейки</p>
+        <h2>Соберите свою цепочку</h2>
+        <p class="lead-section-copy">Выберите этапы, которые уже есть, и добавьте те, которые хотите проверить.</p>
         ${templateModel ? `<p class="builder-template-note">Сейчас показан пример для модели «${templateModel.title}». Его можно менять вручную.</p>` : ''}
         <div class="stage-picker">
           ${productLinesMaterial.stages.map(([id, title, hint]) => `
@@ -1394,7 +1420,7 @@
 
       <section class="lead-section">
         <p class="brand-label">Поддержка линейки</p>
-        <h2>Как не потерять следующий шаг</h2>
+        <h2>Чем поддерживать линейку</h2>
         <div class="support-list">
           ${productLinesMaterial.support.map(([title, text]) => `
             <article>
@@ -1406,9 +1432,9 @@
       </section>
 
       <section class="lead-cta">
-        <h2>Хотите собрать линейку под свой бизнес?</h2>
-        <p>Можно начать с этого черновика, а потом разобрать продукты, повторные покупки и точки, где клиенту уместно предложить продолжение.</p>
-        <button class="primary-btn" type="button" data-action="openContacts">Контакты</button>
+        <h2>Нужно разобрать ваши продукты?</h2>
+        <p>Поможем увидеть, что уже можно связать в линейку и какое предложение добавить следующим.</p>
+        <button class="primary-btn" type="button" data-action="openContacts">Написать нам</button>
       </section>
     `, 'material-screen product-lines-screen');
   }
@@ -1447,14 +1473,14 @@
         <div>
           <p class="brand-label">Атлас трафика 2026</p>
           <h1>Куда идти за новой аудиторией?</h1>
-          <p class="lead">Короткий навигатор по материалу Елены Поповой: сначала выбираем задачу и ресурс, потом смотрим, какие каналы стоит проверить первыми.</p>
+          <p class="lead">Инструмент по материалу Елены Поповой. Ответьте на три вопроса и получите короткий список каналов для первого теста.</p>
         </div>
       </article>
 
       <section class="lead-section">
-        <p class="brand-label">Сначала разделим карту</p>
-        <h2>4 зоны трафика</h2>
-        <p class="lead-section-copy">Не все каналы решают одну и ту же задачу. Одни дают быстрый тест, другие работают на узнаваемость или долгий поток обращений.</p>
+        <p class="brand-label">Карта каналов</p>
+        <h2>Четыре группы</h2>
+        <p class="lead-section-copy">Каналы отличаются по задаче, сроку и ресурсу. Для быстрых заявок и долгого привлечения нужны разные варианты.</p>
         <div class="support-list traffic-zone-summary">
           ${trafficAtlasMaterial.groups.map((group) => `
             <article>
@@ -1468,7 +1494,7 @@
       <section class="lead-section" id="traffic-atlas-navigator">
         <p class="brand-label">Навигатор</p>
         <h2>Что проверить первым?</h2>
-        <p class="lead-section-copy">Выберите по одному варианту в каждом блоке. После третьего ответа появится маршрут из каналов, с которых логичнее начать.</p>
+        <p class="lead-section-copy">Выберите по одному варианту в каждом блоке. После третьего ответа появятся четыре канала для первой проверки.</p>
         <div class="sales-answer-status traffic-answer-status" aria-live="polite">
           <span>${answeredCount} из ${trafficAtlasMaterial.questions.length}</span>
           <strong>${complete ? 'Маршрут готов' : answeredCount ? 'Продолжайте выбирать' : 'Начните с первого блока'}</strong>
@@ -1493,9 +1519,9 @@
         </div>
 
         <div class="lead-recommendation ${complete ? '' : 'muted'}" id="traffic-atlas-recommendation" aria-live="polite">
-          <span>${complete ? 'Ваш стартовый маршрут' : `Ответов ${answeredCount} из ${trafficAtlasMaterial.questions.length}`}</span>
+          <span>${complete ? 'С чего начать' : `Ответов ${answeredCount} из ${trafficAtlasMaterial.questions.length}`}</span>
           <h3>${complete ? 'Каналы для первой проверки' : 'Ответьте на 3 вопроса'}</h3>
-          <p>${complete ? 'Это не полный медиаплан, а короткий список, с которого проще начать без распыления. Нажмите на канал, чтобы увидеть пояснение.' : 'Так приложение не будет угадывать по одному ответу и покажет подбор только после полной картины.'}</p>
+          <p>${complete ? 'Это не медиаплан, а короткий список для старта. Нажмите на канал, чтобы прочитать пояснение.' : 'Нужны все три ответа: тип бизнеса, главная задача и бюджет на первый тест.'}</p>
           ${complete ? `
             <div class="channel-recommendations">
               ${recommendations.map((channel) => `
@@ -1529,7 +1555,7 @@
       <section class="lead-section">
         <p class="brand-label">Карта</p>
         <h2>Все каналы из атласа</h2>
-        <p class="lead-section-copy">Здесь можно пройтись по всем зонам и выбрать канал вручную. Нажатие открывает короткий разбор выше.</p>
+        <p class="lead-section-copy">Ниже — все каналы из материала. Нажмите на любой, чтобы открыть краткое описание.</p>
         <div class="sales-zone-list traffic-zone-list">
           ${trafficAtlasMaterial.groups.map((group) => `
             <article class="sales-zone traffic-zone">
@@ -1553,7 +1579,7 @@
       <section class="lead-section">
         <p class="brand-label">Справочник</p>
         <h2>Кратко по каждому каналу</h2>
-        <p class="lead-section-copy">Раскрывайте пункты, если хотите понять, кому канал подходит и почему его стоит или не стоит тестировать сейчас.</p>
+        <p class="lead-section-copy">Раскройте канал, чтобы посмотреть, кому он подходит и что важно учесть перед тестом.</p>
         <div class="lead-detail-list">
           ${trafficAtlasMaterial.channels.map((channel, index) => `
             <details class="lead-detail" ${index === 0 ? 'open' : ''}>
@@ -1569,9 +1595,9 @@
       </section>
 
       <section class="lead-cta">
-        <h2>Хотите выбрать канал не наугад?</h2>
-        <p>Можно разобрать текущий продукт, аудиторию и ресурс, а потом выбрать один канал для ближайшего теста.</p>
-        <button class="primary-btn" type="button" data-action="openContacts">Контакты</button>
+        <h2>Нужна помощь с выбором канала?</h2>
+        <p>Разберём продукт, аудиторию и доступный ресурс, а затем выберем один канал для первого теста.</p>
+        <button class="primary-btn" type="button" data-action="openContacts">Написать нам</button>
       </section>
     `, 'material-screen product-lines-screen traffic-atlas-screen');
   }
@@ -1616,15 +1642,15 @@
       <article class="lead-hero sales-hero">
         <div>
           <p class="brand-label">Каналы продаж</p>
-          <h1>Все ли возможности для продажи вы&nbsp;используете?</h1>
-          <p class="lead">Короткий навигатор по материалу Елены Поповой: сначала проверяем опоры, потом выбираем один следующий канал и оставляем рядом карту всех вариантов.</p>
+          <h1>Какой канал продаж проверить следующим?</h1>
+          <p class="lead">Инструмент по материалу Елены Поповой. Ответьте на четыре вопроса и получите три канала, которые стоит рассмотреть в вашей ситуации.</p>
         </div>
       </article>
 
       <section class="lead-section">
-        <p class="brand-label">Перед началом</p>
-        <h2>Техника безопасности</h2>
-        <p class="lead-section-copy">Новый канал лучше запускать не «до кучи», а как отдельную проверку: что хотим получить, кто отвечает и как поймем, что канал работает.</p>
+        <p class="brand-label">Перед запуском</p>
+        <h2>Что проверить заранее</h2>
+        <p class="lead-section-copy">Перед запуском нового канала проверьте четыре вещи. Они помогут не тратить силы на несколько экспериментов сразу.</p>
         <div class="support-list sales-safety-list">
           ${salesChannelsMaterial.safety.map(([title, text], index) => `
             <article>
@@ -1638,7 +1664,7 @@
       <section class="lead-section" id="sales-channel-navigator">
         <p class="brand-label">Навигатор</p>
         <h2>Какой канал проверить следующим?</h2>
-        <p class="lead-section-copy">В каждом блоке выберите один вариант. Когда будут все 4 ответа, появятся три канала для первой проверки.</p>
+        <p class="lead-section-copy">Выберите по одному варианту в каждом блоке. После четвёртого ответа появятся три канала для первой проверки.</p>
         <div class="sales-answer-status" aria-live="polite">
           <span>${answeredCount} из ${salesChannelsMaterial.questions.length}</span>
           <strong>${complete ? 'Подбор готов' : answeredCount ? 'Продолжайте выбирать' : 'Начните с первого блока'}</strong>
@@ -1664,7 +1690,7 @@
         <div class="lead-recommendation ${complete ? '' : 'muted'}" id="sales-channel-recommendation" aria-live="polite">
           <span>${complete ? 'Сначала посмотрите' : `Ответов ${answeredCount} из ${salesChannelsMaterial.questions.length}`}</span>
           <h3>${complete ? 'Три канала-кандидата' : 'Ответьте на 4 вопроса'}</h3>
-          <p>${complete ? 'Это не финальный список на годы, а первый практичный набор для проверки. Нажмите на канал, чтобы посмотреть короткий разбор.' : 'Так рекомендация не будет прыгать после каждого клика и появится только после полного набора ответов.'}</p>
+          <p>${complete ? 'Это варианты для первого теста, а не готовая стратегия. Нажмите на канал, чтобы прочитать пояснение.' : 'Нужны все четыре ответа: тип бизнеса, задача, доступный ресурс и удобный формат продаж.'}</p>
           ${complete ? `
             <div class="channel-recommendations">
               ${recommendations.map((channel) => `
@@ -1696,8 +1722,8 @@
 
       <section class="lead-section">
         <p class="brand-label">Карта</p>
-        <h2>16 каналов продаж</h2>
-        <p class="lead-section-copy">Эту карту не нужно внедрять целиком. Она нужна, чтобы увидеть варианты и выбрать один следующий эксперимент.</p>
+        <h2>Все 16 каналов</h2>
+        <p class="lead-section-copy">Не нужно запускать их все. Откройте список, сравните варианты и выберите один для следующего теста.</p>
         <div class="sales-zone-list">
           ${zones.map((zone) => `
             <article class="sales-zone">
@@ -1718,7 +1744,7 @@
       <section class="lead-section">
         <p class="brand-label">Полный справочник</p>
         <h2>Как работает каждый канал</h2>
-        <p class="lead-section-copy">Раскройте канал, если хочется понять, что именно туда входит и какие условия нужны для запуска.</p>
+        <p class="lead-section-copy">Раскройте канал, чтобы посмотреть, что в него входит и какие условия нужны для запуска.</p>
         <div class="lead-detail-list">
           ${salesChannelsMaterial.channels.map((channel, index) => `
             <details class="lead-detail" ${index === 0 ? 'open' : ''}>
@@ -1734,9 +1760,9 @@
       </section>
 
       <section class="lead-cta">
-        <h2>Хотите выбрать канал не наугад?</h2>
-        <p>Можно разобрать текущие продажи, найти слабое место и выбрать один канал для ближайшей проверки.</p>
-        <button class="primary-btn" type="button" data-action="openContacts">Контакты</button>
+        <h2>Нужна помощь с выбором канала?</h2>
+        <p>Разберём текущие продажи, найдём слабое место и выберем один канал для проверки.</p>
+        <button class="primary-btn" type="button" data-action="openContacts">Написать нам</button>
       </section>
     `, 'material-screen product-lines-screen sales-channels-screen');
   }
@@ -1751,77 +1777,73 @@
   function renderContacts() {
     return screen(`
       <section class="contacts-hero">
-        <h1>Соберём понятный цифровой формат</h1>
-        <p class="lead">Мирофактура помогает разложить идею, продукт или запуск по шагам: что человек видит первым, где отвечает на вопросы, что открывает дальше и как доходит до нужного действия.</p>
-      </section>
-
-      <section class="services-panel" aria-label="Услуги Мирофактуры">
-        <p class="brand-label">Чем помогаем</p>
-        <div class="service-list">
-          <article class="service-card">
-            <span class="service-number">01</span>
-            <div>
-              <h2>Цифровой мир</h2>
-              <p>Сайт, бот или мини-приложение с маршрутом, материалами, персонажем и понятным следующим шагом.</p>
-            </div>
-          </article>
-          <article class="service-card">
-            <span class="service-number">02</span>
-            <div>
-              <h2>Квиз или диагностика</h2>
-              <p>Помогаем человеку быстро разобраться в своей ситуации и получить результат, с которым можно работать дальше.</p>
-            </div>
-          </article>
-          <article class="service-card">
-            <span class="service-number">03</span>
-            <div>
-              <h2>Интерактивные материалы</h2>
-              <p>Карты, чек-листы, колоды и лид-магниты, где нужно выбрать, сравнить или собрать свой вариант, а не просто прочитать текст.</p>
-            </div>
-          </article>
-          <article class="service-card">
-            <span class="service-number">04</span>
-            <div>
-              <h2>Онбординг и прогрев</h2>
-              <p>Раскладываем первые шаги: что показать, что спросить, какой материал дать и когда предложить следующий контакт.</p>
-            </div>
-          </article>
-        </div>
-      </section>
-
-      <section class="contacts-cta">
-        <p class="brand-label">Начать</p>
-        <h2>Можно прийти без готового ТЗ</h2>
-        <p>Достаточно коротко описать задачу. Дальше подскажем, с чего начать — с диагностики, карты, квиза или первого инструмента.</p>
-        <button class="primary-btn" type="button" data-action="openMax">Собрать мир</button>
+        <p class="brand-label">Мирофактура</p>
+        <h1>Цифровые миры для бизнеса</h1>
+        <p class="lead">Проектируем системы на базе сайтов, ботов и приложений. Внутри могут работать витрина продуктов, воронка продаж, онбординг сотрудников или клуб для клиентов.</p>
       </section>
 
       <section class="authors-panel" aria-label="Авторы">
-        <p class="brand-label">Авторы</p>
+        <h2 class="contacts-section-title">Авторы Мирофактуры</h2>
         <div class="authors-photo">
-          <img src="${assets.authors}" alt="Авторы Мирофактуры">
+          <img src="${assets.authors}" alt="Авторы Мирофактуры" loading="lazy" decoding="async">
         </div>
         <div class="author-list">
           <div class="author-card">
             <span class="author-avatar">Л</span>
             <span>
               <strong>Елизавета Викулова</strong>
-              <small>сценарии, структура приложения, интерфейсная логика, визуальная сборка и маскоты</small>
+              <small>проектирует и разрабатывает цифровые продукты — от идеи и сценария до прототипа и запуска</small>
             </span>
           </div>
           <div class="author-card">
             <span class="author-avatar">Е</span>
             <span>
               <strong>Елена Попова</strong>
-              <small>маркетинг, продуктовая логика, каналы продаж, трафик и методическая часть материалов</small>
+              <small>отвечает за маркетинг, продуктовую систему и задачи бизнеса, которые должен решать проект</small>
             </span>
           </div>
         </div>
       </section>
 
-      <section class="contacts-note">
-        <p class="brand-label">Куда написать</p>
-        <p>Ссылки для связи подключим под нужную площадку. Пока можно сохранить приложение или отправить его коллегам через кнопку «Поделиться» вверху экрана.</p>
+      <section class="services-panel" aria-label="Услуги Мирофактуры">
+        <h2 class="contacts-section-title">Что мы делаем</h2>
+        <div class="service-list">
+          <article class="service-card">
+            <span class="service-number">01</span>
+            <div>
+              <h2>Аудит и карта проекта</h2>
+              <p>Разбираем продукт, маркетинг и путь клиента. Показываем сильные стороны, проблемные места и порядок следующих шагов. В расширенном формате готовим дорожную карту.</p>
+            </div>
+          </article>
+          <article class="service-card">
+            <span class="service-number">02</span>
+            <div>
+              <h2>Витрины продуктов и воронки</h2>
+              <p>Помогаем показать весь ассортимент или провести аудиторию к конкретному продукту. Добавляем подбор, квизы, программу лояльности и сценарии повторных покупок, если они нужны проекту.</p>
+            </div>
+          </article>
+          <article class="service-card">
+            <span class="service-number">03</span>
+            <div>
+              <h2>Онбординг и обучение</h2>
+              <p>Собираем правила, рабочие ситуации и базу знаний в понятный маршрут. Новые сотрудники быстрее включаются в работу и реже ошибаются.</p>
+            </div>
+          </article>
+          <article class="service-card">
+            <span class="service-number">04</span>
+            <div>
+              <h2>Клубы для клиентов</h2>
+              <p>Создаём собственную среду для общения с лояльной аудиторией. Контент, события, бонусы и подписка могут работать в одной системе.</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="contacts-cta">
+        <p class="brand-label">Обсудить проект</p>
+        <h2>Расскажите о задаче</h2>
+        <p>Можно прийти с идеей, продуктом или уже работающим проектом. Сначала разберём задачу, затем предложим структуру и подходящий формат.</p>
+        <button class="primary-btn" type="button" data-action="openMax">Написать нам</button>
       </section>
 
     `, 'contacts-screen');
@@ -1835,6 +1857,7 @@
       platform: PLATFORM.key,
       messenger: PLATFORM.messenger,
       source: 'mirofaktura-app',
+      v: '20260710-home-nav',
     });
     const platformUserId = getPlatformUserId();
 
@@ -1877,12 +1900,21 @@
     }
   }
 
+  function dismissStartupLoader() {
+    const loader = document.getElementById('app-loader');
+    if (!loader) return;
+    window.requestAnimationFrame(() => {
+      loader.classList.add('is-hidden');
+      window.setTimeout(() => loader.remove(), 260);
+    });
+  }
+
   function showToast(text) {
     state.toast = text;
-    render();
+    render({ scroll: false });
     window.setTimeout(() => {
       state.toast = '';
-      render();
+      render({ scroll: false });
     }, 1800);
   }
 
@@ -2089,7 +2121,7 @@
     }
 
     if (action === 'share') {
-      const text = 'Мирофактура: диагностика, материалы и тренды для продуктов, продаж и трафика';
+      const text = 'Мирофактура: диагностика, материалы и тренды для продуктов, продаж и привлечения аудитории';
       const shareUrl = PLATFORM.entryUrl;
       if (navigator.share) {
         try {
@@ -2120,4 +2152,5 @@
   });
 
   render();
+  dismissStartupLoader();
 })();
