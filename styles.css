@@ -59,7 +59,7 @@ body {
   }
 
   html::-webkit-scrollbar {
-    width: 7px;
+    width: 4px;
   }
 
   html::-webkit-scrollbar-track {
@@ -68,15 +68,13 @@ body {
 
   html::-webkit-scrollbar-thumb {
     min-height: 52px;
-    border: 1px solid transparent;
+    border: 0;
     border-radius: 999px;
-    background: rgba(8, 169, 166, 0.72);
-    background-clip: padding-box;
+    background: rgba(8, 169, 166, 0.68);
   }
 
   html::-webkit-scrollbar-thumb:hover {
     background: rgba(8, 127, 125, 0.9);
-    background-clip: padding-box;
   }
 }
 
