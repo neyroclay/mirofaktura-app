@@ -42,6 +42,15 @@ body {
   background: transparent;
 }
 
+#app {
+  opacity: 0;
+  transition: opacity 260ms ease;
+}
+
+#app.is-ready {
+  opacity: 1;
+}
+
 .app-loader {
   position: fixed;
   inset: 0;
@@ -55,7 +64,7 @@ body {
     linear-gradient(165deg, #ecfaf5, #fffaf0 66%, #f6ecd6);
   opacity: 1;
   visibility: visible;
-  transition: opacity 220ms ease, visibility 220ms ease;
+  transition: opacity 260ms ease, visibility 260ms ease;
 }
 
 .app-loader.is-hidden {

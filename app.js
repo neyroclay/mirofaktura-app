@@ -1925,10 +1925,12 @@
 
   function dismissStartupLoader() {
     const loader = document.getElementById('app-loader');
+    const appRoot = document.getElementById('app');
+    appRoot?.classList.add('is-ready');
     if (!loader) return;
     window.requestAnimationFrame(() => {
       loader.classList.add('is-hidden');
-      window.setTimeout(() => loader.remove(), 260);
+      window.setTimeout(() => loader.remove(), 300);
     });
   }
 

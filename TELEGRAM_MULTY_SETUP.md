@@ -4,7 +4,7 @@
 
 Для Telegram используйте отдельный адрес:
 
-`https://neyroclay.github.io/mirofaktura-app/telegram.html`
+`https://neyroclay.github.io/mirofaktura-app/`
 
 Страница подключает официальный Telegram Mini Apps SDK, сообщает приложению платформу `telegram` и передаёт в колоду ID и имя пользователя.
 
@@ -13,7 +13,7 @@
 1. Откройте `@BotFather`.
 2. Выберите бота `@mirofactura_bot`.
 3. Откройте настройки Mini App / Main Mini App.
-4. Укажите адрес `https://neyroclay.github.io/mirofaktura-app/telegram.html`.
+4. Укажите адрес `https://neyroclay.github.io/mirofaktura-app/`.
 5. В Multy добавьте кнопку, которая открывает это Mini App.
 
 Материалы в приложении открыты. Проверка подписки для доступа к кладовой не нужна.
