@@ -1319,11 +1319,11 @@
 
       <section class="materials" aria-label="Материалы">
         ${Object.entries(materials).map(([id, item]) => `
-          <article class="material-card ${item.tone}">
+          <article class="material-card ${item.tone}" role="button" tabindex="0" data-action="${['traffic', 'products', 'sales'].includes(id) ? 'openMaterial' : 'materialSoon'}" data-material="${id}" aria-label="Открыть: ${item.title}">
             <small>${item.tag}</small>
             <h2>${item.title}</h2>
             <p>${item.text}</p>
-            <button class="primary-btn" type="button" data-action="${['traffic', 'products', 'sales'].includes(id) ? 'openMaterial' : 'materialSoon'}" data-material="${id}">Открыть</button>
+            <span class="primary-btn material-card-action" aria-hidden="true">Открыть</span>
           </article>
         `).join('')}
       </section>
@@ -1979,7 +1979,7 @@
   }
 
   app.addEventListener('click', async (event) => {
-    const target = event.target.closest('button');
+    const target = event.target.closest('button, [role="button"]');
     if (!target) return;
 
     const page = target.getAttribute('data-page');
@@ -2183,7 +2183,15 @@
     if (action === 'share') {
       const text = 'Мирофактура: диагностика, материалы и тренды для продуктов, продаж и привлечения аудитории';
       const shareUrl = PLATFORM.entryUrl;
-      if (navigator.share) {
+      const isMessengerApp = APP_PLATFORM === 'telegram' || Boolean(getPlatformUserId());
+      if (isMessengerApp) {
+        try {
+          await navigator.clipboard.writeText(shareUrl);
+          showToast('Ссылка скопирована');
+        } catch (_) {
+          showToast('Ссылка: ' + shareUrl);
+        }
+      } else if (navigator.share) {
         try {
           await navigator.share({ title: 'Мирофактура', text, url: shareUrl });
         } catch (_) {}
@@ -2201,6 +2209,13 @@
     if (action === 'materialSoon') {
       showToast('Страницу материала ещё готовим');
     }
+  });
+
+  app.addEventListener('keydown', (event) => {
+    const target = event.target.closest('[role="button"]');
+    if (!target || (event.key !== 'Enter' && event.key !== ' ')) return;
+    event.preventDefault();
+    target.click();
   });
 
   window.addEventListener('message', (event) => {
