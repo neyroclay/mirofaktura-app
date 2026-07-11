@@ -1,0 +1,404 @@
+{
+    "title":  "Мирофактура — загрузка прогресса трендов (Telegram + MAX)",
+    "logic":  {
+                  "nextLocalId":  52,
+                  "nextStepId":  9,
+                  "nodes":  [
+                                {
+                                    "type":  "event",
+                                    "start_mode":  "reopen",
+                                    "ui":  {
+                                               "position":  {
+                                                                "x":  124,
+                                                                "y":  170.25
+                                                            },
+                                               "step":  1
+                                           },
+                                    "localId":  1,
+                                    "ports":  [
+                                                  {
+                                                      "name":  "defaultInput",
+                                                      "localId":  2,
+                                                      "type":  "input",
+                                                      "group":  "waitAll"
+                                                  },
+                                                  {
+                                                      "name":  "defaultOutput",
+                                                      "localId":  3,
+                                                      "type":  "output"
+                                                  }
+                                              ],
+                                    "text":  "",
+                                    "events":  [
+                                                   {
+                                                       "localId":  5,
+                                                       "type":  "event/core/webhook/new",
+                                                       "filterEffect":  4,
+                                                       "filter":  [
+
+                                                                  ]
+                                                   }
+                                               ],
+                                    "effects":  [
+                                                    {
+                                                        "type":  "effect/core/graph/condition/jump",
+                                                        "localId":  4,
+                                                        "spec":  {
+                                                                     "truePorts":  [
+                                                                                       3
+                                                                                   ],
+                                                                     "mode":  "and",
+                                                                     "conditions":  [
+                                                                                        {
+                                                                                            "type":  "condition/core/event/webhook/item",
+                                                                                            "localId":  6,
+                                                                                            "spec":  {
+                                                                                                         "values":  [
+                                                                                                                        "trend_deck_load"
+                                                                                                                    ]
+                                                                                                     }
+                                                                                        }
+                                                                                    ]
+                                                                 }
+                                                    }
+                                                ]
+                                },
+                                {
+                                    "type":  "action",
+                                    "ui":  {
+                                               "position":  {
+                                                                "x":  416.75,
+                                                                "y":  171.5
+                                                            },
+                                               "step":  2
+                                           },
+                                    "localId":  7,
+                                    "ports":  [
+                                                  {
+                                                      "name":  "defaultInput",
+                                                      "localId":  8,
+                                                      "type":  "input",
+                                                      "group":  "waitAll"
+                                                  },
+                                                  {
+                                                      "name":  "defaultOutput",
+                                                      "localId":  9,
+                                                      "type":  "output"
+                                                  }
+                                              ],
+                                    "effects":  [
+                                                    {
+                                                        "type":  "effect/core/var/context/integration",
+                                                        "localId":  10,
+                                                        "spec":  {
+                                                                     "var":  "{var:graph.integration.id}",
+                                                                     "from_var":  false,
+                                                                     "value":  "4432"
+                                                                 }
+                                                    },
+                                                    {
+                                                        "type":  "effect/core/graph/jump/to",
+                                                        "localId":  11,
+                                                        "spec":  {
+                                                                     "localIds":  [
+                                                                                      9
+                                                                                  ],
+                                                                     "type":  "jump",
+                                                                     "ignore_next":  false
+                                                                 }
+                                                    }
+                                                ],
+                                    "text":  "назначаем интеграцию после вебхука (обязательно)"
+                                },
+                                {
+                                    "type":  "action",
+                                    "ui":  {
+                                               "position":  {
+                                                                "x":  775.25,
+                                                                "y":  172.2500000000001
+                                                            },
+                                               "step":  3
+                                           },
+                                    "localId":  13,
+                                    "ports":  [
+                                                  {
+                                                      "name":  "defaultInput",
+                                                      "localId":  14,
+                                                      "type":  "input",
+                                                      "group":  "waitAll"
+                                                  },
+                                                  {
+                                                      "name":  "defaultOutput",
+                                                      "localId":  15,
+                                                      "type":  "output"
+                                                  }
+                                              ],
+                                    "effects":  [
+                                                    {
+                                                        "type":  "effect/program/api/request/send",
+                                                        "localId":  17,
+                                                        "spec":  {
+                                                                     "method":  "GET",
+                                                                     "response_method":  "json",
+                                                                     "add_headers":  true,
+                                                                     "add_parameters":  false,
+                                                                     "add_files":  false,
+                                                                     "add_params":  false,
+                                                                     "deep_merge":  false,
+                                                                     "add_auth":  false,
+                                                                     "auth_method":  "Bearer",
+                                                                     "set_request_delay":  false,
+                                                                     "request_delay_ms":  "",
+                                                                     "follow_redirects":  false,
+                                                                     "vpn":  false,
+                                                                     "save_result":  true,
+                                                                     "result_var":  "baserow_data",
+                                                                     "url":  "https://api.baserow.io/api/database/rows/table/893270/?user_field_names=true\u0026filter_type=AND\u0026filter__user_id__equal={var:request.json.user_id}\u0026filter__messenger__equal={var:request.json.messenger}",
+                                                                     "headers":  [
+                                                                                     {
+                                                                                         "name":  "Authorization",
+                                                                                         "value":  "Token __BASEROW_TOKEN__"
+                                                                                     }
+                                                                                 ]
+                                                                 }
+                                                    },
+                                                    {
+                                                        "type":  "effect/core/graph/jump/to",
+                                                        "localId":  16,
+                                                        "spec":  {
+                                                                     "localIds":  [
+                                                                                      15
+                                                                                  ],
+                                                                     "type":  "jump",
+                                                                     "ignore_next":  false
+                                                                 }
+                                                    }
+                                                ],
+                                    "text":  "отправляем max_id в baserow"
+                                },
+                                {
+                                    "type":  "condition",
+                                    "ui":  {
+                                               "position":  {
+                                                                "x":  1066.25,
+                                                                "y":  141.7500000000001
+                                                            },
+                                               "step":  5
+                                           },
+                                    "localId":  24,
+                                    "ports":  [
+                                                  {
+                                                      "name":  "defaultInput",
+                                                      "localId":  25,
+                                                      "type":  "input",
+                                                      "group":  "waitAll"
+                                                  },
+                                                  {
+                                                      "name":  "defaultOutput",
+                                                      "localId":  26,
+                                                      "type":  "output"
+                                                  },
+                                                  {
+                                                      "name":  "condition",
+                                                      "localId":  27,
+                                                      "type":  "output",
+                                                      "group":  "branching",
+                                                      "ui":  {
+                                                                 "title":  "Игрок найден"
+                                                             }
+                                                  },
+                                                  {
+                                                      "name":  "failure",
+                                                      "localId":  28,
+                                                      "type":  "output",
+                                                      "group":  "branching"
+                                                  }
+                                              ],
+                                    "effects":  [
+                                                    {
+                                                        "type":  "effect/core/graph/jump/to",
+                                                        "localId":  29,
+                                                        "spec":  {
+                                                                     "localIds":  [
+                                                                                      26
+                                                                                  ],
+                                                                     "type":  "jump",
+                                                                     "ignore_next":  false
+                                                                 }
+                                                    },
+                                                    {
+                                                        "type":  "effect/core/graph/condition/jump",
+                                                        "localId":  30,
+                                                        "spec":  {
+                                                                     "truePorts":  [
+                                                                                       27
+                                                                                   ],
+                                                                     "mode":  "or",
+                                                                     "conditions":  [
+                                                                                        {
+                                                                                            "type":  "condition/core/var/number/compare",
+                                                                                            "localId":  32,
+                                                                                            "spec":  {
+                                                                                                         "var":  "{var:baserow_data.count}",
+                                                                                                         "method":  "more",
+                                                                                                         "value":  "0",
+                                                                                                         "to_number":  true
+                                                                                                     }
+                                                                                        }
+                                                                                    ]
+                                                                 },
+                                                        "title":  "Игрок найден"
+                                                    },
+                                                    {
+                                                        "type":  "effect/core/graph/jump/to",
+                                                        "localId":  31,
+                                                        "spec":  {
+                                                                     "localIds":  [
+                                                                                      28
+                                                                                  ],
+                                                                     "type":  "jump",
+                                                                     "ignore_next":  false
+                                                                 }
+                                                    }
+                                                ]
+                                },
+                                {
+                                    "type":  "action",
+                                    "ui":  {
+                                               "position":  {
+                                                                "x":  1298.75,
+                                                                "y":  285.5000000000001
+                                                            },
+                                               "step":  6
+                                           },
+                                    "localId":  35,
+                                    "ports":  [
+                                                  {
+                                                      "name":  "defaultInput",
+                                                      "localId":  36,
+                                                      "type":  "input",
+                                                      "group":  "waitAll"
+                                                  },
+                                                  {
+                                                      "name":  "defaultOutput",
+                                                      "localId":  37,
+                                                      "type":  "output"
+                                                  }
+                                              ],
+                                    "effects":  [
+                                                    {
+                                                        "type":  "effect/core/var/json/set",
+                                                        "localId":  39,
+                                                        "spec":  {
+                                                                     "var":  "response",
+                                                                     "value":  "{\n  \"exists\": false\n}"
+                                                                 }
+                                                    },
+                                                    {
+                                                        "type":  "effect/core/graph/jump/to",
+                                                        "localId":  38,
+                                                        "spec":  {
+                                                                     "localIds":  [
+                                                                                      37
+                                                                                  ],
+                                                                     "type":  "jump",
+                                                                     "ignore_next":  false
+                                                                 }
+                                                    }
+                                                ],
+                                    "text":  "Новый игрок"
+                                },
+                                {
+                                    "type":  "action",
+                                    "ui":  {
+                                               "position":  {
+                                                                "x":  1303.5,
+                                                                "y":  147.2500000000001
+                                                            },
+                                               "step":  7
+                                           },
+                                    "localId":  41,
+                                    "ports":  [
+                                                  {
+                                                      "name":  "defaultInput",
+                                                      "localId":  42,
+                                                      "type":  "input",
+                                                      "group":  "waitAll"
+                                                  },
+                                                  {
+                                                      "name":  "defaultOutput",
+                                                      "localId":  43,
+                                                      "type":  "output"
+                                                  }
+                                              ],
+                                    "effects":  [
+                                                    {
+                                                        "type":  "effect/core/var/json/set",
+                                                        "localId":  44,
+                                                        "spec":  {
+                                                                     "var":  "response",
+                                                                     "value":  "{\n  \"exists\": true,\n  \"first_launch_time\": \"{var:baserow_data.results.0.first_launch_time}\",\n  \"last_date\": \"{var:baserow_data.results.0.last_date}\",\n  \"collected\": \"{var:baserow_data.results.0.collected_cards}\",\n  \"onboarding_seen\": true,\n  \"bonus_cards\": \"{var:baserow_data.results.0.bonus_cards}\",\n  \"invited_friends\": \"{var:baserow_data.results.0.invited_friends}\"\n}"
+                                                                 }
+                                                    },
+                                                    {
+                                                        "type":  "effect/core/graph/jump/to",
+                                                        "localId":  45,
+                                                        "spec":  {
+                                                                     "localIds":  [
+                                                                                      43
+                                                                                  ],
+                                                                     "type":  "jump",
+                                                                     "ignore_next":  false
+                                                                 }
+                                                    }
+                                                ],
+                                    "text":  "Старичок"
+                                }
+                            ],
+                  "edges":  [
+                                {
+                                    "localId":  12,
+                                    "srcNode":  1,
+                                    "srcPort":  3,
+                                    "dstNode":  7,
+                                    "dstPort":  8
+                                },
+                                {
+                                    "localId":  23,
+                                    "srcNode":  7,
+                                    "srcPort":  9,
+                                    "dstNode":  13,
+                                    "dstPort":  14
+                                },
+                                {
+                                    "localId":  34,
+                                    "srcNode":  13,
+                                    "srcPort":  15,
+                                    "dstNode":  24,
+                                    "dstPort":  25
+                                },
+                                {
+                                    "localId":  40,
+                                    "srcNode":  24,
+                                    "srcPort":  28,
+                                    "dstNode":  35,
+                                    "dstPort":  36
+                                },
+                                {
+                                    "localId":  46,
+                                    "srcNode":  24,
+                                    "srcPort":  27,
+                                    "dstNode":  41,
+                                    "dstPort":  42
+                                }
+                            ],
+                  "ui":  {
+                             "position":  {
+                                              "x":  -691,
+                                              "y":  145,
+                                              "zoom":  1
+                                          },
+                             "chosenNodeId":  0
+                         }
+              }
+}

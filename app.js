@@ -1930,8 +1930,8 @@
       <div class="trends-page">
         <div class="trends-frame-wrap" aria-label="Колода трендов 2026">
           <div class="trends-frame-loader" role="status" aria-label="Загрузка колоды трендов">
-            <img src="${assets.logo}" alt="" aria-hidden="true">
-            <span class="app-loader__line" aria-hidden="true"></span>
+            <span class="trends-frame-loader__mark" aria-hidden="true"></span>
+            <span class="trends-frame-loader__text">Открываем колоду…</span>
           </div>
           <iframe class="trends-frame" src="${trendsFrameSrc()}" title="Колода трендов 2026"></iframe>
         </div>

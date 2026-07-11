@@ -2331,9 +2331,23 @@ h3 {
   transition: opacity 260ms ease, visibility 260ms ease;
 }
 
-.trends-frame-loader img {
-  width: min(200px, 54vw);
-  height: auto;
+.trends-frame-loader__mark {
+  width: 42px;
+  height: 42px;
+  border: 3px solid rgba(2, 139, 143, 0.18);
+  border-top-color: #079b9e;
+  border-radius: 50%;
+  animation: loader-spin 800ms linear infinite;
+}
+
+.trends-frame-loader__text {
+  color: #426865;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+@keyframes loader-spin {
+  to { transform: rotate(360deg); }
 }
 
 .trends-frame-wrap.is-loaded .trends-frame-loader {

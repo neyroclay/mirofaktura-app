@@ -274,7 +274,7 @@
         const trendParams = new URLSearchParams(window.location.search);
         const platformParam = String(trendParams.get('platform') || trendParams.get('messenger') || '').toLowerCase();
         const trendPlatform = (platformParam === 'tg' || platformParam === 'telegram') ? 'telegram' : 'max';
-        const trendMessenger = trendPlatform === 'telegram' ? 'Telegram' : 'MAX';
+        const trendMessenger = trendPlatform === 'telegram' ? 'TELEGRAM' : 'MAX';
         const trendEntryUrl = trendPlatform === 'telegram'
             ? 'https://t.me/mirofactura_bot'
             : 'https://max.ru/id590417093305_biz';
@@ -1134,6 +1134,7 @@
                         body: JSON.stringify({
                             item: 'trend_deck_load',
                             user_id: String(userId),
+                            profile_key: profileKey,
                             platform: trendPlatform,
                             messenger: trendMessenger,
                             source: 'mirofaktura-app'
