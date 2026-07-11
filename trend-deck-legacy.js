@@ -319,7 +319,7 @@
             ? 'https://cb.multy.ai/api/v1/hook/app/b9c89cbdf0f21aa63c6111487770196a'
             : 'https://cb.multy.ai/api/v1/hook/app/7d62795bb2fc085481ae4e8c3b6f9024';
         const SAVE_URL = useTestMulty
-            ? 'https://cb.multy.ai/api/v1/hook/app/9d6663ea757dcb0ee259aaa8e361a5d9'
+            ? 'https://cb.multy.ai/api/v1/hook/app/bfbc41275aaab161df78a4d0b0f399af'
             : 'https://cb.multy.ai/api/v1/hook/app/da0e0039c43a7c3d4287702d293fa656';
 
         const TEXT_BACK_IMG = "https://i.postimg.cc/RFxMB2Bd/1-2-copy.jpg";
