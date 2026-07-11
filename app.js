@@ -1920,6 +1920,10 @@
     if (platformUser.first_name) params.set('first_name', platformUser.first_name);
     if (platformUser.last_name) params.set('last_name', platformUser.last_name);
 
+    if (new URLSearchParams(window.location.search).get('multy_test') === '1') {
+      params.set('multy_test', '1');
+    }
+
     if (isLocalPreview) params.set('fresh', '1');
 
     return `./trends-deck.html?${params.toString()}`;
