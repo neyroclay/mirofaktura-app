@@ -293,9 +293,19 @@
 
             return '';
         })();
-        const userId = freshPreview ? 'preview-fresh' : (userIdFromQuery || userObj.id || 123456789);
-        const firstName = userObj.first_name || "Без имени";
-        const lastName = userObj.last_name || "";
+        const remoteUserId = String(userIdFromQuery || userObj.id || '');
+        const anonymousIdKey = `mirofaktura_anonymous_id_${trendPlatform}`;
+        let anonymousId = localStorage.getItem(anonymousIdKey);
+        if (!anonymousId) {
+            const randomPart = globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+            anonymousId = `anon-${randomPart}`;
+            localStorage.setItem(anonymousIdKey, anonymousId);
+        }
+        const hasRemoteIdentity = Boolean(remoteUserId);
+        const userId = freshPreview ? 'preview-fresh' : (remoteUserId || anonymousId);
+        const profileKey = `${trendPlatform}:${userId}`;
+        const firstName = trendParams.get('first_name') || userObj.first_name || "Без имени";
+        const lastName = trendParams.get('last_name') || userObj.last_name || "";
 
         // ЗВУКИ
         const winSound = new Audio('https://cdn.jsdelivr.net/gh/neyroclay/img-host-trends-2026@main/sound-effect-859.mp3'); winSound.volume = 0.5;
@@ -303,7 +313,7 @@
         let isAudioUnlocked = false, isScratching = false, scratchTimeout = null;
 
         // ВЕБХУКИ BASEROW И MULTY
-        const STORAGE_KEY      = `oracle_10_trends_release_v23_${trendPlatform}`;
+        const STORAGE_KEY      = `oracle_10_trends_release_v23_${trendPlatform}_${userId}`;
         const LOAD_URL = 'https://cb.multy.ai/api/v1/hook/app/7d62795bb2fc085481ae4e8c3b6f9024';
         const SAVE_URL = 'https://cb.multy.ai/api/v1/hook/app/da0e0039c43a7c3d4287702d293fa656';
 
@@ -788,6 +798,12 @@
                 finishLoad(callback);
                 return;
             }
+            if (!hasRemoteIdentity) {
+                const local = localStorage.getItem(STORAGE_KEY);
+                if (local) appData = { ...appData, ...JSON.parse(local) };
+                finishLoad(callback);
+                return;
+            }
             try {
                 const response = await fetch(LOAD_URL, {
                     method: 'POST',
@@ -795,6 +811,7 @@
                     body: JSON.stringify({
                         item: 'trend_deck_load',
                         user_id: String(userId),
+                        profile_key: profileKey,
                         platform: trendPlatform,
                         messenger: trendMessenger,
                         source: 'mirofaktura-app'
@@ -807,7 +824,15 @@
                     appData.collected = data.collected ? JSON.parse(data.collected) : [];
                     appData.bonusCards = Number(data.bonus_cards) || 0;
                     appData.invitedFriends = Number(data.invited_friends) || 0;
-                    appData.onboardingSeen = true; 
+                    if (Object.prototype.hasOwnProperty.call(data, 'onboarding_seen')) {
+                        appData.onboardingSeen = data.onboarding_seen === true
+                            || data.onboarding_seen === 1
+                            || data.onboarding_seen === '1'
+                            || data.onboarding_seen === 'true';
+                    } else {
+                        // Existing records predate the explicit onboarding flag.
+                        appData.onboardingSeen = true;
+                    }
                     appData.timerSeen = true;
                 } else {
                     const local = localStorage.getItem(STORAGE_KEY); if (local) appData = { ...appData, ...JSON.parse(local) };
@@ -841,8 +866,8 @@
         }
 
         async function saveState() {
-            if (freshPreview) return;
             try { localStorage.setItem(STORAGE_KEY, JSON.stringify(appData)); } catch(e) {}
+            if (freshPreview || !hasRemoteIdentity) return;
             try {
                 const cardsString = JSON.stringify(appData.collected);
                 await fetch(SAVE_URL, { 
@@ -851,6 +876,7 @@
                     body: JSON.stringify({ 
                         item: 'trend_deck_save',
                         user_id: String(userId),
+                        profile_key: profileKey,
                         first_name: String(firstName),
                         last_name: String(lastName),
                         messenger: trendMessenger,
@@ -859,6 +885,7 @@
                         first_launch_time: String(appData.firstLaunchTime), 
                         last_date: appData.lastDate || "", 
                         collected_cards: cardsString,
+                        onboarding_seen: appData.onboardingSeen === true,
                         bonus_cards: String(appData.bonusCards || 0),
                         invited_friends: String(appData.invitedFriends || 0)
                     }) 

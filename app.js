@@ -7,12 +7,14 @@
     tg: 'telegram',
     telegram: 'telegram',
   };
+  const telegramWebApp = window.Telegram?.WebApp || null;
   const APP_PLATFORM = (() => {
     const params = new URLSearchParams(window.location.search);
     const raw = String(
       window.MIROFAKTURA_PLATFORM
       || params.get('platform')
       || params.get('messenger')
+      || (telegramWebApp?.initData ? 'telegram' : '')
       || ''
     ).toLowerCase();
     return PLATFORM_ALIASES[raw] || 'max';
@@ -42,6 +44,11 @@
     return ['gated', 'closed', 'protected'].includes(mode) ? 'gated' : 'open';
   })();
   const IS_OPEN_ACCESS = ACCESS_MODE === 'open';
+
+  if (APP_PLATFORM === 'telegram' && telegramWebApp) {
+    telegramWebApp.ready();
+    telegramWebApp.expand();
+  }
   const assets = {
     logo: './assets/logo-black-yellow.webp',
     stepanStart: './assets/stepan-start.webp',
@@ -935,7 +942,20 @@
       if (value) return value;
     }
 
+    if (PLATFORM.key === 'telegram') {
+      const telegramUserId = telegramWebApp?.initDataUnsafe?.user?.id;
+      if (telegramUserId) return String(telegramUserId);
+    }
+
     return '';
+  }
+
+  function getPlatformUser() {
+    if (PLATFORM.key === 'telegram') {
+      return telegramWebApp?.initDataUnsafe?.user || {};
+    }
+
+    return window.WebApp?.initDataUnsafe?.user || window.WebApp?.user || {};
   }
 
   async function isSubscribedInMax() {
@@ -1860,10 +1880,13 @@
       v: '20260710-home-nav',
     });
     const platformUserId = getPlatformUserId();
+    const platformUser = getPlatformUser();
 
     if (platformUserId) {
       params.set(PLATFORM.key === 'telegram' ? 'telegram_user_id' : 'max_user_id', platformUserId);
     }
+    if (platformUser.first_name) params.set('first_name', platformUser.first_name);
+    if (platformUser.last_name) params.set('last_name', platformUser.last_name);
 
     if (isLocalPreview) params.set('fresh', '1');
 
