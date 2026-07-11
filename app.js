@@ -892,6 +892,64 @@
     toast: ''
   };
 
+  const APP_HISTORY_KEY = 'mirofakturaNavigation';
+  let navigationDepth = 0;
+  let navigationReady = false;
+
+  function syncTelegramBackButton() {
+    const backButton = telegramWebApp?.BackButton;
+    if (!backButton) return;
+
+    if (state.page !== 'home' && navigationDepth > 0) {
+      backButton.show();
+    } else {
+      backButton.hide();
+    }
+  }
+
+  function navigateTo(page, options = {}) {
+    if (!page) return;
+
+    const replace = options.replace === true;
+    const scroll = options.scroll !== false;
+    const pageChanged = state.page !== page;
+    state.page = page;
+
+    if (navigationReady && pageChanged) {
+      try {
+        if (replace) {
+          window.history.replaceState({
+            ...(window.history.state || {}),
+            [APP_HISTORY_KEY]: true,
+            page,
+            depth: navigationDepth
+          }, '');
+        } else {
+          navigationDepth += 1;
+          window.history.pushState({
+            [APP_HISTORY_KEY]: true,
+            page,
+            depth: navigationDepth
+          }, '');
+        }
+      } catch (_) {
+        // Telegram BackButton still provides navigation if WebView history is unavailable.
+      }
+    }
+
+    render({ scroll });
+    syncTelegramBackButton();
+  }
+
+  function goBack(fallbackPage = 'home') {
+    if (navigationDepth > 0) {
+      window.history.back();
+      return;
+    }
+
+    navigateTo(fallbackPage, { replace: true });
+  }
+
   const PAGES_WITH_BOTTOM_NAV = new Set(['home', 'quiz', 'library', 'material', 'contacts']);
 
   const icons = {
@@ -1029,22 +1087,19 @@
 
     if (IS_OPEN_ACCESS || isLocalPreview()) {
       state.material = material;
-      state.page = 'material';
       state.gateStatus = 'idle';
-      render();
+      navigateTo('material');
       return;
     }
 
-    state.page = 'gate';
     state.gateStatus = 'checking';
-    render();
+    navigateTo('gate');
 
     const subscription = await isSubscribedInMax();
     if (subscription.ok) {
       state.material = material;
-      state.page = 'material';
       state.gateStatus = 'idle';
-      render();
+      navigateTo('material', { replace: true });
       return;
     }
 
@@ -1057,21 +1112,18 @@
     state.pendingGateTarget = 'library';
 
     if (IS_OPEN_ACCESS || isLocalPreview()) {
-      state.page = 'library';
       state.gateStatus = 'idle';
-      render();
+      navigateTo('library');
       return;
     }
 
-    state.page = 'gate';
     state.gateStatus = 'checking';
-    render();
+    navigateTo('gate');
 
     const subscription = await isSubscribedInMax();
     if (subscription.ok) {
-      state.page = 'library';
       state.gateStatus = 'idle';
-      render();
+      navigateTo('library', { replace: true });
       return;
     }
 
@@ -2020,8 +2072,11 @@
     const answer = target.getAttribute('data-answer');
 
     if (page) {
-      state.page = page;
-      render();
+      if (target.classList.contains('back-link')) {
+        goBack(page);
+      } else {
+        navigateTo(page);
+      }
       return;
     }
 
@@ -2035,16 +2090,14 @@
     }
 
     if (action === 'startQuiz') {
-      state.page = 'quiz';
       state.step = 0;
       state.answers = {};
-      render();
+      navigateTo('quiz');
       return;
     }
 
     if (action === 'openTrends') {
-      state.page = 'trends';
-      render();
+      navigateTo('trends');
       return;
     }
 
@@ -2065,8 +2118,7 @@
     }
 
     if (action === 'openContacts') {
-      state.page = 'contacts';
-      render();
+      navigateTo('contacts');
       return;
     }
 
@@ -2205,8 +2257,7 @@
         state.step += 1;
         render();
       } else {
-        state.page = 'result';
-        render();
+        navigateTo('result');
       }
       return;
     }
@@ -2274,10 +2325,44 @@
     }
     if (data.type !== 'mirofaktura:navigate') return;
     if (!PAGE_RENDERERS[data.page]) return;
-    state.page = data.page;
-    render();
+    navigateTo(data.page);
   });
 
+  function initializeNavigation() {
+    try {
+      window.history.replaceState({
+        ...(window.history.state || {}),
+        [APP_HISTORY_KEY]: true,
+        page: state.page,
+        depth: 0
+      }, '');
+    } catch (_) {
+      // Local file previews can restrict History API in some browsers.
+    }
+
+    navigationDepth = 0;
+    navigationReady = true;
+
+    window.addEventListener('popstate', (event) => {
+      const historyState = event.state || {};
+      if (!historyState[APP_HISTORY_KEY]) return;
+
+      navigationDepth = Number.isFinite(historyState.depth)
+        ? historyState.depth
+        : Math.max(0, navigationDepth - 1);
+      state.page = PAGE_RENDERERS[historyState.page] ? historyState.page : 'home';
+      render();
+      syncTelegramBackButton();
+    });
+
+    const backButton = telegramWebApp?.BackButton;
+    if (backButton) {
+      backButton.onClick(() => goBack('home'));
+    }
+    syncTelegramBackButton();
+  }
+
+  initializeNavigation();
   render();
   dismissStartupLoader();
   window.setTimeout(warmAppImages, 40);
