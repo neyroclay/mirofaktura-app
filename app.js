@@ -2271,7 +2271,7 @@
     }
 
     if (action === 'share') {
-      const text = 'Мирофактура: диагностика, материалы и тренды для продуктов, продаж и привлечения аудитории';
+      const text = 'Загляните в Мирофактуру — мастерскую цифровых миров. Здесь можно найти идеи и интерактивные инструменты для маркетинга, продуктов и продаж, а ещё вытянуть карту из авторской колоды «Тренды 2026».';
       const shareUrl = PLATFORM.entryUrl;
       if (APP_PLATFORM === 'telegram' && telegramWebApp) {
         const telegramShareUrl = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(text)}`;
