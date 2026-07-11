@@ -113,6 +113,18 @@
     }
   ];
 
+  const quizImageCache = [];
+
+  function warmQuizImages() {
+    quiz.forEach((item) => {
+      const image = new Image();
+      image.decoding = 'async';
+      image.src = item.image;
+      quizImageCache.push(image);
+      image.decode?.().catch(() => {});
+    });
+  }
+
   const materials = {
     traffic: {
       tag: 'Новая аудитория',
@@ -1111,7 +1123,7 @@
       </div>
 
       <div class="quiz-mascot">
-        <img src="${item.image}" alt="Степан помогает пройти квиз" decoding="async">
+        <img src="${item.image}" alt="Степан помогает пройти квиз" loading="eager" decoding="async" fetchpriority="high">
       </div>
 
       <article class="question-card">
@@ -2180,4 +2192,5 @@
 
   render();
   dismissStartupLoader();
+  window.setTimeout(warmQuizImages, 40);
 })();
