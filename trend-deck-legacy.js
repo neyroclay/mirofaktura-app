@@ -418,7 +418,7 @@
             @keyframes fadeInView { from { opacity:0; transform:translateY(15px); } to { opacity:1; transform:translateY(0); } }
             #${CONTAINER_ID} .lib-grid { display:flex; flex-wrap:wrap; justify-content:center; gap:30px; width:100%; max-width:1000px; margin:0 auto; }
             #${CONTAINER_ID} .lib-card-container { perspective:1000px; aspect-ratio:2/3; cursor:pointer; width:280px; flex:0 0 280px; animation:fadeInUpCard 0.4s cubic-bezier(0.16,1,0.3,1) backwards; }
-            #${CONTAINER_ID} .lib-read-btn { background:#00D2D3; color:#fff; padding:8px 32px; border-radius:30px; font-size:12px; font-weight:bold; text-decoration:none; border:none; width:auto; align-self:flex-start; transition:all 0.3s; cursor:pointer; box-sizing:border-box; display:block; text-align:center; box-shadow:0 4px 15px rgba(0,210,211,0.3); }
+            #${CONTAINER_ID} .lib-read-btn { background:linear-gradient(110deg,#174f49 0%,#087f7a 58%,#13b8b1 100%); color:#fff; padding:8px 32px; border-radius:30px; font-size:12px; font-weight:bold; text-decoration:none; border:1px solid rgba(255,255,255,0.5); width:auto; align-self:flex-start; transition:transform 0.25s ease,filter 0.25s ease; cursor:pointer; box-sizing:border-box; display:block; text-align:center; box-shadow:0 8px 18px rgba(14,77,72,0.2); }
             #${CONTAINER_ID} .collection-hint { color:#8A9999; font-size:13px; font-weight:600; margin-top:5px; margin-bottom:15px; text-align:center; pointer-events:auto; transition:opacity 0.3s; }
             #${CONTAINER_ID} .nav { position:absolute; bottom:max(20px, env(safe-area-inset-bottom)); left:50%; transform:translateX(-50%); width:calc(100% - 40px); max-width:400px; background:rgba(255,255,255,0.75); backdrop-filter:blur(25px); -webkit-backdrop-filter:blur(25px); display:flex; border:1px solid rgba(255,255,255,0.6); pointer-events:auto; z-index:50; padding:10px 15px; box-sizing:border-box; align-items:center; border-radius:40px; box-shadow:0 15px 35px rgba(0,0,0,0.1), inset 0 0 0 1px rgba(255,255,255,0.4); }
             #${CONTAINER_ID}.platform-ipad .nav { bottom:max(55px, env(safe-area-inset-bottom)); } #${CONTAINER_ID}.platform-ipad #game-ui { padding-bottom:115px; } #${CONTAINER_ID}.platform-ipad #gameover-view { padding-top:80px !important; padding-bottom:140px !important; }
@@ -1068,9 +1068,9 @@
                     bCtx.clearRect(0, 0, 512, 768); if (cachedBackImg) bCtx.drawImage(cachedBackImg, 0, 0, 512, 768);
                     const btnW=280, btnH=60, btnX=40; bCtx.save(); const sc = isBtnHovered ? 1.02 : 1; bCtx.translate(btnX+btnW/2, 675+btnH/2); bCtx.scale(sc, sc); bCtx.translate(-(btnX+btnW/2), -(675+btnH/2));
                     const btnGradient = bCtx.createLinearGradient(btnX, 675, btnX + btnW, 675);
-                    btnGradient.addColorStop(0, '#ffe78a'); btnGradient.addColorStop(0.42, '#e9fbf4'); btnGradient.addColorStop(1, '#c8f4ef');
+                    btnGradient.addColorStop(0, '#174f49'); btnGradient.addColorStop(0.58, '#087f7a'); btnGradient.addColorStop(1, '#13b8b1');
                     bCtx.shadowColor='rgba(7,57,54,0.18)'; bCtx.shadowBlur=14; bCtx.shadowOffsetY=4; bCtx.beginPath(); if (bCtx.roundRect) bCtx.roundRect(btnX, 675, btnW, btnH, 30); else bCtx.rect(btnX, 675, btnW, btnH);
-                    bCtx.fillStyle=btnGradient; bCtx.fill(); bCtx.shadowColor='transparent'; bCtx.strokeStyle='rgba(255,255,255,0.78)'; bCtx.lineWidth=2; bCtx.stroke(); bCtx.font='800 20px system-ui, sans-serif'; bCtx.fillStyle='#073936'; bCtx.textAlign='center'; bCtx.textBaseline='middle'; bCtx.fillText('Открыть текст', btnX+btnW/2, 675+btnH/2);
+                    bCtx.fillStyle=btnGradient; bCtx.fill(); bCtx.shadowColor='transparent'; bCtx.strokeStyle='rgba(255,255,255,0.7)'; bCtx.lineWidth=2; bCtx.stroke(); bCtx.font='800 20px system-ui, sans-serif'; bCtx.fillStyle='#ffffff'; bCtx.textAlign='center'; bCtx.textBaseline='middle'; bCtx.fillText('Открыть текст', btnX+btnW/2, 675+btnH/2);
                     bCtx.restore(); backTex.needsUpdate = true;
                 };
                 if (cachedBackImg && cachedBackImg.dataset.id === String(card.id)) { draw(); return; }

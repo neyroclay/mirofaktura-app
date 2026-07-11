@@ -48,9 +48,11 @@
 
           const onboarding = document.getElementById('onboarding-view');
           const dailyTab = document.getElementById('btn-tab-daily');
+          const doneUi = document.getElementById('done-ui');
           const isOnboarding = onboarding?.classList.contains('visible');
           const isDaily = dailyTab?.classList.contains('active');
-          title.classList.toggle('is-visible', Boolean(isDaily && !isOnboarding));
+          const isWaiting = doneUi && window.getComputedStyle(doneUi).display !== 'none';
+          title.classList.toggle('is-visible', Boolean(isDaily && !isOnboarding && !isWaiting));
           return title;
         };
 
