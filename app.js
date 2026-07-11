@@ -2217,18 +2217,15 @@
     if (action === 'share') {
       const text = 'Мирофактура: диагностика, материалы и тренды для продуктов, продаж и привлечения аудитории';
       const shareUrl = PLATFORM.entryUrl;
-      const isMessengerApp = APP_PLATFORM === 'telegram' || Boolean(getPlatformUserId());
-      if (isMessengerApp) {
-        try {
-          await navigator.clipboard.writeText(shareUrl);
-          showToast('Ссылка скопирована');
-        } catch (_) {
-          showToast('Ссылка: ' + shareUrl);
-        }
+      if (APP_PLATFORM === 'telegram' && telegramWebApp) {
+        const telegramShareUrl = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(text)}`;
+        telegramWebApp.openTelegramLink(telegramShareUrl);
       } else if (navigator.share) {
         try {
           await navigator.share({ title: 'Мирофактура', text, url: shareUrl });
-        } catch (_) {}
+        } catch (error) {
+          if (error?.name !== 'AbortError') showToast('Не удалось открыть меню отправки');
+        }
       } else {
         try {
           await navigator.clipboard.writeText(shareUrl);
