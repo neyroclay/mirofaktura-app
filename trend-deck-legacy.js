@@ -402,6 +402,7 @@
             #${CONTAINER_ID} .spacer { flex:1; }
             #${CONTAINER_ID} #game-ui { flex:0 0 auto; padding-bottom:110px; background:linear-gradient(to top, rgba(244,247,248,0.9), transparent); transition:opacity 0.3s; display:flex; flex-direction:column; align-items:center; }
             #${CONTAINER_ID} .hint-text { color:#1F2E2E; font-size:14px; margin-bottom:15px; letter-spacing:0.5px; font-weight:700; background:#FFF; padding:10px 20px; border-radius:30px; box-shadow:0 8px 20px rgba(0,0,0,0.06); pointer-events:none; transition:opacity 0.3s; }
+            #${CONTAINER_ID} #game-ui.waiting-for-next-card .hint-text { height:18px; min-height:18px; width:1px; margin:0 0 12px; padding:0; overflow:hidden; background:transparent; box-shadow:none; opacity:0 !important; visibility:hidden !important; }
             #${CONTAINER_ID} .progress-wrapper { pointer-events:none; width:160px; height:3px; background:#F7F7F7; margin:0 auto 10px auto; border-radius:2px; overflow:hidden; transition:opacity 0.5s ease; }
             #${CONTAINER_ID} .progress-fill { height:100%; width:0%; background:#00D2D3; transition:width 0.1s; }
             #hand-icon { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:100px; height:100px; display:flex; align-items:center; justify-content:center; z-index:100; font-size:80px !important; color:#FFF; filter:drop-shadow(0px 5px 10px rgba(0,0,0,0.2)); pointer-events:none; display:none; animation:scratchAnim 2s infinite ease-in-out; opacity:0.9; }
@@ -920,8 +921,10 @@
             const inviteBanner = document.getElementById('invite-banner');
             const inviteTitle = document.getElementById('invite-title');
             const inviteDesc = document.getElementById('invite-desc');
+            const gameUi = document.getElementById('game-ui');
 
             if (appData.bonusCards > 0) {
+                gameUi?.classList.remove('waiting-for-next-card');
                 btnBonus.style.display = 'block';
                 btnBonus.innerHTML = `🎁 Открыть бонусную карту (${appData.bonusCards})`;
                 timerBox.style.display = 'none';
@@ -930,9 +933,11 @@
                 btnBonus.style.display = 'none';
                 
                 if (justFinished) {
+                    gameUi?.classList.remove('waiting-for-next-card');
                     timerBox.style.display = 'none';
                     inviteBanner.style.display = 'none';
                 } else {
+                    gameUi?.classList.add('waiting-for-next-card');
                     timerBox.style.display = 'block';
                     inviteBanner.style.display = 'block';
 
@@ -1108,7 +1113,6 @@
                 document.getElementById('active-ui').style.display = 'none'; 
                 document.getElementById('done-ui').style.display = 'flex'; 
                 updateDoneUI();
-                updateHint('Открыто! Нажми на карту'); 
             }
 
             const raycaster = new THREE.Raycaster(), mouse = new THREE.Vector2(); let isDragging=false, touchStartX=0, touchStartY=0, isTap=false, targetRotX=0, targetRotY=0, baseRotationY=0;
