@@ -2031,6 +2031,10 @@ h3 {
   font-weight: 600;
 }
 
+.lead-detail > p:last-child {
+  padding-bottom: 22px;
+}
+
 .lead-detail ul {
   display: grid;
   gap: 8px;
@@ -2287,10 +2291,6 @@ h3 {
     radial-gradient(circle at 16% 18%, rgba(255, 216, 74, 0.2), transparent 30%),
     radial-gradient(circle at 90% 18%, rgba(64, 226, 220, 0.28), transparent 34%),
     linear-gradient(145deg, #073936 0%, #08736e 56%, #18bbb5 100%);
-}
-
-.sales-channels-screen .lead-detail p:last-child {
-  padding-bottom: 20px;
 }
 
 .trends-screen {
