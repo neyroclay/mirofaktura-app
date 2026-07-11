@@ -55,27 +55,27 @@ body {
 @media (hover: hover) and (pointer: fine) {
   html {
     scrollbar-width: thin;
-    scrollbar-color: var(--teal) rgba(247, 242, 229, 0.72);
+    scrollbar-color: rgba(8, 169, 166, 0.72) transparent;
   }
 
   html::-webkit-scrollbar {
-    width: 10px;
+    width: 7px;
   }
 
   html::-webkit-scrollbar-track {
-    background: rgba(247, 242, 229, 0.72);
+    background: transparent;
   }
 
   html::-webkit-scrollbar-thumb {
     min-height: 52px;
-    border: 2px solid transparent;
+    border: 1px solid transparent;
     border-radius: 999px;
-    background: var(--teal);
+    background: rgba(8, 169, 166, 0.72);
     background-clip: padding-box;
   }
 
   html::-webkit-scrollbar-thumb:hover {
-    background: #087f7d;
+    background: rgba(8, 127, 125, 0.9);
     background-clip: padding-box;
   }
 }
