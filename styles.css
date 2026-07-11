@@ -26,6 +26,16 @@
   box-sizing: border-box;
 }
 
+::selection {
+  color: #ffffff;
+  background: var(--teal);
+}
+
+::-moz-selection {
+  color: #ffffff;
+  background: var(--teal);
+}
+
 html {
   min-height: 100%;
   background:
@@ -40,6 +50,34 @@ body {
   color: var(--ink);
   font-family: var(--font-ui);
   background: transparent;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: var(--teal) rgba(247, 242, 229, 0.72);
+  }
+
+  html::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  html::-webkit-scrollbar-track {
+    background: rgba(247, 242, 229, 0.72);
+  }
+
+  html::-webkit-scrollbar-thumb {
+    min-height: 52px;
+    border: 2px solid transparent;
+    border-radius: 999px;
+    background: var(--teal);
+    background-clip: padding-box;
+  }
+
+  html::-webkit-scrollbar-thumb:hover {
+    background: #087f7d;
+    background-clip: padding-box;
+  }
 }
 
 #app {
