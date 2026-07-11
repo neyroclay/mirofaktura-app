@@ -2313,6 +2313,35 @@ h3 {
   box-shadow: none;
 }
 
+.trends-frame-loader {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 24px;
+  padding: 28px;
+  background:
+    radial-gradient(circle at 20% 16%, rgba(255, 216, 74, 0.18), transparent 34%),
+    radial-gradient(circle at 82% 18%, rgba(40, 212, 206, 0.3), transparent 38%),
+    linear-gradient(165deg, #ecfaf5, #fffaf0 66%, #f6ecd6);
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 260ms ease, visibility 260ms ease;
+}
+
+.trends-frame-loader img {
+  width: min(200px, 54vw);
+  height: auto;
+}
+
+.trends-frame-wrap.is-loaded .trends-frame-loader {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
 .trends-frame {
   display: block;
   width: 100%;
@@ -2320,6 +2349,12 @@ h3 {
   min-height: 660px;
   border: 0;
   background: transparent;
+  opacity: 0;
+  transition: opacity 260ms ease;
+}
+
+.trends-frame-wrap.is-loaded .trends-frame {
+  opacity: 1;
 }
 
 .sales-answer-status {
