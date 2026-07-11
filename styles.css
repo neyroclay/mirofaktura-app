@@ -1288,6 +1288,20 @@ h3 {
     linear-gradient(90deg, rgba(255, 242, 143, 0.98), rgba(193, 255, 245, 0.98) 58%, rgba(71, 211, 202, 0.96));
 }
 
+.contacts-email {
+  justify-self: center;
+  color: rgba(247, 255, 251, 0.86);
+  font-size: 15px;
+  font-weight: 700;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+
+.contacts-email:hover,
+.contacts-email:focus-visible {
+  color: #fff3a8;
+}
+
 .authors-panel {
   padding-top: 0;
 }

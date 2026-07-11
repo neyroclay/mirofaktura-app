@@ -2,6 +2,7 @@
   const app = document.getElementById('app');
   const MAX_CHANNEL_URL = 'https://max.ru/id590417093305_biz';
   const TELEGRAM_BOT_URL = 'https://t.me/mirofactura_bot';
+  const CONTACT_EMAIL = 'info@mirofactura.ru';
   const PLATFORM_ALIASES = {
     max: 'max',
     tg: 'telegram',
@@ -1902,7 +1903,8 @@
         <p class="brand-label">Обсудить проект</p>
         <h2>Расскажите о задаче</h2>
         <p>Можно прийти с идеей, продуктом или уже работающим проектом. Сначала разберём задачу, затем предложим структуру и подходящий формат.</p>
-        <button class="primary-btn" type="button" data-action="openMax">Написать нам</button>
+        <button class="primary-btn" type="button" data-action="openEmail">Написать на почту</button>
+        <a class="contacts-email" href="mailto:${CONTACT_EMAIL}">${CONTACT_EMAIL}</a>
       </section>
 
     `, 'contacts-screen');
@@ -2048,6 +2050,12 @@
 
     if (action === 'openMax') {
       window.open(PLATFORM.channelUrl, '_blank', 'noopener');
+      return;
+    }
+
+    if (action === 'openEmail') {
+      const subject = encodeURIComponent('Заявка с приложения Мирофактуры');
+      window.location.href = `mailto:${CONTACT_EMAIL}?subject=${subject}`;
       return;
     }
 
