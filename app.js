@@ -1926,8 +1926,10 @@
   function dismissStartupLoader() {
     const loader = document.getElementById('app-loader');
     const appRoot = document.getElementById('app');
+    window.clearTimeout(window.__mirofakturaLoaderTimer);
     appRoot?.classList.add('is-ready');
     if (!loader) return;
+    loader.classList.remove('is-visible');
     window.requestAnimationFrame(() => {
       loader.classList.add('is-hidden');
       window.setTimeout(() => loader.remove(), 300);

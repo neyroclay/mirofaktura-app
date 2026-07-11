@@ -6,7 +6,7 @@
     <title>Мирофактура</title>
     <link rel="preload" href="./assets/logo-black-yellow.webp" as="image" type="image/webp">
     <link rel="preload" href="./assets/stepan-start.webp" as="image" type="image/webp">
-    <link rel="stylesheet" href="./styles.css?v=20260710-result-spacing">
+    <link rel="stylesheet" href="./styles.css?v=20260711-delayed-loader">
   </head>
   <body>
     <div class="app-loader" id="app-loader" role="status" aria-label="Загрузка Мирофактуры">
@@ -15,7 +15,12 @@
         <span class="app-loader__line" aria-hidden="true"></span>
       </div>
     </div>
+    <script>
+      window.__mirofakturaLoaderTimer = window.setTimeout(function () {
+        document.getElementById('app-loader')?.classList.add('is-visible');
+      }, 220);
+    </script>
     <div id="app"></div>
-    <script src="./app.js?v=20260710-trends-home-nav"></script>
+    <script src="./app.js?v=20260711-delayed-loader"></script>
   </body>
 </html>

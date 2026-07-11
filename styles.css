@@ -62,9 +62,14 @@ body {
     radial-gradient(circle at 20% 14%, rgba(255, 216, 74, 0.2), transparent 34%),
     radial-gradient(circle at 82% 16%, rgba(40, 212, 206, 0.3), transparent 38%),
     linear-gradient(165deg, #ecfaf5, #fffaf0 66%, #f6ecd6);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 260ms ease, visibility 260ms ease;
+}
+
+.app-loader.is-visible {
   opacity: 1;
   visibility: visible;
-  transition: opacity 260ms ease, visibility 260ms ease;
 }
 
 .app-loader.is-hidden {
