@@ -2006,6 +2006,11 @@
     }, 1800);
   }
 
+  function openTelegramShare(shareUrl) {
+    telegramWebApp.openTelegramLink(shareUrl);
+    window.setTimeout(() => telegramWebApp.close(), 120);
+  }
+
   app.addEventListener('click', async (event) => {
     const target = event.target.closest('button, [role="button"]');
     if (!target) return;
@@ -2219,7 +2224,7 @@
       const shareUrl = PLATFORM.entryUrl;
       if (APP_PLATFORM === 'telegram' && telegramWebApp) {
         const telegramShareUrl = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(text)}`;
-        telegramWebApp.openTelegramLink(telegramShareUrl);
+        openTelegramShare(telegramShareUrl);
       } else if (navigator.share) {
         try {
           await navigator.share({ title: 'Мирофактура', text, url: shareUrl });
@@ -2257,7 +2262,7 @@
 
       if (APP_PLATFORM === 'telegram' && telegramWebApp) {
         const telegramShareUrl = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`;
-        telegramWebApp.openTelegramLink(telegramShareUrl);
+        openTelegramShare(telegramShareUrl);
       } else if (navigator.share) {
         navigator.share({
           title: String(data.title || 'Мирофактура'),
