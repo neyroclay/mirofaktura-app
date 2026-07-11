@@ -113,15 +113,35 @@
     }
   ];
 
-  const quizImageCache = [];
+  const warmedImageCache = [];
 
-  function warmQuizImages() {
-    quiz.forEach((item) => {
+  function warmAppImages() {
+    const sources = [
+      ...quiz.map((item) => item.image),
+      assets.aristarch,
+      assets.potap,
+      assets.authors,
+    ];
+
+    sources.forEach((source) => {
       const image = new Image();
       image.decoding = 'async';
-      image.src = item.image;
-      quizImageCache.push(image);
+      image.src = source;
+      warmedImageCache.push(image);
       image.decode?.().catch(() => {});
+    });
+  }
+
+  function prepareImageReveals() {
+    app.querySelectorAll('img').forEach((image) => {
+      image.classList.add('image-reveal');
+      const reveal = () => window.requestAnimationFrame(() => image.classList.add('is-loaded'));
+
+      if (image.complete && image.naturalWidth > 0) {
+        reveal();
+      } else {
+        image.addEventListener('load', reveal, { once: true });
+      }
     });
   }
 
@@ -1930,6 +1950,7 @@
   function render(options = {}) {
     const renderPage = PAGE_RENDERERS[state.page] || renderHome;
     app.innerHTML = renderPage();
+    prepareImageReveals();
     if (options.scroll !== false) {
       window.scrollTo({ top: 0, behavior: 'instant' });
     }
@@ -2192,5 +2213,5 @@
 
   render();
   dismissStartupLoader();
-  window.setTimeout(warmQuizImages, 40);
+  window.setTimeout(warmAppImages, 40);
 })();

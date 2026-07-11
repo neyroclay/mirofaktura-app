@@ -51,6 +51,15 @@ body {
   opacity: 1;
 }
 
+.image-reveal {
+  opacity: 0;
+  transition: opacity 280ms ease;
+}
+
+.image-reveal.is-loaded {
+  opacity: 1;
+}
+
 .app-loader {
   position: fixed;
   inset: 0;
