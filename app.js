@@ -2251,6 +2251,22 @@
 
   window.addEventListener('message', (event) => {
     const data = event.data || {};
+    if (data.type === 'mirofaktura:share') {
+      const shareUrl = String(data.url || PLATFORM.entryUrl);
+      const shareText = String(data.text || 'Мирофактура');
+
+      if (APP_PLATFORM === 'telegram' && telegramWebApp) {
+        const telegramShareUrl = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`;
+        telegramWebApp.openTelegramLink(telegramShareUrl);
+      } else if (navigator.share) {
+        navigator.share({
+          title: String(data.title || 'Мирофактура'),
+          text: shareText,
+          url: shareUrl,
+        }).catch(() => {});
+      }
+      return;
+    }
     if (data.type !== 'mirofaktura:navigate') return;
     if (!PAGE_RENDERERS[data.page]) return;
     state.page = data.page;

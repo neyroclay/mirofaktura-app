@@ -1240,6 +1240,16 @@
                 const text = `Мне выпал стратегический тренд 2026: ${currentCardData.title}\n\nЗагляни в будущее и собери свою коллекцию инсайтов 👇`;
                 const fullText = text + '\n' + shareUrl;
 
+                if (trendPlatform === 'telegram' && window.parent !== window) {
+                    window.parent.postMessage({
+                        type: 'mirofaktura:share',
+                        title: 'Тренды 2026',
+                        text,
+                        url: shareUrl
+                    }, '*');
+                    return;
+                }
+
                 const fallbackCopy = () => {
                     const t = document.createElement('textarea'); 
                     t.value = fullText; 
