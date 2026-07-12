@@ -11,8 +11,10 @@
     telegram: 'telegram',
   };
   const telegramWebApp = window.Telegram?.WebApp || null;
+  const URL_PARAMS = new URLSearchParams(window.location.search);
+  const USE_NATIVE_TRENDS = URL_PARAMS.get('trends_native') === '1';
   const APP_PLATFORM = (() => {
-    const params = new URLSearchParams(window.location.search);
+    const params = URL_PARAMS;
     const raw = String(
       window.MIROFAKTURA_PLATFORM
       || params.get('platform')
@@ -995,7 +997,7 @@
   }
 
   function screen(content, cls = '') {
-    const hasBottomNav = PAGES_WITH_BOTTOM_NAV.has(state.page);
+    const hasBottomNav = PAGES_WITH_BOTTOM_NAV.has(state.page) || (USE_NATIVE_TRENDS && state.page === 'trends');
     return `
       <main class="app-shell">
         <section class="screen ${hasBottomNav ? 'has-bottom-nav' : ''} ${cls}">
@@ -1984,7 +1986,7 @@
       platform: PLATFORM.key,
       messenger: PLATFORM.messenger,
       source: 'mirofaktura-app',
-      v: '20260712-status-top',
+      v: '20260712-native-shell',
     });
     const platformUserId = getPlatformUserId();
     const platformUser = getPlatformUser();
@@ -2005,6 +2007,19 @@
   }
 
   function renderTrends() {
+    if (USE_NATIVE_TRENDS) {
+      return screen(`
+        <div class="trends-native-page">
+          <div class="trends-native-tabs" role="tablist" aria-label="Разделы колоды трендов">
+            <button class="trends-native-tab active" type="button" data-trends-tab="daily" role="tab" aria-selected="true">Карта</button>
+            <button class="trends-native-tab" type="button" data-trends-tab="collection" role="tab" aria-selected="false">Коллекция</button>
+            <button class="trends-native-tab" type="button" data-trends-tab="authors" role="tab" aria-selected="false">Авторы</button>
+          </div>
+          <div id="c37" class="trends-native-host" aria-label="Колода трендов 2026"></div>
+        </div>
+      `, 'trends-screen trends-native-screen');
+    }
+
     return screen(`
       <div class="trends-page">
         <div class="trends-frame-wrap" aria-label="Колода трендов 2026">
@@ -2031,6 +2046,12 @@
   };
 
   function prepareTrendsFrame() {
+    const nativeHost = app.querySelector('.trends-native-host');
+    if (nativeHost) {
+      prepareNativeTrends(nativeHost);
+      return;
+    }
+
     const frame = app.querySelector('.trends-frame');
     const wrap = frame?.closest('.trends-frame-wrap');
     if (!frame || !wrap) return;
@@ -2040,8 +2061,64 @@
     }, { once: true });
   }
 
+  let trendDeckScriptPromise = null;
+
+  function loadTrendDeckScript() {
+    if (window.MirofacturaTrendDeck) return Promise.resolve();
+    if (trendDeckScriptPromise) return trendDeckScriptPromise;
+
+    window.MIROFAKTURA_TRENDS_MANUAL_MOUNT = true;
+    trendDeckScriptPromise = new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = './trend-deck-legacy.js?v=20260712-native-shell';
+      script.onload = () => resolve();
+      script.onerror = () => reject(new Error('trend deck script failed'));
+      document.body.appendChild(script);
+    });
+
+    return trendDeckScriptPromise;
+  }
+
+  function prepareNativeTrends(host) {
+    const tabs = [...app.querySelectorAll('.trends-native-tab')];
+    const setActiveTab = (tab) => {
+      tabs.forEach((button) => {
+        const active = button.dataset.trendsTab === tab;
+        button.classList.toggle('active', active);
+        button.setAttribute('aria-selected', active ? 'true' : 'false');
+      });
+      window.MirofacturaTrendDeck?.showTab?.(tab);
+    };
+
+    tabs.forEach((button) => {
+      button.addEventListener('click', () => setActiveTab(button.dataset.trendsTab || 'daily'));
+    });
+
+    host.addEventListener('mirofactura:trend-tab', (event) => {
+      const tab = event.detail?.tab || 'daily';
+      tabs.forEach((button) => {
+        const active = button.dataset.trendsTab === tab;
+        button.classList.toggle('active', active);
+        button.setAttribute('aria-selected', active ? 'true' : 'false');
+      });
+    });
+
+    loadTrendDeckScript()
+      .then(() => {
+        window.MirofacturaTrendDeck?.mount?.({
+          containerId: host.id,
+          mode: 'native'
+        });
+        setActiveTab('daily');
+      })
+      .catch(() => {
+        host.innerHTML = '<div class="trends-native-error">Не удалось открыть колоду. Попробуйте обновить приложение.</div>';
+      });
+  }
+
   function render(options = {}) {
     const renderPage = PAGE_RENDERERS[state.page] || renderHome;
+    window.MirofacturaTrendDeck?.destroy?.();
     app.innerHTML = renderPage();
     prepareImageReveals();
     prepareTrendsFrame();

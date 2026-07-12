@@ -2413,6 +2413,72 @@ h3 {
   opacity: 1;
 }
 
+.trends-native-screen {
+  padding-bottom: calc(116px + env(safe-area-inset-bottom));
+}
+
+.trends-native-page {
+  display: grid;
+  gap: 14px;
+}
+
+.trends-native-tabs {
+  position: relative;
+  z-index: 4;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  padding: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.66);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.48);
+  box-shadow: 0 14px 32px rgba(6, 59, 55, 0.08);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.trends-native-tab {
+  border: 0;
+  border-radius: 999px;
+  padding: 12px 10px;
+  color: rgba(7, 57, 54, 0.66);
+  background: transparent;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 850;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.trends-native-tab.active {
+  color: #007d7a;
+  background:
+    radial-gradient(circle at 18% 16%, rgba(255, 216, 74, 0.42), transparent 34%),
+    linear-gradient(135deg, rgba(234, 255, 249, 0.94), rgba(210, 255, 248, 0.82));
+  box-shadow: 0 10px 24px rgba(15, 119, 112, 0.12);
+}
+
+.trends-native-host {
+  position: relative;
+  min-height: min(720px, calc(100vh - 228px));
+  height: min(720px, calc(100vh - 228px));
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.58);
+  border-radius: 30px;
+  background: transparent;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.trends-native-error {
+  display: grid;
+  min-height: 320px;
+  place-items: center;
+  padding: 24px;
+  color: #426865;
+  text-align: center;
+  font-weight: 750;
+}
+
 .sales-answer-status {
   display: flex;
   align-items: center;

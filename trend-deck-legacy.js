@@ -1,4 +1,7 @@
 (function() {
+    let activeDeckInstance = null;
+    let mountSerial = 0;
+    const DEFAULT_CONTAINER_ID = 'c37';
     // --- ТЕКСТЫ ДОКУМЕНТОВ ---
     const LEGAL_TEXT_PRIVACY = `Политика в отношении обработки персональных данных (политика конфиденциальности)
 
@@ -260,13 +263,42 @@
     }
 
     // --- ОСНОВНАЯ ЛОГИКА ПРИЛОЖЕНИЯ ---
-    function initMainApp() {
-        const CONTAINER_ID = 'c37';
+    function initMainApp(options = {}) {
+        const CONTAINER_ID = options.containerId || DEFAULT_CONTAINER_ID;
+        const nativeMode = options.mode === 'native';
         const container = document.getElementById(CONTAINER_ID);
-        if (!container) return;
+        if (!container) return null;
 
-        container.addEventListener('copy', (e) => e.preventDefault());
-        container.addEventListener('contextmenu', (e) => e.preventDefault());
+        const cleanupStack = [];
+        let destroyed = false;
+        let renderer = null;
+        let rafId = 0;
+        function addCleanup(fn) { cleanupStack.push(fn); }
+        const instance = {
+            showTab: null,
+            destroy() {
+                if (destroyed) return;
+                destroyed = true;
+                while (cleanupStack.length) {
+                    try { cleanupStack.pop()(); } catch (_) {}
+                }
+                try { renderer?.dispose?.(); } catch (_) {}
+                container.innerHTML = '';
+                delete container.dataset.trendDeckMounted;
+                container.classList.remove('trend-native-embedded');
+            }
+        };
+
+        container.dataset.trendDeckMounted = '1';
+        if (nativeMode) container.classList.add('trend-native-embedded');
+
+        const preventNativeMenu = (e) => e.preventDefault();
+        container.addEventListener('copy', preventNativeMenu);
+        container.addEventListener('contextmenu', preventNativeMenu);
+        addCleanup(() => {
+            container.removeEventListener('copy', preventNativeMenu);
+            container.removeEventListener('contextmenu', preventNativeMenu);
+        });
 
         const maxApp = window.WebApp || null;
         if (maxApp && typeof maxApp.ready === 'function') maxApp.ready();
@@ -348,8 +380,9 @@
 
         container.style.position  = 'relative';
         container.style.width     = '100%';
-        function setAppHeight() { container.style.height = window.innerHeight + 'px'; }
+        function setAppHeight() { container.style.height = nativeMode ? '100%' : window.innerHeight + 'px'; }
         setAppHeight(); window.addEventListener('resize', setAppHeight);
+        addCleanup(() => window.removeEventListener('resize', setAppHeight));
         const isIPad = /iPad/i.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Macintosh/i.test(navigator.userAgent));
         if (isIPad) container.classList.add('platform-ipad');
         container.style.minHeight = '600px'; container.style.overflow = 'hidden';
@@ -359,6 +392,7 @@
         const fontLink = document.createElement('link'); fontLink.rel = 'stylesheet'; fontLink.href = 'https://fonts.googleapis.com/icon?family=Material+Icons+Round&display=block';
         document.head.appendChild(fontLink); fontLink.onload = () => { document.fonts.ready.then(() => container.classList.add('icons-loaded')); };
         setTimeout(() => container.classList.add('icons-loaded'), 2000);
+        addCleanup(() => fontLink.remove());
 
         const style = document.createElement('style');
         style.textContent = `
@@ -377,6 +411,13 @@
             #${CONTAINER_ID} canvas { display:block; width:100%; height:100%; outline:none; cursor:default; touch-action: none; }
             #${CONTAINER_ID} .ui-layer { position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:10; display:flex; flex-direction:column; }
             #${CONTAINER_ID} header, #${CONTAINER_ID} .nav, #${CONTAINER_ID} .fullscreen-view, #${CONTAINER_ID} .modal-overlay, #${CONTAINER_ID} .action-buttons-row, #${CONTAINER_ID} #onboarding-view, #${CONTAINER_ID} .collection-hint, #${CONTAINER_ID} #done-ui { pointer-events: auto; }
+            #${CONTAINER_ID}.trend-native-embedded #top-header-nav,
+            #${CONTAINER_ID}.trend-native-embedded > .ui-layer > .nav { display:none !important; }
+            #${CONTAINER_ID}.trend-native-embedded #game-ui { padding-bottom:28px; }
+            #${CONTAINER_ID}.trend-native-embedded .fullscreen-view { padding:24px 20px 32px; }
+            #${CONTAINER_ID}.trend-native-embedded #gameover-view { padding-top:32px !important; padding-bottom:32px !important; }
+            #${CONTAINER_ID}.trend-native-embedded #game-ui.waiting-for-next-card #done-ui::before { height:clamp(26px, 4vh, 42px); }
+            #${CONTAINER_ID}.trend-native-embedded .waiting-card-status { position:absolute; top:clamp(24px, 7vh, 72px); }
             
             #${CONTAINER_ID} header { 
                 flex:0 0 auto; 
@@ -485,6 +526,7 @@
             @keyframes spin { to { transform: rotate(360deg); } }
         `;
         document.head.appendChild(style);
+        addCleanup(() => style.remove());
 
       // --- ДОБАВЛЯЕМ ПРЕЛОАДЕР ---
        const preloaderDiv = document.createElement('div');
@@ -507,8 +549,10 @@
                setTimeout(() => { if (el) { el.textContent = preloaderTexts[textIndex]; el.style.opacity = '1'; } }, 300);
            }
        }, 2200);
+       addCleanup(() => clearInterval(textInterval));
 
        let preloaderHidden = false;
+       const previousHidePreloader = window.hidePreloader;
        window.hidePreloader = function() {
            if (preloaderHidden) return;
            preloaderHidden = true;
@@ -520,6 +564,9 @@
                setTimeout(() => { if (p.parentNode) p.parentNode.removeChild(p); }, 800);
            }
        };
+       addCleanup(() => {
+           if (window.hidePreloader !== previousHidePreloader) window.hidePreloader = previousHidePreloader;
+       });
 
        // Страховка на 10 секунд
        setTimeout(() => {
@@ -1124,7 +1171,7 @@
            if (aspect > 0.6) { cameraZ = 8.2; cardY = 0.9; } else if (isIPad) { cameraZ = 7.5; cardY = 0.7; } else if (width < 768) { cameraZ = 7.5; cardY = 0.4; }
            const camera = new THREE.PerspectiveCamera(60, aspect, 0.1, 100); camera.position.z = cameraZ;
            
-           let renderer;
+           renderer = null;
            try {
                renderer = new THREE.WebGLRenderer({ antialias:true, alpha:true });
            } catch(e) {
@@ -1139,7 +1186,9 @@
            canvasDiv.appendChild(renderer.domElement); const canvas = renderer.domElement;
             canvas.style.touchAction = 'none';
 
-            canvas.addEventListener('touchmove', function(e) { if (e.cancelable) e.preventDefault(); }, { passive: false });
+            const preventCanvasTouch = function(e) { if (e.cancelable) e.preventDefault(); };
+            canvas.addEventListener('touchmove', preventCanvasTouch, { passive: false });
+            addCleanup(() => canvas.removeEventListener('touchmove', preventCanvasTouch));
             scene.add(new THREE.AmbientLight(0xffffff, 0.7)); const dir = new THREE.DirectionalLight(0xffffff, 0.8); dir.position.set(5, 5, 10); scene.add(dir);
 
             const cardGroup = new THREE.Group(); cardGroup.position.y = cardY; scene.add(cardGroup);
@@ -1304,7 +1353,7 @@
 
             function flipCard() { isFlipped=!isFlipped; const target=isFlipped?Math.PI:0; const el=document.getElementById('main-hint'); if (el) el.style.opacity = isFlipped?'0':'1'; new TWEEN.Tween({y:baseRotationY}).to({y:target},600).easing(TWEEN.Easing.Back.Out).onUpdate(o=>baseRotationY=o.y).start(); }
             function updateParallax(e) { const m=getMouse(e); if (!isNaN(m.x)&&window.innerWidth>=768) { targetRotX=m.y*0.15; targetRotY=m.x*0.15; } }
-            function animate(t) { requestAnimationFrame(animate); TWEEN.update(t); cardGroup.rotation.x+=(targetRotX-cardGroup.rotation.x)*0.1; cardGroup.rotation.y+=((targetRotY+baseRotationY)-cardGroup.rotation.y)*0.1; renderer.render(scene,camera); }
+            function animate(t) { if (destroyed) return; rafId = requestAnimationFrame(animate); TWEEN.update(t); cardGroup.rotation.x+=(targetRotX-cardGroup.rotation.x)*0.1; cardGroup.rotation.y+=((targetRotY+baseRotationY)-cardGroup.rotation.y)*0.1; renderer.render(scene,camera); }
             function updateHint(text) { const el=document.getElementById('main-hint'); el.style.opacity=0; setTimeout(()=>{el.textContent=text; el.style.visibility='visible'; el.style.opacity=1;},200); }
 
             function showCustomAlert(msgHTML, showCancel = false, okText = 'ПОНЯТНО', onOk = null) {
@@ -1422,12 +1471,13 @@
             }
 
             function toggleView(viewId) {
+                container.dispatchEvent(new CustomEvent('mirofactura:trend-tab', { detail: { tab: viewId } }));
                 document.getElementById('library-view').classList.remove('visible'); document.getElementById('authors-view').style.display='none'; document.getElementById('gameover-view').style.display='none';
                 
                 const topHeader = document.getElementById('top-header-nav');
                 if (topHeader) topHeader.style.display = 'flex';
                 
-                canvasDiv.style.opacity='1'; document.getElementById('game-ui').style.opacity='1'; document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active')); const hand=document.getElementById('hand-icon');
+                canvasDiv.style.opacity='1'; document.getElementById('game-ui').style.opacity='1'; container.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active')); const hand=document.getElementById('hand-icon');
                 if (viewId==='daily') {
                     document.getElementById('btn-tab-daily').classList.add('active');
                     
@@ -1470,6 +1520,7 @@
                 }
             }
             document.getElementById('btn-tab-daily').addEventListener('click', ()=>toggleView('daily')); document.getElementById('btn-tab-collection').addEventListener('click', ()=>toggleView('collection')); document.getElementById('btn-tab-authors').addEventListener('click', ()=>toggleView('authors'));
+            instance.showTab = toggleView;
 
             // ОНБОРДИНГ
             const onboardView = document.getElementById('onboarding-view');
@@ -1503,18 +1554,58 @@
                 }, 200);
             }
 
-            setInterval(updateTimer, 1000);
+            const timerInterval = setInterval(updateTimer, 1000);
             canvas.addEventListener('pointerdown', onDown, { passive:false }); window.addEventListener('pointermove', onMove, { passive:false }); window.addEventListener('pointerup', onUp); window.addEventListener('pointercancel', onUp);
-            window.addEventListener('resize', ()=>{
+            addCleanup(() => {
+                clearInterval(timerInterval);
+                cancelAnimationFrame(rafId);
+                canvas.removeEventListener('pointerdown', onDown);
+                window.removeEventListener('pointermove', onMove);
+                window.removeEventListener('pointerup', onUp);
+                window.removeEventListener('pointercancel', onUp);
+            });
+            const resizeScene = ()=>{
+                if (destroyed) return;
                 const w=container.clientWidth, h=container.clientHeight, a=w/h; camera.aspect=a; camera.updateProjectionMatrix(); renderer.setSize(w,h);
                 if (a>0.6) { camera.position.z=8.2; cardGroup.position.y=0.9; } else if (isIPad) { camera.position.z=7.5; cardGroup.position.y=0.7; } else if (w<768) { camera.position.z=7.5; cardGroup.position.y=0.4; } else { camera.position.z=6; cardGroup.position.y=0.3; }
-            });
+            };
+            window.addEventListener('resize', resizeScene);
+            addCleanup(() => window.removeEventListener('resize', resizeScene));
             
             animate(); // Запуск 3D-сцены
 
           
         }
+        return instance;
     }
 
-    loadMaxBridge(initMainApp);
+    function mountTrendDeck(options = {}) {
+        const currentMount = ++mountSerial;
+        if (activeDeckInstance?.destroy) activeDeckInstance.destroy();
+        activeDeckInstance = null;
+        loadMaxBridge(() => {
+            if (currentMount !== mountSerial) return;
+            activeDeckInstance = initMainApp(options);
+        });
+        return activeDeckInstance;
+    }
+
+    window.MirofacturaTrendDeck = {
+        mount: mountTrendDeck,
+        destroy() {
+            mountSerial += 1;
+            if (activeDeckInstance?.destroy) activeDeckInstance.destroy();
+            activeDeckInstance = null;
+        },
+        isMounted() {
+            return Boolean(activeDeckInstance);
+        },
+        showTab(tab) {
+            activeDeckInstance?.showTab?.(tab);
+        }
+    };
+
+    if (!window.MIROFAKTURA_TRENDS_MANUAL_MOUNT) {
+        mountTrendDeck();
+    }
 })();
