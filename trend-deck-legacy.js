@@ -314,13 +314,8 @@
 
         // ВЕБХУКИ BASEROW И MULTY
         const STORAGE_KEY      = `oracle_10_trends_release_v23_${trendPlatform}_${userId}`;
-        const useTestMulty = trendParams.get('multy_test') === '1';
-        const LOAD_URL = useTestMulty
-            ? 'https://cb.multy.ai/api/v1/hook/app/b9c89cbdf0f21aa63c6111487770196a'
-            : 'https://cb.multy.ai/api/v1/hook/app/7d62795bb2fc085481ae4e8c3b6f9024';
-        const SAVE_URL = useTestMulty
-            ? 'https://cb.multy.ai/api/v1/hook/app/bfbc41275aaab161df78a4d0b0f399af'
-            : 'https://cb.multy.ai/api/v1/hook/app/da0e0039c43a7c3d4287702d293fa656';
+        const LOAD_URL = 'https://cb.multy.ai/api/v1/hook/app/b9c89cbdf0f21aa63c6111487770196a';
+        const SAVE_URL = 'https://cb.multy.ai/api/v1/hook/app/bfbc41275aaab161df78a4d0b0f399af';
 
         const TEXT_BACK_IMG = "https://i.postimg.cc/RFxMB2Bd/1-2-copy.jpg";
         const AUTHOR_1_IMG  = "https://cdn.jsdelivr.net/gh/neyroclay/img-host-trends-2026@main/Elizaveta-Vikulova-new.jpg";
@@ -402,7 +397,7 @@
             #${CONTAINER_ID} .spacer { flex:1; }
             #${CONTAINER_ID} #game-ui { flex:0 0 auto; padding-bottom:110px; background:linear-gradient(to top, rgba(244,247,248,0.9), transparent); transition:opacity 0.3s; display:flex; flex-direction:column; align-items:center; }
             #${CONTAINER_ID} .hint-text { color:#1F2E2E; font-size:14px; margin-bottom:15px; letter-spacing:0.5px; font-weight:700; background:#FFF; padding:10px 20px; border-radius:30px; box-shadow:0 8px 20px rgba(0,0,0,0.06); pointer-events:none; transition:opacity 0.3s; }
-            #${CONTAINER_ID} #game-ui.waiting-for-next-card .hint-text { height:18px; min-height:18px; width:1px; margin:0 0 12px; padding:0; overflow:hidden; background:transparent; box-shadow:none; opacity:0 !important; visibility:hidden !important; }
+            #${CONTAINER_ID} #game-ui.waiting-for-next-card .hint-text { background:rgba(255,255,255,0.86); box-shadow:0 8px 20px rgba(6,76,72,0.07); }
             #${CONTAINER_ID} .progress-wrapper { pointer-events:none; width:160px; height:3px; background:#F7F7F7; margin:0 auto 10px auto; border-radius:2px; overflow:hidden; transition:opacity 0.5s ease; }
             #${CONTAINER_ID} .progress-fill { height:100%; width:0%; background:#00D2D3; transition:width 0.1s; }
             #hand-icon { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:100px; height:100px; display:flex; align-items:center; justify-content:center; z-index:100; font-size:80px !important; color:#FFF; filter:drop-shadow(0px 5px 10px rgba(0,0,0,0.2)); pointer-events:none; display:none; animation:scratchAnim 2s infinite ease-in-out; opacity:0.9; }
@@ -938,6 +933,7 @@
                     inviteBanner.style.display = 'none';
                 } else {
                     gameUi?.classList.add('waiting-for-next-card');
+                    updateHint('Карта дня уже открыта');
                     timerBox.style.display = 'block';
                     inviteBanner.style.display = 'block';
 
