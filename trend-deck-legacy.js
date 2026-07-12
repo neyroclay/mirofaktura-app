@@ -308,8 +308,8 @@
         const lastName = trendParams.get('last_name') || userObj.last_name || "";
 
         // ЗВУКИ
-        const winSound = new Audio('https://cdn.jsdelivr.net/gh/neyroclay/img-host-trends-2026@main/sound-effect-859.mp3'); winSound.volume = 0.5;
-        const scratchSound = new Audio('https://cdn.jsdelivr.net/gh/neyroclay/img-host-trends-2026@main/sound-effect-stiranie.mp3'); scratchSound.loop = true; scratchSound.volume = 1.0;
+        const winSound = new Audio('https://cdn.jsdelivr.net/gh/neyroclay/img-host-trends-2026@main/sound-effect-859.mp3'); winSound.preload = 'none'; winSound.volume = 0.5;
+        const scratchSound = new Audio('https://cdn.jsdelivr.net/gh/neyroclay/img-host-trends-2026@main/sound-effect-stiranie.mp3'); scratchSound.preload = 'none'; scratchSound.loop = true; scratchSound.volume = 1.0;
         let isAudioUnlocked = false, isScratching = false, scratchTimeout = null;
 
         // ВЕБХУКИ BASEROW И MULTY
@@ -667,14 +667,14 @@
                     
                     <div style="text-align:center;color:#1F2E2E;font-weight:800;margin-bottom:20px;letter-spacing:2px;font-size:14px;">АВТОРЫ ПРОЕКТА</div>
                     <a href="#" class="author-card" onclick="window.app_openBotLink(event, 'https://max.ru/u/f9LHodD0cOJ7KLcSGQ2-nIru39qLMDByEa3oTWgNABebA15thaMVXVpHB-w')">
-                        <img src="${AUTHOR_1_IMG}" class="author-img" alt="Елизавета Викулова">
+                        <img src="${AUTHOR_1_IMG}" class="author-img" alt="Елизавета Викулова" loading="lazy" decoding="async">
                         <div class="author-info">
                             <div class="author-name">Елизавета Викулова</div>
                             <div class="author-desc">Эксперт по цифровизации маркетинга, фанат геймификации.</div>
                         </div>
                     </a>
                     <a href="#" class="author-card" onclick="window.app_openBotLink(event, 'https://max.ru/u/f9LHodD0cOL6WZFmWoaBowA5ZAdNLubiIRJlhbrL5vxjlmvr16DBtsGJcLY')">
-                        <img src="${AUTHOR_2_IMG}" class="author-img" alt="Елена Попова">
+                        <img src="${AUTHOR_2_IMG}" class="author-img" alt="Елена Попова" loading="lazy" decoding="async">
                         <div class="author-info">
                             <div class="author-name">Елена Попова</div>
                             <div class="author-desc">Эксперт по созданию впечатлений в маркетинге и вау-эффектам.</div>
@@ -992,13 +992,15 @@
         });
 
 
+        const deckLibrariesReady = Promise.all([
+            loadScript('https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'),
+            loadScript('https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js'),
+            loadScript('https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js')
+        ]);
+
         loadState(() => {
             selectCard();
-            Promise.all([
-                loadScript('https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'),
-                loadScript('https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js'),
-                loadScript('https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js')
-            ]).then(initThreeJS);
+            deckLibrariesReady.then(initThreeJS);
         });
 
       function loadScript(src) {

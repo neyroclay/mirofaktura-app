@@ -135,12 +135,11 @@
 
   function prepareImageReveals() {
     app.querySelectorAll('img').forEach((image) => {
-      image.classList.add('image-reveal');
-      const reveal = () => window.requestAnimationFrame(() => image.classList.add('is-loaded'));
-
       if (image.complete && image.naturalWidth > 0) {
-        reveal();
+        image.classList.add('image-reveal', 'is-loaded');
       } else {
+        image.classList.add('image-reveal');
+        const reveal = () => window.requestAnimationFrame(() => image.classList.add('is-loaded'));
         image.addEventListener('load', reveal, { once: true });
       }
     });
@@ -1970,7 +1969,7 @@
       platform: PLATFORM.key,
       messenger: PLATFORM.messenger,
       source: 'mirofaktura-app',
-      v: '20260712-ui-cleanup',
+      v: '20260712-performance-visual',
     });
     const platformUserId = getPlatformUserId();
     const platformUser = getPlatformUser();
