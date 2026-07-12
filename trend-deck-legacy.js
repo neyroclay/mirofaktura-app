@@ -1304,7 +1304,19 @@
 
             function flipCard() { isFlipped=!isFlipped; const target=isFlipped?Math.PI:0; const el=document.getElementById('main-hint'); if (el) el.style.opacity = isFlipped?'0':'1'; new TWEEN.Tween({y:baseRotationY}).to({y:target},600).easing(TWEEN.Easing.Back.Out).onUpdate(o=>baseRotationY=o.y).start(); }
             function updateParallax(e) { const m=getMouse(e); if (!isNaN(m.x)&&window.innerWidth>=768) { targetRotX=m.y*0.15; targetRotY=m.x*0.15; } }
-            function animate(t) { requestAnimationFrame(animate); TWEEN.update(t); cardGroup.rotation.x+=(targetRotX-cardGroup.rotation.x)*0.1; cardGroup.rotation.y+=((targetRotY+baseRotationY)-cardGroup.rotation.y)*0.1; renderer.render(scene,camera); }
+            let isAnimationPaused = false;
+            window.addEventListener('message', (event) => {
+                const data = event.data || {};
+                if (data.type !== 'mirofaktura:trend-visibility') return;
+                const shouldPause = data.visible === false;
+                if (isAnimationPaused && !shouldPause) {
+                    isAnimationPaused = false;
+                    requestAnimationFrame(animate);
+                } else {
+                    isAnimationPaused = shouldPause;
+                }
+            });
+            function animate(t) { if (isAnimationPaused) return; requestAnimationFrame(animate); TWEEN.update(t); cardGroup.rotation.x+=(targetRotX-cardGroup.rotation.x)*0.1; cardGroup.rotation.y+=((targetRotY+baseRotationY)-cardGroup.rotation.y)*0.1; renderer.render(scene,camera); }
             function updateHint(text) { const el=document.getElementById('main-hint'); el.style.opacity=0; setTimeout(()=>{el.textContent=text; el.style.visibility='visible'; el.style.opacity=1;},200); }
 
             function showCustomAlert(msgHTML, showCancel = false, okText = 'ПОНЯТНО', onOk = null) {
