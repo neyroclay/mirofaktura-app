@@ -1192,7 +1192,7 @@
           <span>Вопрос ${state.step + 1} из ${quiz.length}</span>
           <span>${progress}%</span>
         </div>
-        <div class="progress" role="progressbar" aria-label="Прогресс диагностики" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${progress}"><span style="width:${progress}%"></span></div>
+        <div class="progress" role="progressbar" aria-label="Прогресс квиза" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${progress}"><span style="width:${progress}%"></span></div>
       </div>
 
       <div class="quiz-mascot">
@@ -1255,7 +1255,7 @@
       </div>
 
       <article class="result-card">
-        <p class="brand-label">Результат диагностики</p>
+        <p class="brand-label">Ваш результат</p>
         <h1>Вот с чего лучше начать</h1>
         <p class="lead">По вашим ответам Аристарх предлагает подарок под выбранную задачу.</p>
 
@@ -1296,7 +1296,7 @@
           <div class="result-panel">
             <p class="brand-label">${isLibraryGate ? 'Кладовая Мирофактуры' : material.tag}</p>
             <h2>${isLibraryGate ? 'Материалы и инструменты' : material.title}</h2>
-            <p>${isLibraryGate ? 'Выберите нужный материал или пройдите диагностику, если пока не знаете, с чего начать.' : material.text}</p>
+            <p>${isLibraryGate ? 'Выберите нужный материал или пройдите квиз, если пока не знаете, с чего начать.' : material.text}</p>
           </div>
 
           <button class="primary-btn" type="button" data-action="${isLibraryGate ? 'openLibrary' : 'openMaterial'}" ${isLibraryGate ? '' : `data-material="${state.pendingMaterial || resultKey()}"`}>${isLibraryGate ? 'Открыть кладовую' : 'Открыть материал'}</button>
@@ -1326,7 +1326,7 @@
         <div class="result-panel">
           <p class="brand-label">Кладовая Мирофактуры</p>
           <h2>Материалы и инструменты</h2>
-          <p>Здесь собраны интерактивные материалы о продуктах, продажах и привлечении аудитории.</p>
+          <p>Карты, квизы и другие материалы, которые помогают разобрать задачу и выбрать следующий шаг.</p>
         </div>
       `
       : `
@@ -1357,7 +1357,7 @@
       <div class="library-title">
         <p class="brand-label">Материалы Мирофактуры</p>
         <h1>Кладовая</h1>
-        <p class="lead">Здесь собраны интерактивные материалы Мирофактуры. Короткая диагностика подскажет, какой из них сейчас будет полезнее.</p>
+        <p class="lead">Кладовая — часть мастерской цифровых миров. Здесь собраны карты, квизы и другие материалы Мирофактуры: они помогают разобрать задачу, увидеть подходящие варианты и понять, что попробовать дальше.</p>
         <div class="library-actions">
           <button class="primary-btn" type="button" data-action="startQuiz">Подобрать материал</button>
         </div>
@@ -1419,7 +1419,7 @@
       </article>
 
       <section class="lead-section">
-        <p class="brand-label">Быстрая диагностика</p>
+        <p class="brand-label">Быстрый разбор</p>
         <h2>Как часто клиенты возвращаются?</h2>
         <p class="lead-section-copy">Выберите один вариант, который ближе всего к текущей ситуации.</p>
         <div class="lead-choice-list">
@@ -1521,7 +1521,7 @@
             <span>${String(index + 1).padStart(2, '0')} ${title}</span>
           `).join('') : '<p>Выберите хотя бы один этап.</p>'}
         </div>
-        <button class="soft-btn" type="button" data-action="resetProductStages">Вернуть пример</button>
+        <button class="soft-btn" type="button" data-action="resetProductStages">Вернуть исходную цепочку</button>
       </section>
 
       <section class="lead-section">
