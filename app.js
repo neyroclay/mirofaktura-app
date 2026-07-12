@@ -2021,9 +2021,24 @@
     const wrap = frame?.closest('.trends-frame-wrap');
     if (!frame || !wrap) return;
 
-    frame.addEventListener('load', () => {
+    let revealTimer;
+    const revealFrame = () => {
+      window.clearTimeout(revealTimer);
       window.requestAnimationFrame(() => wrap.classList.add('is-loaded'));
-    }, { once: true });
+    };
+
+    frame.addEventListener('load', revealFrame, { once: true });
+
+    // A cached same-origin iframe can finish loading while app.innerHTML is
+    // still being assigned, before the load listener above is attached.
+    // Reveal it immediately in that case so the loader cannot block the deck.
+    try {
+      if (frame.contentDocument?.readyState === 'complete') revealFrame();
+    } catch (error) {}
+
+    // Do not leave an invisible overlay over the deck if a browser skips the
+    // iframe load event during history/cache restoration.
+    revealTimer = window.setTimeout(revealFrame, 2500);
   }
 
   function render(options = {}) {
