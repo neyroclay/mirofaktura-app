@@ -542,8 +542,12 @@
         window.app_openBotLink = function(e, url) { 
             if (e) { e.preventDefault(); e.stopPropagation(); } 
 
-            if (trendPlatform === 'telegram' && window.parent !== window) {
-                window.parent.postMessage({ type: 'mirofaktura:open-link', url }, '*');
+            if (trendPlatform === 'telegram') {
+                if (window.parent !== window) {
+                    window.parent.postMessage({ type: 'mirofaktura:open-link', url }, '*');
+                } else {
+                    window.open(url, '_blank', 'noopener');
+                }
                 return;
             }
             
