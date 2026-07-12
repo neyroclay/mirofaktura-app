@@ -1984,7 +1984,7 @@
       platform: PLATFORM.key,
       messenger: PLATFORM.messenger,
       source: 'mirofaktura-app',
-      v: '20260712-card-button-hint',
+      v: '20260712-status-top',
     });
     const platformUserId = getPlatformUserId();
     const platformUser = getPlatformUser();
