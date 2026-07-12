@@ -314,8 +314,9 @@
 
         // ВЕБХУКИ BASEROW И MULTY
         const STORAGE_KEY      = `oracle_10_trends_release_v23_${trendPlatform}_${userId}`;
-        const LOAD_URL = 'https://cb.multy.ai/api/v1/hook/app/7d62795bb2fc085481ae4e8c3b6f9024';
-        const SAVE_URL = 'https://cb.multy.ai/api/v1/hook/app/da0e0039c43a7c3d4287702d293fa656';
+        const LOAD_URL = 'https://cb.multy.ai/api/v1/hook/app/b9c89cbdf0f21aa63c6111487770196a';
+        const SAVE_URL = 'https://cb.multy.ai/api/v1/hook/app/bfbc41275aaab161df78a4d0b0f399af';
+        const WEBHOOK_TIMEOUT_MS = 3500;
 
         const TEXT_BACK_IMG = "https://i.postimg.cc/RFxMB2Bd/1-2-copy.jpg";
         const AUTHOR_1_IMG  = "https://cdn.jsdelivr.net/gh/neyroclay/img-host-trends-2026@main/Elizaveta-Vikulova-new.jpg";
@@ -816,24 +817,81 @@
             let seed = Math.abs(hash); seed = (seed * 9301 + 49297) % 233280; return Math.floor((seed / 233280) * max);
         }
 
+        function parseCollectedCards(value) {
+            if (Array.isArray(value)) {
+                return value.map(Number).filter(Number.isFinite);
+            }
+            if (typeof value !== 'string' || !value.trim()) return [];
+            try {
+                const parsed = JSON.parse(value);
+                return Array.isArray(parsed) ? parsed.map(Number).filter(Number.isFinite) : [];
+            } catch (error) {
+                return [];
+            }
+        }
+
+        function parseBoolean(value, fallback = false) {
+            if (value === true || value === 1 || value === '1' || value === 'true') return true;
+            if (value === false || value === 0 || value === '0' || value === 'false') return false;
+            return fallback;
+        }
+
+        function normalizeState(data = {}) {
+            const merged = { ...appData, ...data };
+            merged.collected = parseCollectedCards(data.collected ?? data.collected_cards ?? merged.collected);
+            merged.bonusCards = Number(data.bonusCards ?? data.bonus_cards ?? merged.bonusCards) || 0;
+            merged.invitedFriends = Number(data.invitedFriends ?? data.invited_friends ?? merged.invitedFriends) || 0;
+            merged.lastDate = data.lastDate ?? data.last_date ?? merged.lastDate ?? null;
+            merged.firstLaunchTime = data.firstLaunchTime ?? data.first_launch_time ?? merged.firstLaunchTime ?? null;
+            merged.onboardingSeen = parseBoolean(
+                data.onboardingSeen ?? data.onboarding_seen,
+                Boolean(merged.onboardingSeen)
+            );
+            merged.timerSeen = parseBoolean(data.timerSeen ?? data.timer_seen, Boolean(merged.timerSeen));
+            return merged;
+        }
+
+        function readLocalState() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (!raw) return null;
+                const parsed = JSON.parse(raw);
+                return parsed && typeof parsed === 'object' ? parsed : null;
+            } catch (error) {
+                try { localStorage.removeItem(STORAGE_KEY); } catch (storageError) {}
+                return null;
+            }
+        }
+
+        async function fetchWithTimeout(url, options, timeoutMs = WEBHOOK_TIMEOUT_MS) {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+            try {
+                return await fetch(url, { ...options, signal: controller.signal });
+            } finally {
+                clearTimeout(timeoutId);
+            }
+        }
+
         async function loadState(callback) {
             if (freshPreview) {
                 appData = { lastDate:null, collected:[], onboardingSeen:false, timerSeen:false, firstLaunchTime:Date.now().toString(), bonusCards: 0, invitedFriends: 0 };
                 finishLoad(callback);
                 return;
             }
+            const localState = readLocalState();
+            if (localState) appData = normalizeState(localState);
+
             if (!hasRemoteIdentity) {
-                const local = localStorage.getItem(STORAGE_KEY);
-                if (local) appData = { ...appData, ...JSON.parse(local) };
                 finishLoad(callback);
                 return;
             }
             try {
-                const response = await fetch(LOAD_URL, {
+                const response = await fetchWithTimeout(LOAD_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        item: 'trend_deck_load',
+                        item: 'trend_deck_load_v2',
                         user_id: String(userId),
                         profile_key: profileKey,
                         platform: trendPlatform,
@@ -841,27 +899,17 @@
                         source: 'mirofaktura-app'
                     })
                 });
-                const data = await response.json();
+                if (!response.ok) throw new Error(`Progress load failed: ${response.status}`);
+                const responseText = await response.text();
+                const data = responseText ? JSON.parse(responseText) : {};
                 if (data.exists === true) {
-                    appData.firstLaunchTime = data.first_launch_time; 
-                    appData.lastDate = data.last_date;
-                    appData.collected = data.collected ? JSON.parse(data.collected) : [];
-                    appData.bonusCards = Number(data.bonus_cards) || 0;
-                    appData.invitedFriends = Number(data.invited_friends) || 0;
-                    if (Object.prototype.hasOwnProperty.call(data, 'onboarding_seen')) {
-                        appData.onboardingSeen = data.onboarding_seen === true
-                            || data.onboarding_seen === 1
-                            || data.onboarding_seen === '1'
-                            || data.onboarding_seen === 'true';
-                    } else {
-                        // Existing records predate the explicit onboarding flag.
-                        appData.onboardingSeen = true;
-                    }
+                    appData = normalizeState(data);
+                    if (!Object.prototype.hasOwnProperty.call(data, 'onboarding_seen')) appData.onboardingSeen = true;
                     appData.timerSeen = true;
-                } else {
-                    const local = localStorage.getItem(STORAGE_KEY); if (local) appData = { ...appData, ...JSON.parse(local) };
                 }
-            } catch (error) { const local = localStorage.getItem(STORAGE_KEY); if (local) appData = { ...appData, ...JSON.parse(local) }; }
+            } catch (error) {
+                console.warn('Trend progress load skipped:', error.message || error);
+            }
             finishLoad(callback);
         }
 
@@ -894,11 +942,11 @@
             if (freshPreview || !hasRemoteIdentity) return;
             try {
                 const cardsString = JSON.stringify(appData.collected);
-                await fetch(SAVE_URL, { 
+                await fetchWithTimeout(SAVE_URL, {
                     method: 'POST', 
                     headers: { 'Content-Type': 'application/json' }, 
                     body: JSON.stringify({ 
-                        item: 'trend_deck_save',
+                        item: 'trend_deck_save_v2',
                         user_id: String(userId),
                         profile_key: profileKey,
                         first_name: String(firstName),
@@ -1168,11 +1216,11 @@
                 isFinishingProcess = true;
 
                 try {
-                    const response = await fetch(LOAD_URL, {
+                    const response = await fetchWithTimeout(LOAD_URL, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
-                            item: 'trend_deck_load',
+                            item: 'trend_deck_load_v2',
                             user_id: String(userId),
                             profile_key: profileKey,
                             platform: trendPlatform,
@@ -1180,7 +1228,9 @@
                             source: 'mirofaktura-app'
                         })
                     });
-                    const data = await response.json();
+                    if (!response.ok) throw new Error(`Progress sync failed: ${response.status}`);
+                    const responseText = await response.text();
+                    const data = responseText ? JSON.parse(responseText) : {};
                     if (data && data.exists === true) {
                         appData.bonusCards = Number(data.bonus_cards) || 0;
                         appData.invitedFriends = Number(data.invited_friends) || 0;
