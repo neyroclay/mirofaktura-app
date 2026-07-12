@@ -278,6 +278,16 @@
         const trendEntryUrl = trendPlatform === 'telegram'
             ? 'https://t.me/mirofactura_bot'
             : 'https://max.ru/id590417093305_biz';
+        const elizavetaProfileUrl = trendPlatform === 'telegram'
+            ? 'https://t.me/gameneurons'
+            : 'https://max.ru/u/f9LHodD0cOJ7KLcSGQ2-nIru39qLMDByEa3oTWgNABebA15thaMVXVpHB-w';
+        const elenaProfileUrl = trendPlatform === 'telegram'
+            ? 'https://t.me/adviceperm'
+            : 'https://max.ru/u/f9LHodD0cOL6WZFmWoaBowA5ZAdNLubiIRJlhbrL5vxjlmvr16DBtsGJcLY';
+        const elenaContactUrl = trendPlatform === 'telegram'
+            ? 'https://t.me/PopovaE'
+            : 'https://max.ru/u/f9LHodD0cOL6WZFmWoaBowA5ZAdNLubiIRJlhbrL5vxjlmvr16DBtsGJcLY';
+        const fullDeckPurchaseUrl = 'https://payform.ru/f0b2Chh/';
         const userObj = maxApp?.initDataUnsafe?.user || maxApp?.user || {};
         const isLocalPreview = window.location.protocol === 'file:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
         const freshPreview = isLocalPreview && trendParams.get('fresh') === '1';
@@ -531,6 +541,11 @@
         // --- Функция-помощник для всех ссылок (ОБЯЗАТЕЛЬНО должна быть глобальной) ---
         window.app_openBotLink = function(e, url) { 
             if (e) { e.preventDefault(); e.stopPropagation(); } 
+
+            if (trendPlatform === 'telegram' && window.parent !== window) {
+                window.parent.postMessage({ type: 'mirofaktura:open-link', url }, '*');
+                return;
+            }
             
             if (maxApp) {
                 if (url.includes('max.ru') || url.startsWith('max://')) {
@@ -591,7 +606,7 @@
                         Нажмите кнопку ниже, чтобы перейти в чат и договориться о времени.
                     </div>
                     
-                    <button type="button" onclick="window.app_openBotLink(event, 'https://max.ru/u/f9LHodD0cOL6WZFmWoaBowA5ZAdNLubiIRJlhbrL5vxjlmvr16DBtsGJcLY')" class="consult-btn" style="display:block;width:100%;box-sizing:border-box;text-align:center;border:none;font-family:inherit;outline:none;cursor:pointer;background:#00D2D3;">Написать Елене</button>
+                    <button type="button" onclick="window.app_openBotLink(event, '${elenaContactUrl}')" class="consult-btn" style="display:block;width:100%;box-sizing:border-box;text-align:center;border:none;font-family:inherit;outline:none;cursor:pointer;background:#00D2D3;">Написать Елене</button>
                 </div>
             </div>
 
@@ -628,7 +643,7 @@
             <header id="top-header-nav">
                 <div style="display:flex; align-items:center;">
                     <h1>ТРЕНДЫ 2026 |</h1>
-                    <div style="margin-left:8px; cursor:pointer;" onclick="window.app_openBotLink(event, 'https://max.ru/id590417093305_biz')">
+                    <div style="margin-left:8px; cursor:pointer;" onclick="window.app_openBotLink(event, '${trendEntryUrl}')">
                         <div style="background:#00D2D3; color:#fff; padding:6px 16px; border-radius:30px; font-weight:800; font-size:12px; text-transform:uppercase; box-shadow:0 3px 10px rgba(0,210,211,0.4);">Мирофактура</div>
                     </div>
                 </div>
@@ -651,7 +666,7 @@
                     <div style="color:#1F2E2E;font-size:15px;font-weight:800;margin-bottom:10px;position:relative;z-index:2;">Готовы увидеть всю картину?</div>
                     <div style="color:#8A9999;font-size:13px;line-height:1.5;margin-bottom:25px;position:relative;z-index:2;">Полная колода из 28 трендов <span style="color:#00D2D3;font-weight:700;">(будет еще больше, сейчас пополняем)</span> — ваш личный стратегический навигатор для работы с клиентами, генерации идей и проведения стратсессий.</div>
                     
-                    <button type="button" onclick="window.app_openBotLink(event, 'https://payform.ru/f0b2Chh/')" class="consult-btn" style="display:block;width:100%;box-sizing:border-box;text-align:center;border:none;font-family:inherit;outline:none;cursor:pointer;position:relative;z-index:2;">Забрать полную колоду</button>
+                    <button type="button" onclick="window.app_openBotLink(event, '${fullDeckPurchaseUrl}')" class="consult-btn" style="display:block;width:100%;box-sizing:border-box;text-align:center;border:none;font-family:inherit;outline:none;cursor:pointer;position:relative;z-index:2;">Забрать полную колоду</button>
                 </div>
             </div>
 
@@ -663,18 +678,18 @@
                 <div class="authors-container">
                     
                     <div style="text-align:center;color:#1F2E2E;font-weight:800;margin-bottom:20px;letter-spacing:2px;font-size:14px;">АВТОРЫ ПРОЕКТА</div>
-                    <a href="#" class="author-card" onclick="window.app_openBotLink(event, 'https://max.ru/u/f9LHodD0cOJ7KLcSGQ2-nIru39qLMDByEa3oTWgNABebA15thaMVXVpHB-w')">
+                    <a href="${elizavetaProfileUrl}" class="author-card" onclick="window.app_openBotLink(event, '${elizavetaProfileUrl}')">
                         <img src="${AUTHOR_1_IMG}" class="author-img" alt="Елизавета Викулова" loading="lazy" decoding="async">
                         <div class="author-info">
                             <div class="author-name">Елизавета Викулова</div>
-                            <div class="author-desc">Эксперт по цифровизации маркетинга, фанат геймификации.</div>
+                            <div class="author-desc">Стратег и архитектор интерактивного опыта. Проектирует путь человека и собирает его в digital-продукты.</div>
                         </div>
                     </a>
-                    <a href="#" class="author-card" onclick="window.app_openBotLink(event, 'https://max.ru/u/f9LHodD0cOL6WZFmWoaBowA5ZAdNLubiIRJlhbrL5vxjlmvr16DBtsGJcLY')">
+                    <a href="${elenaProfileUrl}" class="author-card" onclick="window.app_openBotLink(event, '${elenaProfileUrl}')">
                         <img src="${AUTHOR_2_IMG}" class="author-img" alt="Елена Попова" loading="lazy" decoding="async">
                         <div class="author-info">
                             <div class="author-name">Елена Попова</div>
-                            <div class="author-desc">Эксперт по созданию впечатлений в маркетинге и вау-эффектам.</div>
+                            <div class="author-desc">Эксперт по системному маркетингу, оптимизации продуктов и воронкам впечатлений.</div>
                         </div>
                     </a>
 
@@ -688,7 +703,7 @@
                             <div class="consult-gift" style="color:#FFC845;font-weight:900;font-size:14px;margin-bottom:10px;letter-spacing:0.5px;text-transform:uppercase;">🎁 ПОДАРОК: 30-мин Консультация</div>
                             <div style="color:#8A9999;font-size:13px;margin-bottom:18px;line-height:1.5;">Разберете, как применить тренды 2026 конкретно в вашем проекте на личной 30-минутной встрече с одним из авторов колоды Еленой Поповой.</div>
                             
-                            <button type="button" onclick="document.getElementById('consultation-modal').classList.add('visible');" class="consult-btn" style="display:block;width:100%;box-sizing:border-box;text-align:center;border:none;font-family:inherit;outline:none;cursor:pointer;">Обсудить мой проект</button>
+                            <button type="button" onclick="window.app_openBotLink(event, '${elenaContactUrl}')" class="consult-btn" style="display:block;width:100%;box-sizing:border-box;text-align:center;border:none;font-family:inherit;outline:none;cursor:pointer;">Написать Елене</button>
                         </div>
                         
                         <hr style="border:none;border-top:1px dashed #E0E0E0;margin:20px 0;">
@@ -697,7 +712,7 @@
                             <div style="color:#1F2E2E;font-weight:800;font-size:16px;margin-bottom:10px;">Полная колода 2026</div>
                             <p style="color:#8A9999;font-size:13px;line-height:1.5;margin-bottom:18px;">Профессиональный бизнес-навигатор на интерактивной доске Холст (аналог Миро). Колода существует в цифровом формате, так как мы непрерывно анализируем рынок и пополняем её новыми трендами. Идеально для стратсессий и поиска прорывных решений.</p>
                             
-                            <button type="button" onclick="window.app_openBotLink(event, 'https://payform.ru/f0b2Chh/')" class="primary-btn" style="display:block;background:#1F2E2E;color:#FFF;padding:14px;border-radius:30px;font-weight:800;font-size:13px;text-align:center;width:100%;box-sizing:border-box;border:none;font-family:inherit;outline:none;cursor:pointer;">Забрать полную колоду</button>
+                            <button type="button" onclick="window.app_openBotLink(event, '${fullDeckPurchaseUrl}')" class="primary-btn" style="display:block;background:#1F2E2E;color:#FFF;padding:14px;border-radius:30px;font-weight:800;font-size:13px;text-align:center;width:100%;box-sizing:border-box;border:none;font-family:inherit;outline:none;cursor:pointer;">Забрать полную колоду</button>
                         </div>
                     </div>
                 </div>

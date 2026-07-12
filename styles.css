@@ -1309,6 +1309,14 @@ h3 {
   object-position: center 38%;
 }
 
+.authors-intro {
+  margin: -2px 0 4px;
+  color: rgba(15, 47, 44, 0.72);
+  font-size: 16.5px;
+  line-height: 1.5;
+  font-weight: 600;
+}
+
 .author-list {
   display: grid;
   gap: 10px;
@@ -1357,6 +1365,30 @@ h3 {
   font-size: 15.5px;
   line-height: 1.38;
   font-weight: 600;
+}
+
+.author-channel-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  margin-top: 13px;
+  padding: 10px 16px;
+  border: 1px solid rgba(0, 143, 146, 0.22);
+  border-radius: 18px;
+  color: #007f82;
+  background: rgba(247, 255, 249, 0.72);
+  font: inherit;
+  font-size: 14px;
+  line-height: 1.2;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.author-channel-link:hover,
+.author-channel-link:focus-visible {
+  border-color: rgba(0, 143, 146, 0.4);
+  background: rgba(230, 255, 249, 0.96);
 }
 
 .contacts-note {

@@ -2,6 +2,8 @@
   const app = document.getElementById('app');
   const MAX_CHANNEL_URL = 'https://max.ru/id590417093305_biz';
   const TELEGRAM_BOT_URL = 'https://t.me/mirofactura_bot';
+  const ELIZAVETA_TELEGRAM_CHANNEL_URL = 'https://t.me/gameneurons';
+  const ELENA_TELEGRAM_CHANNEL_URL = 'https://t.me/adviceperm';
   const CONTACT_EMAIL = 'info@mirofactura.ru';
   const PLATFORM_ALIASES = {
     max: 'max',
@@ -34,8 +36,8 @@
       messenger: 'Telegram',
       entryUrl: TELEGRAM_BOT_URL,
       channelUrl: TELEGRAM_BOT_URL,
-      channelLabel: 'Telegram',
-      channelText: 'Бот Мирофактуры и каналы Елизаветы Викуловой и Елены Поповой.',
+      channelLabel: 'Карманная Вселенная',
+      channelText: 'Бот Мирофактуры с приложением, новыми материалами и напоминаниями.',
     },
   }[APP_PLATFORM];
   const SUBSCRIPTION_WEBHOOK_URL = window.MIROFAKTURA_SUBSCRIPTION_WEBHOOK_URL || '';
@@ -1879,6 +1881,16 @@
   }
 
   function renderContacts() {
+    const telegramAuthorsIntro = APP_PLATFORM === 'telegram'
+      ? '<p class="authors-intro">В Мирофактуре соединились два авторских подхода: Лиза проектирует интерактивный опыт и digital-продукты, Елена выстраивает системный маркетинг и воронки впечатлений.</p>'
+      : '';
+    const elizavetaChannelButton = APP_PLATFORM === 'telegram'
+      ? `<button class="author-channel-link" type="button" data-action="openExternalLink" data-url="${ELIZAVETA_TELEGRAM_CHANNEL_URL}">Канал «Игровые нейроны»</button>`
+      : '';
+    const elenaChannelButton = APP_PLATFORM === 'telegram'
+      ? `<button class="author-channel-link" type="button" data-action="openExternalLink" data-url="${ELENA_TELEGRAM_CHANNEL_URL}">Канал «Воронки впечатлений»</button>`
+      : '';
+
     return screen(`
       <section class="contacts-hero">
         <p class="brand-label">Мирофактура</p>
@@ -1889,6 +1901,7 @@
 
       <section class="authors-panel" aria-label="Авторы">
         <h2 class="contacts-section-title">Авторы Мирофактуры</h2>
+        ${telegramAuthorsIntro}
         <div class="authors-photo">
           <img src="${assets.authors}" alt="Авторы Мирофактуры" loading="lazy" decoding="async">
         </div>
@@ -1897,14 +1910,16 @@
             <span class="author-avatar">Л</span>
             <span>
               <strong>Елизавета Викулова</strong>
-              <small>проектирует и разрабатывает цифровые продукты — от идеи и сценария до прототипа и запуска</small>
+              <small>стратег и архитектор интерактивного опыта. Собирает смысл и путь человека, а затем превращает их в квизы, мини-приложения, видео, 3D/AR и другие digital-форматы</small>
+              ${elizavetaChannelButton}
             </span>
           </div>
           <div class="author-card">
             <span class="author-avatar">Е</span>
             <span>
               <strong>Елена Попова</strong>
-              <small>отвечает за маркетинг, продуктовую систему и задачи бизнеса, которые должен решать проект</small>
+              <small>выстраивает системный маркетинг, помогает оптимизировать продукты и привлечение клиентов, проектирует воронки впечатлений, повторные продажи и рекомендации</small>
+              ${elenaChannelButton}
             </span>
           </div>
         </div>
@@ -2062,6 +2077,39 @@
     window.setTimeout(() => telegramWebApp.close(), 120);
   }
 
+  function openExternalUrl(rawUrl) {
+    const allowedHosts = new Set(['t.me', 'payform.ru', 'max.ru']);
+    let url;
+    try {
+      url = new URL(String(rawUrl || ''));
+    } catch (_) {
+      showToast('Не удалось открыть ссылку');
+      return;
+    }
+
+    if (url.protocol !== 'https:' || !allowedHosts.has(url.hostname.toLowerCase())) {
+      showToast('Не удалось открыть ссылку');
+      return;
+    }
+
+    if (APP_PLATFORM === 'telegram' && telegramWebApp) {
+      try {
+        if (url.hostname === 't.me' && typeof telegramWebApp.openTelegramLink === 'function') {
+          telegramWebApp.openTelegramLink(url.href);
+          return;
+        }
+        if (typeof telegramWebApp.openLink === 'function') {
+          telegramWebApp.openLink(url.href);
+          return;
+        }
+      } catch (_) {
+        // В обычном браузере и старых версиях Telegram используем безопасный запасной вариант.
+      }
+    }
+
+    window.open(url.href, '_blank', 'noopener');
+  }
+
   app.addEventListener('click', async (event) => {
     const target = event.target.closest('button, [role="button"]');
     if (!target) return;
@@ -2113,7 +2161,12 @@
     }
 
     if (action === 'openMax') {
-      window.open(PLATFORM.channelUrl, '_blank', 'noopener');
+      openExternalUrl(PLATFORM.channelUrl);
+      return;
+    }
+
+    if (action === 'openExternalLink') {
+      openExternalUrl(target.getAttribute('data-url'));
       return;
     }
 
@@ -2327,6 +2380,10 @@
           url: shareUrl,
         }).catch(() => {});
       }
+      return;
+    }
+    if (data.type === 'mirofaktura:open-link') {
+      openExternalUrl(data.url);
       return;
     }
     if (data.type !== 'mirofaktura:navigate') return;
