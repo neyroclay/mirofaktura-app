@@ -405,7 +405,7 @@
             #${CONTAINER_ID}, #${CONTAINER_ID} * { user-select: none !important; -webkit-user-select: none !important; -ms-user-select: none !important; -webkit-touch-callout: none !important; }
             #${CONTAINER_ID} { position: relative; width: 100%; height: 100%; overflow: hidden; background-color: #F4F7F8; }
             #${CONTAINER_ID}::before, #${CONTAINER_ID}::after { content: ""; position: absolute; border-radius: 50%; filter: blur(60px); z-index: 0; animation: floatBokeh 10s infinite alternate ease-in-out; pointer-events: none; }
-            #${CONTAINER_ID}::before { width:300px; height:300px; background:#00D2D3; top:-50px; left:-50px; opacity:0.25; }
+            #${CONTAINER_ID}::before { width:300px; height:300px; background:#CFEFE4; top:-50px; left:-50px; opacity:0.18; }
             #${CONTAINER_ID}::after  { width:400px; height:400px; background:#FFC845; bottom:-100px; right:-100px; opacity:0.2; animation-duration:15s; }
             @keyframes floatBokeh { 0%{transform:translate(0,0);} 100%{transform:translate(20px,30px);} }
             #${CONTAINER_ID} canvas { display:block; width:100%; height:100%; outline:none; cursor:default; touch-action: none; }
@@ -423,6 +423,29 @@
             #${CONTAINER_ID}.trend-native-embedded .waiting-card-status { position:static; transform:none; margin:0 auto clamp(34px, 5.5vh, 50px); }
             #${CONTAINER_ID}.trend-native-embedded .ask-ai-main-btn { background:linear-gradient(105deg,#F9EC9F 0%,#DEF8F1 68%,#CFF5F1 100%); color:#073936; box-shadow:0 8px 18px rgba(14,77,72,0.12); border:1px solid rgba(255,255,255,0.92); }
             #${CONTAINER_ID}.trend-native-embedded .collection-hint span { color:#087f7a !important; }
+            #${CONTAINER_ID} .onboard-btn,
+            #${CONTAINER_ID} .ask-ai-main-btn,
+            #${CONTAINER_ID} .primary-btn,
+            #${CONTAINER_ID} .consult-btn,
+            #${CONTAINER_ID} .lib-read-btn {
+                background:linear-gradient(105deg,#F9EC9F 0%,#DEF8F1 68%,#CFF5F1 100%) !important;
+                color:#073936 !important;
+                border:1px solid rgba(255,255,255,0.92) !important;
+                box-shadow:0 8px 18px rgba(14,77,72,0.12) !important;
+            }
+            #${CONTAINER_ID} .progress-fill,
+            #${CONTAINER_ID} .nav-item.active::after { background:#8AB7AA !important; box-shadow:0 0 8px rgba(138,183,170,0.45) !important; }
+            #${CONTAINER_ID} .nav-item.active,
+            #${CONTAINER_ID} .author-name,
+            #${CONTAINER_ID} a[id^="btn-doc-"] { color:#087f7a !important; }
+            #${CONTAINER_ID} .author-img { border-color:#8AB7AA !important; }
+            #${CONTAINER_ID} .author-card:hover { box-shadow:0 8px 25px rgba(14,77,72,0.12) !important; border-color:rgba(138,183,170,0.5) !important; }
+            #${CONTAINER_ID} .read-scroll-area span[style*="#00D2D3"] { color:#087f7a !important; }
+            #${CONTAINER_ID} .read-scroll-area span[style*="rgba(0,210,211"] { background:rgba(249,236,159,0.32) !important; border-left-color:#8AB7AA !important; }
+            #${CONTAINER_ID} [style*="#00D2D3"] { color:#087f7a !important; border-color:#8AB7AA !important; border-top-color:#8AB7AA !important; border-left-color:#8AB7AA !important; }
+            #${CONTAINER_ID} [style*="background:#00D2D3"] { background:linear-gradient(105deg,#F9EC9F 0%,#DEF8F1 68%,#CFF5F1 100%) !important; color:#073936 !important; box-shadow:0 8px 18px rgba(14,77,72,0.12) !important; }
+            #${CONTAINER_ID} [style*="rgba(0,210,211"],
+            #${CONTAINER_ID} [style*="rgba(0, 210, 211"] { background:rgba(249,236,159,0.22) !important; border-color:#8AB7AA !important; border-top-color:#8AB7AA !important; border-left-color:#8AB7AA !important; box-shadow:0 8px 20px rgba(14,77,72,0.08) !important; }
             
             #${CONTAINER_ID} header { 
                 flex:0 0 auto; 
@@ -471,7 +494,7 @@
             #${CONTAINER_ID} .ask-ai-main-btn:hover, #${CONTAINER_ID} .onboard-btn:not(:disabled):hover, #${CONTAINER_ID} .primary-btn:hover, #${CONTAINER_ID} .consult-btn:hover, #${CONTAINER_ID} .lib-read-btn:hover { transform:scale(1.02); }
             #${CONTAINER_ID} .onboard-btn:not(:disabled), #${CONTAINER_ID} .primary-btn, #${CONTAINER_ID} .consult-btn { box-shadow:0 4px 15px rgba(0,210,211,0.3); transition:all 0.3s; }
             #${CONTAINER_ID} .read-scroll-area { color:#1F2E2E; font-size:16px; line-height:1.6; margin-top:10px; margin-bottom:5px; max-height:40vh; overflow-y:auto; padding-right:10px; text-align:left; white-space:pre-wrap; touch-action:pan-y; overscroll-behavior:contain; -webkit-overflow-scrolling:touch; }
-            #${CONTAINER_ID} .read-scroll-area::-webkit-scrollbar { width:4px; } #${CONTAINER_ID} .read-scroll-area::-webkit-scrollbar-track { background:rgba(0,0,0,0.05); } #${CONTAINER_ID} .read-scroll-area::-webkit-scrollbar-thumb { background:#00D2D3; border-radius:2px; }
+            #${CONTAINER_ID} .read-scroll-area::-webkit-scrollbar { width:4px; } #${CONTAINER_ID} .read-scroll-area::-webkit-scrollbar-track { background:rgba(0,0,0,0.05); } #${CONTAINER_ID} .read-scroll-area::-webkit-scrollbar-thumb { background:#8AB7AA; border-radius:2px; }
             @keyframes fadeInUpCard { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
             @keyframes fadeInView { from { opacity:0; transform:translateY(15px); } to { opacity:1; transform:translateY(0); } }
             #${CONTAINER_ID} .lib-grid { display:flex; flex-wrap:wrap; justify-content:center; gap:30px; width:100%; max-width:1000px; margin:0 auto; }
@@ -524,7 +547,7 @@
             .mrf-preloader-spinner { 
                 width: 36px; height: 36px; 
                 border: 3px solid rgba(0, 210, 211, 0.15); 
-                border-top-color: #00D2D3; 
+                border-top-color: #8AB7AA;
                 border-radius: 50%; 
                 animation: spin 1s cubic-bezier(0.4, 0, 0.2, 1) infinite; 
             }
@@ -1217,13 +1240,13 @@
             const cardGeo = new THREE.PlaneGeometry(3.5, 5.0); const txLoader = new THREE.TextureLoader(); txLoader.crossOrigin = 'Anonymous';
 
             const glowGeo = new THREE.PlaneGeometry(6, 7.5); const gc = document.createElement('canvas'); gc.width = gc.height = 128; const gx = gc.getContext('2d');
-            const gr = gx.createRadialGradient(64,64,0,64,64,64); gr.addColorStop(0, 'rgba(0,210,211,0.8)'); gr.addColorStop(0.5, 'rgba(0,210,211,0.2)'); gr.addColorStop(1, 'rgba(0,0,0,0)');
+            const gr = gx.createRadialGradient(64,64,0,64,64,64); gr.addColorStop(0, 'rgba(138,183,170,0.55)'); gr.addColorStop(0.5, 'rgba(138,183,170,0.16)'); gr.addColorStop(1, 'rgba(0,0,0,0)');
             gx.fillStyle = gr; gx.fillRect(0,0,128,128); const glowTex = new THREE.CanvasTexture(gc);
             const glowMat = new THREE.MeshBasicMaterial({ map:glowTex, transparent:true, opacity:0, depthWrite:false, blending:THREE.AdditiveBlending });
             
             const glowMesh = new THREE.Mesh(glowGeo, glowMat); glowMesh.position.z = -0.05; cardGroup.add(glowMesh);
 
-            const frontMat = new THREE.MeshBasicMaterial({ color:0x00D2D3, side:THREE.FrontSide, transparent:true, opacity:0.8 });
+            const frontMat = new THREE.MeshBasicMaterial({ color:0x8AB7AA, side:THREE.FrontSide, transparent:true, opacity:0.8 });
             const frontMesh = new THREE.Mesh(cardGeo, frontMat); frontMesh.position.z = 0.01; cardGroup.add(frontMesh);
             txLoader.load(
                currentCardData.imgFront, 
@@ -1332,7 +1355,7 @@
                 }
 
                 if (isScratching) { scratchSound.pause(); isScratching=false; } clearTimeout(scratchTimeout); winSound.play().catch(()=>{});
-                if (window.confetti) confetti({ particleCount:100, spread:70, origin:{y:0.6}, colors:['#00D2D3','#FFC845','#FFFFFF'] });
+                if (window.confetti) confetti({ particleCount:100, spread:70, origin:{y:0.6}, colors:['#8AB7AA','#FFC845','#FFFFFF'] });
                 
                 updateHint('КАРТА ОТКРЫТА');
                 document.getElementById('active-ui').style.display='none'; 
