@@ -414,11 +414,15 @@
             #${CONTAINER_ID}.trend-native-embedded #top-header-nav,
             #${CONTAINER_ID}.trend-native-embedded > .ui-layer > .nav { display:none !important; }
             #${CONTAINER_ID}.trend-native-embedded { background:transparent !important; }
+            #${CONTAINER_ID}.trend-native-embedded::before { background:#CFEFE4 !important; opacity:0.12 !important; }
+            #${CONTAINER_ID}.trend-native-embedded::after { opacity:0.12 !important; }
             #${CONTAINER_ID}.trend-native-embedded #game-ui { padding-bottom:28px; }
             #${CONTAINER_ID}.trend-native-embedded .fullscreen-view { padding:24px 20px 32px; }
             #${CONTAINER_ID}.trend-native-embedded #gameover-view { padding-top:32px !important; padding-bottom:32px !important; }
-            #${CONTAINER_ID}.trend-native-embedded #game-ui.waiting-for-next-card #done-ui::before { height:clamp(26px, 4vh, 42px); }
-            #${CONTAINER_ID}.trend-native-embedded .waiting-card-status { position:absolute; top:clamp(10px, 3vh, 28px); }
+            #${CONTAINER_ID}.trend-native-embedded #game-ui.waiting-for-next-card #done-ui::before { height:clamp(72px, 11vh, 116px); }
+            #${CONTAINER_ID}.trend-native-embedded .waiting-card-status { position:static; transform:none; margin:0 auto clamp(34px, 5.5vh, 50px); }
+            #${CONTAINER_ID}.trend-native-embedded .ask-ai-main-btn { background:linear-gradient(105deg,#F9EC9F 0%,#DEF8F1 68%,#CFF5F1 100%); color:#073936; box-shadow:0 8px 18px rgba(14,77,72,0.12); border:1px solid rgba(255,255,255,0.92); }
+            #${CONTAINER_ID}.trend-native-embedded .collection-hint span { color:#087f7a !important; }
             
             #${CONTAINER_ID} header { 
                 flex:0 0 auto; 
@@ -472,7 +476,7 @@
             @keyframes fadeInView { from { opacity:0; transform:translateY(15px); } to { opacity:1; transform:translateY(0); } }
             #${CONTAINER_ID} .lib-grid { display:flex; flex-wrap:wrap; justify-content:center; gap:30px; width:100%; max-width:1000px; margin:0 auto; }
             #${CONTAINER_ID} .lib-card-container { perspective:1000px; aspect-ratio:2/3; cursor:pointer; width:280px; flex:0 0 280px; animation:fadeInUpCard 0.4s cubic-bezier(0.16,1,0.3,1) backwards; }
-            #${CONTAINER_ID} .lib-read-btn { background:linear-gradient(110deg,#174f49 0%,#087f7a 58%,#13b8b1 100%); color:#fff; padding:8px 32px; border-radius:30px; font-size:12px; font-weight:bold; text-decoration:none; border:1px solid rgba(255,255,255,0.5); width:auto; align-self:flex-start; transition:transform 0.25s ease,filter 0.25s ease; cursor:pointer; box-sizing:border-box; display:block; text-align:center; box-shadow:0 8px 18px rgba(14,77,72,0.2); }
+            #${CONTAINER_ID} .lib-read-btn { background:linear-gradient(105deg,#F9EC9F 0%,#DEF8F1 68%,#CFF5F1 100%); color:#073936; padding:8px 32px; border-radius:30px; font-size:12px; font-weight:bold; text-decoration:none; border:1px solid rgba(255,255,255,0.92); width:auto; align-self:flex-start; transition:transform 0.25s ease,filter 0.25s ease; cursor:pointer; box-sizing:border-box; display:block; text-align:center; box-shadow:0 8px 18px rgba(14,77,72,0.12); }
             #${CONTAINER_ID} .collection-hint { color:#8A9999; font-size:13px; font-weight:600; margin-top:5px; margin-bottom:15px; text-align:center; pointer-events:auto; transition:opacity 0.3s; }
             #${CONTAINER_ID} .nav { position:absolute; bottom:max(20px, env(safe-area-inset-bottom)); left:50%; transform:translateX(-50%); width:calc(100% - 40px); max-width:400px; background:rgba(255,255,255,0.75); backdrop-filter:blur(25px); -webkit-backdrop-filter:blur(25px); display:flex; border:1px solid rgba(255,255,255,0.6); pointer-events:auto; z-index:50; padding:10px 15px; box-sizing:border-box; align-items:center; border-radius:40px; box-shadow:0 15px 35px rgba(0,0,0,0.1), inset 0 0 0 1px rgba(255,255,255,0.4); }
             #${CONTAINER_ID}.platform-ipad .nav { bottom:max(55px, env(safe-area-inset-bottom)); } #${CONTAINER_ID}.platform-ipad #game-ui { padding-bottom:115px; } #${CONTAINER_ID}.platform-ipad #gameover-view { padding-top:80px !important; padding-bottom:140px !important; }
@@ -826,7 +830,7 @@
                         <button id="btn-invite-friend" type="button" class="ask-ai-main-btn" style="width:100%; background:#1F2E2E; color:#FFF; box-shadow:0 4px 15px rgba(0,0,0,0.2); padding:14px; font-size:14px;"><span class="material-icons-round" style="font-size:18px;">person_add</span> Пригласить друга</button>
                     </div>
 
-                    <div class="collection-hint">Карта сохранена в <span id="link-to-collection" style="color:#00D2D3;cursor:pointer;">КОЛЛЕКЦИИ</span></div>
+                    <div class="collection-hint">Карта сохранена в <span id="link-to-collection" style="color:#087f7a;cursor:pointer;">КОЛЛЕКЦИИ</span></div>
                 </div>
             </div>
             
@@ -1096,7 +1100,7 @@
                     if (appData.invitedFriends < 3) {
                         inviteTitle.textContent = "Расширьте картину будущего";
                         const left = 3 - appData.invitedFriends;
-                        inviteDesc.innerHTML = `Поделитесь приложением с коллегой, и за каждое приглашение мы откроем для вас дополнительный артефакт.<br><br><div style="background:rgba(0,210,211,0.1); border: 1px dashed #00D2D3; border-radius:12px; padding:12px; display:inline-block;"><span style="color:#00D2D3; font-weight:900; font-size:14px; text-transform:uppercase;">Бонусных карт: ${left}</span></div>`;
+                        inviteDesc.innerHTML = `Поделитесь приложением с коллегой, и за каждое приглашение мы откроем для вас дополнительный артефакт.<br><br><div style="background:rgba(249,236,159,0.32); border: 1px dashed #8AB7AA; border-radius:12px; padding:12px; display:inline-block;"><span style="color:#087f7a; font-weight:900; font-size:14px; text-transform:uppercase;">Бонусных карт: ${left}</span></div>`;
                     } else {
                         inviteTitle.textContent = "Поделитесь с коллегами";
                         inviteDesc.innerHTML = "Отправьте друзьям ссылку на это приложение, чтобы они тоже узнали тренды 2026 года.";
@@ -1242,9 +1246,9 @@
                     bCtx.clearRect(0, 0, 512, 768); if (cachedBackImg) bCtx.drawImage(cachedBackImg, 0, 0, 512, 768);
                     const btnW=280, btnH=60, btnX=40; bCtx.save(); const sc = isBtnHovered ? 1.02 : 1; bCtx.translate(btnX+btnW/2, 675+btnH/2); bCtx.scale(sc, sc); bCtx.translate(-(btnX+btnW/2), -(675+btnH/2));
                     const btnGradient = bCtx.createLinearGradient(btnX, 675, btnX + btnW, 675);
-                    btnGradient.addColorStop(0, '#174f49'); btnGradient.addColorStop(0.58, '#087f7a'); btnGradient.addColorStop(1, '#13b8b1');
-                    bCtx.shadowColor='rgba(7,57,54,0.18)'; bCtx.shadowBlur=14; bCtx.shadowOffsetY=4; bCtx.beginPath(); if (bCtx.roundRect) bCtx.roundRect(btnX, 675, btnW, btnH, 30); else bCtx.rect(btnX, 675, btnW, btnH);
-                    bCtx.fillStyle=btnGradient; bCtx.fill(); bCtx.shadowColor='transparent'; bCtx.strokeStyle='rgba(255,255,255,0.7)'; bCtx.lineWidth=2; bCtx.stroke(); bCtx.font='800 20px system-ui, sans-serif'; bCtx.fillStyle='#ffffff'; bCtx.textAlign='center'; bCtx.textBaseline='middle'; bCtx.fillText('Открыть текст', btnX+btnW/2, 675+btnH/2);
+                    btnGradient.addColorStop(0, '#F9EC9F'); btnGradient.addColorStop(0.68, '#DEF8F1'); btnGradient.addColorStop(1, '#CFF5F1');
+                    bCtx.shadowColor='rgba(7,57,54,0.12)'; bCtx.shadowBlur=14; bCtx.shadowOffsetY=4; bCtx.beginPath(); if (bCtx.roundRect) bCtx.roundRect(btnX, 675, btnW, btnH, 30); else bCtx.rect(btnX, 675, btnW, btnH);
+                    bCtx.fillStyle=btnGradient; bCtx.fill(); bCtx.shadowColor='transparent'; bCtx.strokeStyle='rgba(255,255,255,0.92)'; bCtx.lineWidth=2; bCtx.stroke(); bCtx.font='800 20px system-ui, sans-serif'; bCtx.fillStyle='#073936'; bCtx.textAlign='center'; bCtx.textBaseline='middle'; bCtx.fillText('Открыть текст', btnX+btnW/2, 675+btnH/2);
                     bCtx.restore(); backTex.needsUpdate = true;
                 };
                 if (cachedBackImg && cachedBackImg.dataset.id === String(card.id)) { draw(); return; }
