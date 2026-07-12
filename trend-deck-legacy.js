@@ -448,6 +448,12 @@
             #${CONTAINER_ID} [style*="rgba(0, 210, 211"] { background:rgba(249,236,159,0.22) !important; border-color:#8AB7AA !important; border-top-color:#8AB7AA !important; border-left-color:#8AB7AA !important; box-shadow:0 8px 20px rgba(14,77,72,0.08) !important; }
             #${CONTAINER_ID} #invite-banner { border-color:rgba(138,183,170,0.16) !important; box-shadow:0 12px 28px rgba(14,77,72,0.07) !important; overflow:hidden; }
             #${CONTAINER_ID} #invite-banner .ask-ai-main-btn { width:calc(100% - 12px) !important; margin-left:auto !important; margin-right:auto !important; }
+            #${CONTAINER_ID} .full-deck-btn {
+                background:linear-gradient(105deg,#FFF1A8 0%,#FFD98A 58%,#F4BF63 100%) !important;
+                color:#17302C !important;
+                border:1px solid rgba(255,255,255,0.88) !important;
+                box-shadow:0 10px 22px rgba(132,92,20,0.14) !important;
+            }
             
             #${CONTAINER_ID} header { 
                 flex:0 0 auto; 
@@ -752,7 +758,7 @@
                     <div style="color:#1F2E2E;font-size:15px;font-weight:800;margin-bottom:10px;position:relative;z-index:2;">Готовы увидеть всю картину?</div>
                     <div style="color:#8A9999;font-size:13px;line-height:1.5;margin-bottom:25px;position:relative;z-index:2;">Полная колода из 28 трендов <span style="color:#00D2D3;font-weight:700;">(будет еще больше, сейчас пополняем)</span> — ваш личный стратегический навигатор для работы с клиентами, генерации идей и проведения стратсессий.</div>
                     
-                    <button type="button" onclick="window.app_openBotLink(event, '${fullDeckPurchaseUrl}')" class="consult-btn" style="display:block;width:100%;box-sizing:border-box;text-align:center;border:none;font-family:inherit;outline:none;cursor:pointer;position:relative;z-index:2;">Забрать полную колоду</button>
+                    <button type="button" onclick="window.app_openBotLink(event, '${fullDeckPurchaseUrl}')" class="consult-btn full-deck-btn" style="display:block;width:100%;box-sizing:border-box;text-align:center;border:none;font-family:inherit;outline:none;cursor:pointer;position:relative;z-index:2;">Забрать полную колоду</button>
                 </div>
             </div>
 
@@ -798,7 +804,7 @@
                             <div style="color:#1F2E2E;font-weight:800;font-size:16px;margin-bottom:10px;">Полная колода 2026</div>
                             <p style="color:#8A9999;font-size:13px;line-height:1.5;margin-bottom:18px;">Профессиональный бизнес-навигатор на интерактивной доске Холст (аналог Миро). Колода существует в цифровом формате, так как мы непрерывно анализируем рынок и пополняем её новыми трендами. Идеально для стратсессий и поиска прорывных решений.</p>
                             
-                            <button type="button" onclick="window.app_openBotLink(event, '${fullDeckPurchaseUrl}')" class="primary-btn" style="display:block;background:#1F2E2E;color:#FFF;padding:14px;border-radius:30px;font-weight:800;font-size:13px;text-align:center;width:100%;box-sizing:border-box;border:none;font-family:inherit;outline:none;cursor:pointer;">Забрать полную колоду</button>
+                            <button type="button" onclick="window.app_openBotLink(event, '${fullDeckPurchaseUrl}')" class="primary-btn full-deck-btn" style="display:block;background:#1F2E2E;color:#FFF;padding:14px;border-radius:30px;font-weight:800;font-size:13px;text-align:center;width:100%;box-sizing:border-box;border:none;font-family:inherit;outline:none;cursor:pointer;">Забрать полную колоду</button>
                         </div>
                     </div>
                 </div>
