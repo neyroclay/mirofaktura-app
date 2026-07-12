@@ -314,8 +314,8 @@
 
         // ВЕБХУКИ BASEROW И MULTY
         const STORAGE_KEY      = `oracle_10_trends_release_v23_${trendPlatform}_${userId}`;
-        const LOAD_URL = 'https://cb.multy.ai/api/v1/hook/app/b9c89cbdf0f21aa63c6111487770196a';
-        const SAVE_URL = 'https://cb.multy.ai/api/v1/hook/app/bfbc41275aaab161df78a4d0b0f399af';
+        const LOAD_URL = 'https://cb.multy.ai/api/v1/hook/app/7d62795bb2fc085481ae4e8c3b6f9024';
+        const SAVE_URL = 'https://cb.multy.ai/api/v1/hook/app/da0e0039c43a7c3d4287702d293fa656';
 
         const TEXT_BACK_IMG = "https://i.postimg.cc/RFxMB2Bd/1-2-copy.jpg";
         const AUTHOR_1_IMG  = "https://cdn.jsdelivr.net/gh/neyroclay/img-host-trends-2026@main/Elizaveta-Vikulova-new.jpg";
