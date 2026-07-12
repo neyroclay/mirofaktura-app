@@ -2423,8 +2423,9 @@ h3 {
 }
 
 .trends-native-tabs {
-  position: relative;
-  z-index: 4;
+  position: sticky;
+  top: 8px;
+  z-index: 22;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 6px;
