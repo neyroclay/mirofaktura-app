@@ -1401,7 +1401,11 @@
             }
 
             document.getElementById('btn-tab-home').addEventListener('click', () => {
-                window.parent?.postMessage({ type: 'mirofaktura:navigate', page: 'home' }, '*');
+                if (window.parent !== window) {
+                    window.parent.postMessage({ type: 'mirofaktura:navigate', page: 'home' }, '*');
+                } else {
+                    window.location.href = `./?platform=${encodeURIComponent(trendPlatform)}`;
+                }
             });
             document.getElementById('btn-invite-friend').addEventListener('click', triggerShare);
             document.getElementById('btn-gameover-invite').addEventListener('click', triggerShare);
