@@ -65,8 +65,8 @@
   const quiz = [
     {
       kicker: 'Сначала — продукт',
-      title: 'Что вы сейчас продаёте?',
-      hint: 'Выберите вариант, который точнее описывает ситуацию сейчас.',
+      title: 'Как сейчас устроено ваше предложение?',
+      hint: 'Выберите вариант, который ближе к вашей ситуации.',
       image: assets.stepanProduct,
       note: 'Если предложение пока трудно описать одним предложением, это нормально. Для начала достаточно понять, что уже можно предложить клиенту.',
       answers: [
@@ -1221,7 +1221,7 @@
 
         <div class="quiz-actions">
           <button class="primary-btn" type="button" data-action="nextQuestion" ${selected ? '' : 'disabled'}>${state.step === quiz.length - 1 ? 'Показать результат' : 'Дальше'}</button>
-          <button class="soft-btn" type="button" data-action="prevQuestion" ${state.step === 0 ? 'disabled' : ''}>Назад</button>
+          ${state.step > 0 ? '<button class="soft-btn" type="button" data-action="prevQuestion">Назад</button>' : ''}
         </div>
       </article>
     `, 'quiz-screen');
