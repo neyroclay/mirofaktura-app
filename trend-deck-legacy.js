@@ -446,6 +446,8 @@
             #${CONTAINER_ID} [style*="background:#00D2D3"] { background:linear-gradient(105deg,#F9EC9F 0%,#DEF8F1 68%,#CFF5F1 100%) !important; color:#073936 !important; box-shadow:0 8px 18px rgba(14,77,72,0.12) !important; }
             #${CONTAINER_ID} [style*="rgba(0,210,211"],
             #${CONTAINER_ID} [style*="rgba(0, 210, 211"] { background:rgba(249,236,159,0.22) !important; border-color:#8AB7AA !important; border-top-color:#8AB7AA !important; border-left-color:#8AB7AA !important; box-shadow:0 8px 20px rgba(14,77,72,0.08) !important; }
+            #${CONTAINER_ID} #invite-banner { border-color:rgba(138,183,170,0.16) !important; box-shadow:0 12px 28px rgba(14,77,72,0.07) !important; overflow:hidden; }
+            #${CONTAINER_ID} #invite-banner .ask-ai-main-btn { width:calc(100% - 12px) !important; margin-left:auto !important; margin-right:auto !important; }
             
             #${CONTAINER_ID} header { 
                 flex:0 0 auto; 

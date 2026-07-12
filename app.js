@@ -1986,7 +1986,7 @@
       platform: PLATFORM.key,
       messenger: PLATFORM.messenger,
       source: 'mirofaktura-app',
-      v: '20260712-native-shell-4',
+      v: '20260712-native-shell-5',
     });
     const platformUserId = getPlatformUserId();
     const platformUser = getPlatformUser();
@@ -2070,7 +2070,7 @@
     window.MIROFAKTURA_TRENDS_MANUAL_MOUNT = true;
     trendDeckScriptPromise = new Promise((resolve, reject) => {
       const script = document.createElement('script');
-      script.src = './trend-deck-legacy.js?v=20260712-native-shell-4';
+      script.src = './trend-deck-legacy.js?v=20260712-native-shell-5';
       script.onload = () => resolve();
       script.onerror = () => reject(new Error('trend deck script failed'));
       document.body.appendChild(script);
