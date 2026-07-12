@@ -413,6 +413,7 @@
             #${CONTAINER_ID} #done-ui { position:relative; }
             #${CONTAINER_ID} .waiting-card-status { display:none; align-items:center; justify-content:center; align-self:center; color:#1F2E2E; font-size:14px; letter-spacing:0.5px; font-weight:700; background:#FFF; padding:10px 20px; border-radius:30px; box-shadow:0 8px 20px rgba(0,0,0,0.06); pointer-events:none; white-space:nowrap; margin:0 auto clamp(30px, 5vh, 52px); }
             #${CONTAINER_ID} #game-ui.waiting-for-next-card .waiting-card-status { display:inline-flex; }
+            @media (max-height:760px) { #${CONTAINER_ID} #game-ui.waiting-for-next-card .waiting-card-status { display:none; } }
             #${CONTAINER_ID} .progress-wrapper { pointer-events:none; width:160px; height:3px; background:#F7F7F7; margin:0 auto 10px auto; border-radius:2px; overflow:hidden; transition:opacity 0.5s ease; }
             #${CONTAINER_ID} .progress-fill { height:100%; width:0%; background:#00D2D3; transition:width 0.1s; }
             #hand-icon { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:100px; height:100px; display:flex; align-items:center; justify-content:center; z-index:100; font-size:80px !important; color:#FFF; filter:drop-shadow(0px 5px 10px rgba(0,0,0,0.2)); pointer-events:none; display:none; animation:scratchAnim 2s infinite ease-in-out; opacity:0.9; }
@@ -1173,16 +1174,7 @@
                 const draw = () => {
                     bCtx.clearRect(0, 0, 512, 768); if (cachedBackImg) bCtx.drawImage(cachedBackImg, 0, 0, 512, 768);
                     const btnW=280, btnH=60, btnX=40; bCtx.save(); const sc = isBtnHovered ? 1.02 : 1; bCtx.translate(btnX+btnW/2, 675+btnH/2); bCtx.scale(sc, sc); bCtx.translate(-(btnX+btnW/2), -(675+btnH/2));
-                    const gradientAngle = 110 * Math.PI / 180;
-                    const gradientX = Math.sin(gradientAngle), gradientY = -Math.cos(gradientAngle);
-                    const gradientHalf = (Math.abs(btnW * gradientX) + Math.abs(btnH * gradientY)) / 2;
-                    const gradientCenterX = btnX + btnW / 2, gradientCenterY = 675 + btnH / 2;
-                    const btnGradient = bCtx.createLinearGradient(
-                        gradientCenterX - gradientX * gradientHalf,
-                        gradientCenterY - gradientY * gradientHalf,
-                        gradientCenterX + gradientX * gradientHalf,
-                        gradientCenterY + gradientY * gradientHalf
-                    );
+                    const btnGradient = bCtx.createLinearGradient(btnX, 675, btnX + btnW, 675);
                     btnGradient.addColorStop(0, '#174f49'); btnGradient.addColorStop(0.58, '#087f7a'); btnGradient.addColorStop(1, '#13b8b1');
                     bCtx.shadowColor='rgba(7,57,54,0.18)'; bCtx.shadowBlur=14; bCtx.shadowOffsetY=4; bCtx.beginPath(); if (bCtx.roundRect) bCtx.roundRect(btnX, 675, btnW, btnH, 30); else bCtx.rect(btnX, 675, btnW, btnH);
                     bCtx.fillStyle=btnGradient; bCtx.fill(); bCtx.shadowColor='transparent'; bCtx.strokeStyle='rgba(255,255,255,0.7)'; bCtx.lineWidth=2; bCtx.stroke(); bCtx.font='800 20px system-ui, sans-serif'; bCtx.fillStyle='#ffffff'; bCtx.textAlign='center'; bCtx.textBaseline='middle'; bCtx.fillText('Открыть текст', btnX+btnW/2, 675+btnH/2);
@@ -1214,7 +1206,7 @@
 
             if (!isDailyDone || appData.bonusCards > 0) { 
                 createClayLayer(); 
-                updateHint('ВАША КАРТА ТРЕНДА');
+                updateHint('СОТРИТЕ СЛОЙ');
                 document.getElementById('active-ui').style.display = 'block'; 
                 document.getElementById('done-ui').style.display = 'none';
                 document.getElementById('hand-icon').style.display = 'flex'; 
@@ -1307,7 +1299,7 @@
                 document.getElementById('done-ui').style.display = 'none';
                 document.getElementById('active-ui').style.display = 'block';
                 document.getElementById('hand-icon').style.display = 'flex';
-                updateHint('ВАША КАРТА ТРЕНДА');
+                updateHint('СОТРИТЕ СЛОЙ');
             });
 
             function flipCard() { isFlipped=!isFlipped; const target=isFlipped?Math.PI:0; const el=document.getElementById('main-hint'); if (el) el.style.opacity = isFlipped?'0':'1'; new TWEEN.Tween({y:baseRotationY}).to({y:target},600).easing(TWEEN.Easing.Back.Out).onUpdate(o=>baseRotationY=o.y).start(); }
