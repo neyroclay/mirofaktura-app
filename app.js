@@ -1970,7 +1970,7 @@
       platform: PLATFORM.key,
       messenger: PLATFORM.messenger,
       source: 'mirofaktura-app',
-      v: '20260710-home-nav',
+      v: '20260712-trends-v2',
     });
     const platformUserId = getPlatformUserId();
     const platformUser = getPlatformUser();
