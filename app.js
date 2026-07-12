@@ -1970,7 +1970,7 @@
       platform: PLATFORM.key,
       messenger: PLATFORM.messenger,
       source: 'mirofaktura-app',
-      v: '20260712-stable-rollback',
+      v: '20260712-card-status-safe',
     });
     const platformUserId = getPlatformUserId();
     const platformUser = getPlatformUser();

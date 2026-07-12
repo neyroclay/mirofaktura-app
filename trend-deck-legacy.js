@@ -403,6 +403,9 @@
             #${CONTAINER_ID} #game-ui { flex:0 0 auto; padding-bottom:110px; background:linear-gradient(to top, rgba(244,247,248,0.9), transparent); transition:opacity 0.3s; display:flex; flex-direction:column; align-items:center; }
             #${CONTAINER_ID} .hint-text { color:#1F2E2E; font-size:14px; margin-bottom:15px; letter-spacing:0.5px; font-weight:700; background:#FFF; padding:10px 20px; border-radius:30px; box-shadow:0 8px 20px rgba(0,0,0,0.06); pointer-events:none; transition:opacity 0.3s; }
             #${CONTAINER_ID} #game-ui.waiting-for-next-card .hint-text { height:18px; min-height:18px; width:1px; margin:0 0 12px; padding:0; overflow:hidden; background:transparent; box-shadow:none; opacity:0 !important; visibility:hidden !important; }
+            #${CONTAINER_ID} #done-ui { position:relative; }
+            #${CONTAINER_ID} .waiting-card-status { display:none; position:absolute; left:50%; bottom:calc(100% + 18px); transform:translateX(-50%); color:#1F2E2E; font-size:14px; letter-spacing:0.5px; font-weight:700; background:#FFF; padding:10px 20px; border-radius:30px; box-shadow:0 8px 20px rgba(0,0,0,0.06); pointer-events:none; white-space:nowrap; }
+            #${CONTAINER_ID} #game-ui.waiting-for-next-card .waiting-card-status { display:block; }
             #${CONTAINER_ID} .progress-wrapper { pointer-events:none; width:160px; height:3px; background:#F7F7F7; margin:0 auto 10px auto; border-radius:2px; overflow:hidden; transition:opacity 0.5s ease; }
             #${CONTAINER_ID} .progress-fill { height:100%; width:0%; background:#00D2D3; transition:width 0.1s; }
             #hand-icon { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:100px; height:100px; display:flex; align-items:center; justify-content:center; z-index:100; font-size:80px !important; color:#FFF; filter:drop-shadow(0px 5px 10px rgba(0,0,0,0.2)); pointer-events:none; display:none; animation:scratchAnim 2s infinite ease-in-out; opacity:0.9; }
@@ -739,6 +742,7 @@
                 <div id="active-ui"><div class="progress-wrapper"><div class="progress-fill" id="p-bar"></div></div></div>
                 
                 <div id="done-ui" style="display:none;flex-direction:column;align-items:center; width:100%; max-width:280px; margin: 0 auto;">
+                    <div class="waiting-card-status">КАРТА ОТКРЫТА</div>
                     
                     <button id="btn-next-bonus" type="button" class="ask-ai-main-btn" style="display:none; margin-bottom:15px; font-size:14px; padding:14px; width:100%;">🎁 Открыть бонусную карту</button>
 
@@ -1104,7 +1108,7 @@
 
             if (!isDailyDone || appData.bonusCards > 0) { 
                 createClayLayer(); 
-                updateHint('Сотри защитный слой'); 
+                updateHint('ВАША КАРТА ТРЕНДА');
                 document.getElementById('active-ui').style.display = 'block'; 
                 document.getElementById('done-ui').style.display = 'none';
                 document.getElementById('hand-icon').style.display = 'flex'; 
@@ -1166,7 +1170,7 @@
                 if (isScratching) { scratchSound.pause(); isScratching=false; } clearTimeout(scratchTimeout); winSound.play().catch(()=>{});
                 if (window.confetti) confetti({ particleCount:100, spread:70, origin:{y:0.6}, colors:['#00D2D3','#FFC845','#FFFFFF'] });
                 
-                updateHint('Открыто! Нажми на карту'); 
+                updateHint('КАРТА ОТКРЫТА');
                 document.getElementById('active-ui').style.display='none'; 
                 document.getElementById('done-ui').style.display='flex'; 
                 
@@ -1201,7 +1205,7 @@
                 document.getElementById('done-ui').style.display = 'none';
                 document.getElementById('active-ui').style.display = 'block';
                 document.getElementById('hand-icon').style.display = 'flex';
-                updateHint('Сотри защитный слой');
+                updateHint('ВАША КАРТА ТРЕНДА');
             });
 
             function flipCard() { isFlipped=!isFlipped; const target=isFlipped?Math.PI:0; const el=document.getElementById('main-hint'); if (el) el.style.opacity = isFlipped?'0':'1'; new TWEEN.Tween({y:baseRotationY}).to({y:target},600).easing(TWEEN.Easing.Back.Out).onUpdate(o=>baseRotationY=o.y).start(); }
