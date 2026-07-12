@@ -314,13 +314,10 @@
 
         // ВЕБХУКИ BASEROW И MULTY
         const STORAGE_KEY      = `oracle_10_trends_release_v23_${trendPlatform}_${userId}`;
-        const useTestMulty = trendParams.get('multy_test') === '1';
-        const LOAD_URL = useTestMulty
-            ? 'https://cb.multy.ai/api/v1/hook/app/b9c89cbdf0f21aa63c6111487770196a'
-            : 'https://cb.multy.ai/api/v1/hook/app/7d62795bb2fc085481ae4e8c3b6f9024';
-        const SAVE_URL = useTestMulty
-            ? 'https://cb.multy.ai/api/v1/hook/app/bfbc41275aaab161df78a4d0b0f399af'
-            : 'https://cb.multy.ai/api/v1/hook/app/da0e0039c43a7c3d4287702d293fa656';
+        const LOAD_URL = 'https://cb.multy.ai/api/v1/hook/app/b9c89cbdf0f21aa63c6111487770196a';
+        const SAVE_URL = 'https://cb.multy.ai/api/v1/hook/app/bfbc41275aaab161df78a4d0b0f399af';
+        const TELEGRAM_FOLLOWUP_URL = 'https://cb.multy.ai/api/v1/hook/app/e0cd16a80fb1553178dbdeace2747156';
+        const MULTY_REQUEST_TIMEOUT_MS = 6000;
 
         const TEXT_BACK_IMG = "https://i.postimg.cc/RFxMB2Bd/1-2-copy.jpg";
         const AUTHOR_1_IMG  = "https://cdn.jsdelivr.net/gh/neyroclay/img-host-trends-2026@main/Elizaveta-Vikulova-new.jpg";
@@ -795,6 +792,93 @@
         let isDailyDone = false, isFlipped = false, currentCardData, preloadedClayImg = null;
         let justFinished = false; 
         let isFinishingProcess = false; 
+        let shouldStartTelegramFollowup = false;
+        let telegramFollowupRequestStarted = false;
+
+        async function postMulty(url, payload, timeoutMs = MULTY_REQUEST_TIMEOUT_MS) {
+            const controller = typeof AbortController === 'function' ? new AbortController() : null;
+            const timeoutId = controller ? setTimeout(() => controller.abort(), timeoutMs) : null;
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                    ...(controller ? { signal: controller.signal } : {})
+                });
+
+                if (!response.ok) throw new Error(`Multy HTTP ${response.status}`);
+                const text = await response.text();
+                if (!text) return {};
+                try { return JSON.parse(text); } catch (error) { return {}; }
+            } finally {
+                if (timeoutId) clearTimeout(timeoutId);
+            }
+        }
+
+        function normalizeCollectedCards(value, fallback = []) {
+            let parsed = value;
+            if (typeof parsed === 'string') {
+                try { parsed = JSON.parse(parsed); } catch (error) { return fallback; }
+            }
+            if (!Array.isArray(parsed)) return fallback;
+
+            return [...new Set(parsed
+                .map((cardId) => Number(cardId))
+                .filter((cardId) => Number.isInteger(cardId) && cardId >= 1 && cardId <= CARDS_DB.length))];
+        }
+
+        function normalizeCounter(value, fallback = 0) {
+            const number = Number(value);
+            return Number.isFinite(number) && number >= 0 ? Math.floor(number) : fallback;
+        }
+
+        function restoreLocalState() {
+            try {
+                const local = localStorage.getItem(STORAGE_KEY);
+                if (!local) return;
+                const parsed = JSON.parse(local);
+                if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+                    appData = {
+                        ...appData,
+                        ...parsed,
+                        collected: normalizeCollectedCards(parsed.collected, appData.collected),
+                        bonusCards: normalizeCounter(parsed.bonusCards, appData.bonusCards),
+                        invitedFriends: normalizeCounter(parsed.invitedFriends, appData.invitedFriends)
+                    };
+                }
+            } catch (error) {
+                console.warn('Local trend progress is unavailable', error);
+            }
+        }
+
+        async function startTelegramFollowupOnce() {
+            if (!shouldStartTelegramFollowup || telegramFollowupRequestStarted || trendPlatform !== 'telegram' || !hasRemoteIdentity || freshPreview) return;
+
+            const markerKey = `mirofaktura_trend_followup_started_${profileKey}`;
+            let followupAlreadyStarted = false;
+            try { followupAlreadyStarted = localStorage.getItem(markerKey) === '1'; } catch (error) {}
+            if (followupAlreadyStarted) {
+                shouldStartTelegramFollowup = false;
+                return;
+            }
+
+            telegramFollowupRequestStarted = true;
+            try {
+                await postMulty(TELEGRAM_FOLLOWUP_URL, {
+                    item: 'trend_deck_started_telegram',
+                    user_id: String(userId),
+                    messenger: trendMessenger,
+                    platform: trendPlatform,
+                    source: 'mirofaktura-app'
+                });
+                try { localStorage.setItem(markerKey, '1'); } catch (error) {}
+                shouldStartTelegramFollowup = false;
+            } catch (error) {
+                telegramFollowupRequestStarted = false;
+                console.warn('Telegram trend follow-up was not started', error);
+            }
+        }
 
         function getSeededRandom(max) {
             const now = new Date(); const seedStr = String(userId) + '-' + now.getFullYear() + '-' + now.getMonth() + '-' + now.getDate();
@@ -809,31 +893,29 @@
                 return;
             }
             if (!hasRemoteIdentity) {
-                const local = localStorage.getItem(STORAGE_KEY);
-                if (local) appData = { ...appData, ...JSON.parse(local) };
+                restoreLocalState();
                 finishLoad(callback);
                 return;
             }
+            restoreLocalState();
             try {
-                const response = await fetch(LOAD_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        item: 'trend_deck_load',
-                        user_id: String(userId),
-                        profile_key: profileKey,
-                        platform: trendPlatform,
-                        messenger: trendMessenger,
-                        source: 'mirofaktura-app'
-                    })
+                const data = await postMulty(LOAD_URL, {
+                    item: 'trend_deck_load_v2',
+                    user_id: String(userId),
+                    profile_key: profileKey,
+                    platform: trendPlatform,
+                    messenger: trendMessenger,
+                    source: 'mirofaktura-app'
                 });
-                const data = await response.json();
                 if (data.exists === true) {
-                    appData.firstLaunchTime = data.first_launch_time; 
-                    appData.lastDate = data.last_date;
-                    appData.collected = data.collected ? JSON.parse(data.collected) : [];
-                    appData.bonusCards = Number(data.bonus_cards) || 0;
-                    appData.invitedFriends = Number(data.invited_friends) || 0;
+                    const remoteFirstLaunchTime = Number(data.first_launch_time);
+                    if (Number.isFinite(remoteFirstLaunchTime) && remoteFirstLaunchTime > 0) {
+                        appData.firstLaunchTime = String(data.first_launch_time);
+                    }
+                    if (typeof data.last_date === 'string') appData.lastDate = data.last_date;
+                    appData.collected = normalizeCollectedCards(data.collected, appData.collected);
+                    appData.bonusCards = normalizeCounter(data.bonus_cards, appData.bonusCards);
+                    appData.invitedFriends = normalizeCounter(data.invited_friends, appData.invitedFriends);
                     if (Object.prototype.hasOwnProperty.call(data, 'onboarding_seen')) {
                         appData.onboardingSeen = data.onboarding_seen === true
                             || data.onboarding_seen === 1
@@ -844,10 +926,8 @@
                         appData.onboardingSeen = true;
                     }
                     appData.timerSeen = true;
-                } else {
-                    const local = localStorage.getItem(STORAGE_KEY); if (local) appData = { ...appData, ...JSON.parse(local) };
                 }
-            } catch (error) { const local = localStorage.getItem(STORAGE_KEY); if (local) appData = { ...appData, ...JSON.parse(local) }; }
+            } catch (error) { console.warn('Remote trend progress is unavailable', error); }
             finishLoad(callback);
         }
 
@@ -880,11 +960,8 @@
             if (freshPreview || !hasRemoteIdentity) return;
             try {
                 const cardsString = JSON.stringify(appData.collected);
-                await fetch(SAVE_URL, { 
-                    method: 'POST', 
-                    headers: { 'Content-Type': 'application/json' }, 
-                    body: JSON.stringify({ 
-                        item: 'trend_deck_save',
+                await postMulty(SAVE_URL, {
+                        item: 'trend_deck_save_v2',
                         user_id: String(userId),
                         profile_key: profileKey,
                         first_name: String(firstName),
@@ -898,7 +975,6 @@
                         onboarding_seen: appData.onboardingSeen === true,
                         bonus_cards: String(appData.bonusCards || 0),
                         invited_friends: String(appData.invitedFriends || 0)
-                    }) 
                 });
             } catch (error) {}
         }
@@ -1152,19 +1228,14 @@
                 isFinishingProcess = true;
 
                 try {
-                    const response = await fetch(LOAD_URL, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            item: 'trend_deck_load',
+                    const data = await postMulty(LOAD_URL, {
+                            item: 'trend_deck_load_v2',
                             user_id: String(userId),
                             profile_key: profileKey,
                             platform: trendPlatform,
                             messenger: trendMessenger,
                             source: 'mirofaktura-app'
-                        })
-                    });
-                    const data = await response.json();
+                    }, 2500);
                     if (data && data.exists === true) {
                         appData.bonusCards = Number(data.bonus_cards) || 0;
                         appData.invitedFriends = Number(data.invited_friends) || 0;
@@ -1194,6 +1265,7 @@
                 
                 if (!appData.collected.includes(currentCardData.id)) appData.collected.push(currentCardData.id);
                 saveState(); renderLibrary();
+                startTelegramFollowupOnce();
 
                 if (appData.bonusCards > 0) {
                     setTimeout(() => {
@@ -1388,6 +1460,7 @@
             const onboardView = document.getElementById('onboarding-view');
             
             if(!appData.onboardingSeen && !isGameOver()) {
+                shouldStartTelegramFollowup = trendPlatform === 'telegram' && hasRemoteIdentity;
                 onboardView.classList.add('visible'); onboardView.style.opacity = '1';
                 canvasDiv.style.opacity = '0'; document.getElementById('game-ui').style.opacity = '0';
             } else {
@@ -1406,6 +1479,7 @@
                     onboardView.classList.remove('visible'); 
                     appData.onboardingSeen=true; 
                     saveState(); 
+                    startTelegramFollowupOnce();
                     toggleView('daily');
                     if (!isGameOver()) {
                         canvasDiv.style.transition = 'opacity 0.3s ease-in-out'; canvasDiv.style.opacity = '1';
