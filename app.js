@@ -1984,7 +1984,7 @@
       platform: PLATFORM.key,
       messenger: PLATFORM.messenger,
       source: 'mirofaktura-app',
-      v: '20260712-status-flow',
+      v: '20260712-status-gap',
     });
     const platformUserId = getPlatformUserId();
     const platformUser = getPlatformUser();
