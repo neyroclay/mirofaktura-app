@@ -2419,7 +2419,7 @@ h3 {
 
 .trends-native-page {
   display: grid;
-  gap: 14px;
+  gap: 10px;
 }
 
 .trends-native-tabs {
@@ -2463,8 +2463,8 @@ h3 {
   min-height: min(720px, calc(100vh - 228px));
   height: min(720px, calc(100vh - 228px));
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.58);
-  border-radius: 30px;
+  border: 0;
+  border-radius: 0;
   background: transparent;
   -webkit-tap-highlight-color: transparent;
 }

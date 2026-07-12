@@ -386,7 +386,7 @@
         const isIPad = /iPad/i.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Macintosh/i.test(navigator.userAgent));
         if (isIPad) container.classList.add('platform-ipad');
         container.style.minHeight = '600px'; container.style.overflow = 'hidden';
-        container.style.backgroundColor = '#F4F7F8'; container.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+        container.style.backgroundColor = nativeMode ? 'transparent' : '#F4F7F8'; container.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
         container.style.touchAction = 'none';
 
         const fontLink = document.createElement('link'); fontLink.rel = 'stylesheet'; fontLink.href = 'https://fonts.googleapis.com/icon?family=Material+Icons+Round&display=block';
@@ -413,11 +413,12 @@
             #${CONTAINER_ID} header, #${CONTAINER_ID} .nav, #${CONTAINER_ID} .fullscreen-view, #${CONTAINER_ID} .modal-overlay, #${CONTAINER_ID} .action-buttons-row, #${CONTAINER_ID} #onboarding-view, #${CONTAINER_ID} .collection-hint, #${CONTAINER_ID} #done-ui { pointer-events: auto; }
             #${CONTAINER_ID}.trend-native-embedded #top-header-nav,
             #${CONTAINER_ID}.trend-native-embedded > .ui-layer > .nav { display:none !important; }
+            #${CONTAINER_ID}.trend-native-embedded { background:transparent !important; }
             #${CONTAINER_ID}.trend-native-embedded #game-ui { padding-bottom:28px; }
             #${CONTAINER_ID}.trend-native-embedded .fullscreen-view { padding:24px 20px 32px; }
             #${CONTAINER_ID}.trend-native-embedded #gameover-view { padding-top:32px !important; padding-bottom:32px !important; }
             #${CONTAINER_ID}.trend-native-embedded #game-ui.waiting-for-next-card #done-ui::before { height:clamp(26px, 4vh, 42px); }
-            #${CONTAINER_ID}.trend-native-embedded .waiting-card-status { position:absolute; top:clamp(24px, 7vh, 72px); }
+            #${CONTAINER_ID}.trend-native-embedded .waiting-card-status { position:absolute; top:clamp(10px, 3vh, 28px); }
             
             #${CONTAINER_ID} header { 
                 flex:0 0 auto; 
@@ -465,7 +466,7 @@
             #${CONTAINER_ID} .ask-ai-main-btn { background:#00D2D3; border:none; color:white; padding:12px 25px; border-radius:30px; font-weight:700; font-size:13px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; transition:all 0.3s; width:100%; outline:none; box-shadow:0 4px 15px rgba(0,210,211,0.3); }
             #${CONTAINER_ID} .ask-ai-main-btn:hover, #${CONTAINER_ID} .onboard-btn:not(:disabled):hover, #${CONTAINER_ID} .primary-btn:hover, #${CONTAINER_ID} .consult-btn:hover, #${CONTAINER_ID} .lib-read-btn:hover { transform:scale(1.02); }
             #${CONTAINER_ID} .onboard-btn:not(:disabled), #${CONTAINER_ID} .primary-btn, #${CONTAINER_ID} .consult-btn { box-shadow:0 4px 15px rgba(0,210,211,0.3); transition:all 0.3s; }
-            #${CONTAINER_ID} .read-scroll-area { color:#1F2E2E; font-size:16px; line-height:1.6; margin-top:10px; margin-bottom:5px; max-height:40vh; overflow-y:auto; padding-right:10px; text-align:left; white-space:pre-wrap; }
+            #${CONTAINER_ID} .read-scroll-area { color:#1F2E2E; font-size:16px; line-height:1.6; margin-top:10px; margin-bottom:5px; max-height:40vh; overflow-y:auto; padding-right:10px; text-align:left; white-space:pre-wrap; touch-action:pan-y; overscroll-behavior:contain; -webkit-overflow-scrolling:touch; }
             #${CONTAINER_ID} .read-scroll-area::-webkit-scrollbar { width:4px; } #${CONTAINER_ID} .read-scroll-area::-webkit-scrollbar-track { background:rgba(0,0,0,0.05); } #${CONTAINER_ID} .read-scroll-area::-webkit-scrollbar-thumb { background:#00D2D3; border-radius:2px; }
             @keyframes fadeInUpCard { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
             @keyframes fadeInView { from { opacity:0; transform:translateY(15px); } to { opacity:1; transform:translateY(0); } }
@@ -496,7 +497,7 @@
             #${CONTAINER_ID} .consult-gift { color:#FFC845; font-weight:bold; font-size:12px; margin-bottom:10px; letter-spacing:1px; }
             #${CONTAINER_ID} .modal-overlay { position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(244,247,248,0.4); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px); z-index:2000; display:none; align-items:center; justify-content:center; opacity:0; transition:opacity 0.3s ease; }
             #${CONTAINER_ID} .modal-overlay.visible { display:flex; opacity:1; }
-            #${CONTAINER_ID} .modal-content { background:rgba(255,255,255,0.85); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,0.6); width:85%; max-width:320px; border-radius:20px; padding:25px; position:relative; transform:scale(0.9); transition:transform 0.3s; box-shadow:0 15px 35px rgba(0,0,0,0.1); text-align:left; max-height:80vh; overflow-y:auto; }
+            #${CONTAINER_ID} .modal-content { background:rgba(255,255,255,0.85); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,0.6); width:85%; max-width:320px; border-radius:20px; padding:25px; position:relative; transform:scale(0.9); transition:transform 0.3s; box-shadow:0 15px 35px rgba(0,0,0,0.1); text-align:left; max-height:80vh; overflow:hidden; touch-action:pan-y; overscroll-behavior:contain; }
             #${CONTAINER_ID} .modal-overlay.visible .modal-content { transform:scale(1); }
             #${CONTAINER_ID} .modal-close { position:absolute; top:15px; right:15px; color:#8A9999; cursor:pointer; font-size:24px; z-index:10; padding:5px; }
             
@@ -529,6 +530,8 @@
         addCleanup(() => style.remove());
 
       // --- ДОБАВЛЯЕМ ПРЕЛОАДЕР ---
+       const shouldShowPreloader = !nativeMode || !window.__mirofakturaTrendDeckReady;
+       if (shouldShowPreloader) {
        const preloaderDiv = document.createElement('div');
        preloaderDiv.id = 'mrf-preloader';
        preloaderDiv.innerHTML = `
@@ -537,26 +540,28 @@
            <div id="mrf-preloader-text" style="margin-top: 20px; color: #8A9999; font-size: 13px; font-weight: 700; text-align: center; transition: opacity 0.3s ease;">Раскладываем карты...</div>
        `;
        container.appendChild(preloaderDiv);
+       }
 
        // Логика умного прелоадера
        const preloaderTexts = ["Раскладываем карты...", "Загружаем 3D-магию...", "Отрисовываем детали...", "Ещё буквально секунду..."];
        let textIndex = 0;
-       const textInterval = setInterval(() => {
+       const textInterval = shouldShowPreloader ? setInterval(() => {
            const el = document.getElementById('mrf-preloader-text');
            if (el) {
                textIndex = (textIndex + 1) % preloaderTexts.length;
                el.style.opacity = '0';
                setTimeout(() => { if (el) { el.textContent = preloaderTexts[textIndex]; el.style.opacity = '1'; } }, 300);
            }
-       }, 2200);
-       addCleanup(() => clearInterval(textInterval));
+       }, 2200) : null;
+       addCleanup(() => { if (textInterval) clearInterval(textInterval); });
 
        let preloaderHidden = false;
        const previousHidePreloader = window.hidePreloader;
        window.hidePreloader = function() {
+           if (nativeMode) window.__mirofakturaTrendDeckReady = true;
            if (preloaderHidden) return;
            preloaderHidden = true;
-           clearInterval(textInterval);
+           if (textInterval) clearInterval(textInterval);
            const p = document.getElementById('mrf-preloader');
            if (p) {
                p.style.opacity = '0';
@@ -1133,6 +1138,19 @@
             e.preventDefault();
             window.app_openLegalText('Согласие на рассылку', LEGAL_TEXT_ADS);
         });
+
+        const readTrendTextEl = document.getElementById('read-trend-text');
+        if (readTrendTextEl) {
+            const keepReadModalScroll = (e) => e.stopPropagation();
+            readTrendTextEl.addEventListener('wheel', keepReadModalScroll, { passive: true });
+            readTrendTextEl.addEventListener('touchstart', keepReadModalScroll, { passive: true });
+            readTrendTextEl.addEventListener('touchmove', keepReadModalScroll, { passive: true });
+            addCleanup(() => {
+                readTrendTextEl.removeEventListener('wheel', keepReadModalScroll);
+                readTrendTextEl.removeEventListener('touchstart', keepReadModalScroll);
+                readTrendTextEl.removeEventListener('touchmove', keepReadModalScroll);
+            });
+        }
 
 
         const deckLibrariesReady = Promise.all([
