@@ -546,7 +546,7 @@
                 if (window.parent !== window) {
                     window.parent.postMessage({ type: 'mirofaktura:open-link', url }, '*');
                 } else {
-                    window.open(url, '_blank', 'noopener');
+                    window.location.href = url;
                 }
                 return;
             }
