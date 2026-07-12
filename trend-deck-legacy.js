@@ -314,9 +314,13 @@
 
         // ВЕБХУКИ BASEROW И MULTY
         const STORAGE_KEY      = `oracle_10_trends_release_v23_${trendPlatform}_${userId}`;
-        const LOAD_URL = 'https://cb.multy.ai/api/v1/hook/app/b9c89cbdf0f21aa63c6111487770196a';
-        const SAVE_URL = 'https://cb.multy.ai/api/v1/hook/app/bfbc41275aaab161df78a4d0b0f399af';
-        const WEBHOOK_TIMEOUT_MS = 10000;
+        const useTestMulty = trendParams.get('multy_test') === '1';
+        const LOAD_URL = useTestMulty
+            ? 'https://cb.multy.ai/api/v1/hook/app/b9c89cbdf0f21aa63c6111487770196a'
+            : 'https://cb.multy.ai/api/v1/hook/app/7d62795bb2fc085481ae4e8c3b6f9024';
+        const SAVE_URL = useTestMulty
+            ? 'https://cb.multy.ai/api/v1/hook/app/bfbc41275aaab161df78a4d0b0f399af'
+            : 'https://cb.multy.ai/api/v1/hook/app/da0e0039c43a7c3d4287702d293fa656';
 
         const TEXT_BACK_IMG = "https://i.postimg.cc/RFxMB2Bd/1-2-copy.jpg";
         const AUTHOR_1_IMG  = "https://cdn.jsdelivr.net/gh/neyroclay/img-host-trends-2026@main/Elizaveta-Vikulova-new.jpg";
@@ -397,9 +401,8 @@
             #${CONTAINER_ID} .onboard-btn:disabled { opacity: 0.7; cursor: not-allowed; }
             #${CONTAINER_ID} .spacer { flex:1; }
             #${CONTAINER_ID} #game-ui { flex:0 0 auto; padding-bottom:110px; background:linear-gradient(to top, rgba(244,247,248,0.9), transparent); transition:opacity 0.3s; display:flex; flex-direction:column; align-items:center; }
-            #${CONTAINER_ID}, #${CONTAINER_ID} #canvas-container, #${CONTAINER_ID} #game-ui { -webkit-tap-highlight-color:transparent; -webkit-touch-callout:none; }
             #${CONTAINER_ID} .hint-text { color:#1F2E2E; font-size:14px; margin-bottom:15px; letter-spacing:0.5px; font-weight:700; background:#FFF; padding:10px 20px; border-radius:30px; box-shadow:0 8px 20px rgba(0,0,0,0.06); pointer-events:none; transition:opacity 0.3s; }
-            #${CONTAINER_ID} #game-ui.waiting-for-next-card .hint-text { background:rgba(255,255,255,0.86); box-shadow:0 8px 20px rgba(6,76,72,0.07); }
+            #${CONTAINER_ID} #game-ui.waiting-for-next-card .hint-text { height:18px; min-height:18px; width:1px; margin:0 0 12px; padding:0; overflow:hidden; background:transparent; box-shadow:none; opacity:0 !important; visibility:hidden !important; }
             #${CONTAINER_ID} .progress-wrapper { pointer-events:none; width:160px; height:3px; background:#F7F7F7; margin:0 auto 10px auto; border-radius:2px; overflow:hidden; transition:opacity 0.5s ease; }
             #${CONTAINER_ID} .progress-fill { height:100%; width:0%; background:#00D2D3; transition:width 0.1s; }
             #hand-icon { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:100px; height:100px; display:flex; align-items:center; justify-content:center; z-index:100; font-size:80px !important; color:#FFF; filter:drop-shadow(0px 5px 10px rgba(0,0,0,0.2)); pointer-events:none; display:none; animation:scratchAnim 2s infinite ease-in-out; opacity:0.9; }
@@ -416,8 +419,7 @@
             @keyframes fadeInView { from { opacity:0; transform:translateY(15px); } to { opacity:1; transform:translateY(0); } }
             #${CONTAINER_ID} .lib-grid { display:flex; flex-wrap:wrap; justify-content:center; gap:30px; width:100%; max-width:1000px; margin:0 auto; }
             #${CONTAINER_ID} .lib-card-container { perspective:1000px; aspect-ratio:2/3; cursor:pointer; width:280px; flex:0 0 280px; animation:fadeInUpCard 0.4s cubic-bezier(0.16,1,0.3,1) backwards; }
-            #${CONTAINER_ID} .lib-read-btn { background:linear-gradient(110deg,#fff2a0 0%,#dffff8 58%,#bdf7f1 100%); color:#073936; padding:8px 32px; border-radius:30px; font-size:12px; font-weight:bold; text-decoration:none; border:1px solid rgba(255,255,255,0.82); width:auto; align-self:flex-start; transition:transform 0.25s ease,filter 0.25s ease,background 0.25s ease; cursor:pointer; box-sizing:border-box; display:block; text-align:center; box-shadow:0 8px 18px rgba(14,77,72,0.14); }
-            #${CONTAINER_ID} .lib-read-btn:hover, #${CONTAINER_ID} .lib-read-btn:focus-visible { background:linear-gradient(110deg,#ffe878 0%,#c9fff5 58%,#79e5dc 100%); color:#073936; }
+            #${CONTAINER_ID} .lib-read-btn { background:linear-gradient(110deg,#174f49 0%,#087f7a 58%,#13b8b1 100%); color:#fff; padding:8px 32px; border-radius:30px; font-size:12px; font-weight:bold; text-decoration:none; border:1px solid rgba(255,255,255,0.5); width:auto; align-self:flex-start; transition:transform 0.25s ease,filter 0.25s ease; cursor:pointer; box-sizing:border-box; display:block; text-align:center; box-shadow:0 8px 18px rgba(14,77,72,0.2); }
             #${CONTAINER_ID} .collection-hint { color:#8A9999; font-size:13px; font-weight:600; margin-top:5px; margin-bottom:15px; text-align:center; pointer-events:auto; transition:opacity 0.3s; }
             #${CONTAINER_ID} .nav { position:absolute; bottom:max(20px, env(safe-area-inset-bottom)); left:50%; transform:translateX(-50%); width:calc(100% - 40px); max-width:400px; background:rgba(255,255,255,0.75); backdrop-filter:blur(25px); -webkit-backdrop-filter:blur(25px); display:flex; border:1px solid rgba(255,255,255,0.6); pointer-events:auto; z-index:50; padding:10px 15px; box-sizing:border-box; align-items:center; border-radius:40px; box-shadow:0 15px 35px rgba(0,0,0,0.1), inset 0 0 0 1px rgba(255,255,255,0.4); }
             #${CONTAINER_ID}.platform-ipad .nav { bottom:max(55px, env(safe-area-inset-bottom)); } #${CONTAINER_ID}.platform-ipad #game-ui { padding-bottom:115px; } #${CONTAINER_ID}.platform-ipad #gameover-view { padding-top:80px !important; padding-bottom:140px !important; }
@@ -473,26 +475,20 @@
         `;
         document.head.appendChild(style);
 
-      // --- ДОБАВЛЯЕМ ПРЕЛОАДЕР ТОЛЬКО ПРИ ПЕРВОМ ВХОДЕ ЗА СЕАНС ---
-       const PRELOADER_READY_KEY = 'mirofaktura_trends_ready_v1';
-       let skipPreloader = false;
-       try { skipPreloader = sessionStorage.getItem(PRELOADER_READY_KEY) === '1'; } catch (_) {}
-
-       if (!skipPreloader) {
-           const preloaderDiv = document.createElement('div');
-           preloaderDiv.id = 'mrf-preloader';
-           preloaderDiv.innerHTML = `
-               <img class="mrf-preloader-logo" src="https://raw.githubusercontent.com/neyroclay/img-host-trends-2026/main/mirofaktura_world_logo.png" alt="Mirofaktura" onload="this.style.opacity='1'">
-               <div class="mrf-preloader-spinner"></div>
-               <div id="mrf-preloader-text" style="margin-top: 20px; color: #8A9999; font-size: 13px; font-weight: 700; text-align: center; transition: opacity 0.3s ease;">Раскладываем карты...</div>
-           `;
-           container.appendChild(preloaderDiv);
-       }
+      // --- ДОБАВЛЯЕМ ПРЕЛОАДЕР ---
+       const preloaderDiv = document.createElement('div');
+       preloaderDiv.id = 'mrf-preloader';
+       preloaderDiv.innerHTML = `
+           <img class="mrf-preloader-logo" src="https://raw.githubusercontent.com/neyroclay/img-host-trends-2026/main/mirofaktura_world_logo.png" alt="Mirofaktura" onload="this.style.opacity='1'">
+           <div class="mrf-preloader-spinner"></div>
+           <div id="mrf-preloader-text" style="margin-top: 20px; color: #8A9999; font-size: 13px; font-weight: 700; text-align: center; transition: opacity 0.3s ease;">Раскладываем карты...</div>
+       `;
+       container.appendChild(preloaderDiv);
 
        // Логика умного прелоадера
        const preloaderTexts = ["Раскладываем карты...", "Загружаем 3D-магию...", "Отрисовываем детали...", "Ещё буквально секунду..."];
        let textIndex = 0;
-       const textInterval = skipPreloader ? null : setInterval(() => {
+       const textInterval = setInterval(() => {
            const el = document.getElementById('mrf-preloader-text');
            if (el) {
                textIndex = (textIndex + 1) % preloaderTexts.length;
@@ -505,8 +501,7 @@
        window.hidePreloader = function() {
            if (preloaderHidden) return;
            preloaderHidden = true;
-           if (textInterval) clearInterval(textInterval);
-           try { sessionStorage.setItem(PRELOADER_READY_KEY, '1'); } catch (_) {}
+           clearInterval(textInterval);
            const p = document.getElementById('mrf-preloader');
            if (p) {
                p.style.opacity = '0';
@@ -516,7 +511,7 @@
        };
 
        // Страховка на 10 секунд
-       if (!skipPreloader) setTimeout(() => {
+       setTimeout(() => {
            if (!preloaderHidden) {
                const hint = document.getElementById('main-hint');
                if (hint && hint.style.visibility !== 'visible') {
@@ -632,7 +627,7 @@
             
             <header id="top-header-nav">
                 <div style="display:flex; align-items:center;">
-                    <h1 id="top-header-title">ТРЕНДЫ 2026 |</h1>
+                    <h1>ТРЕНДЫ 2026 |</h1>
                     <div style="margin-left:8px; cursor:pointer;" onclick="window.app_openBotLink(event, 'https://max.ru/id590417093305_biz')">
                         <div style="background:#00D2D3; color:#fff; padding:6px 16px; border-radius:30px; font-weight:800; font-size:12px; text-transform:uppercase; box-shadow:0 3px 10px rgba(0,210,211,0.4);">Мирофактура</div>
                     </div>
@@ -786,20 +781,6 @@
             }
         }
 
-        function setTopHeaderVisible(visible) {
-            const topHeader = document.getElementById('top-header-nav');
-            if (!topHeader) return;
-            topHeader.style.display = 'flex';
-            topHeader.style.opacity = visible ? '1' : '0';
-            topHeader.style.transform = visible ? 'translateY(0)' : 'translateY(-16px)';
-            topHeader.style.pointerEvents = visible ? 'auto' : 'none';
-        }
-
-        function setTopHeaderTitle(text) {
-            const title = document.getElementById('top-header-title');
-            if (title) title.textContent = text;
-        }
-
         document.getElementById('library-view').addEventListener('scroll', handleScroll);
         document.getElementById('authors-view').addEventListener('scroll', handleScroll);
         document.getElementById('gameover-view').addEventListener('scroll', handleScroll);
@@ -817,81 +798,24 @@
             let seed = Math.abs(hash); seed = (seed * 9301 + 49297) % 233280; return Math.floor((seed / 233280) * max);
         }
 
-        function parseCollectedCards(value) {
-            if (Array.isArray(value)) {
-                return value.map(Number).filter(Number.isFinite);
-            }
-            if (typeof value !== 'string' || !value.trim()) return [];
-            try {
-                const parsed = JSON.parse(value);
-                return Array.isArray(parsed) ? parsed.map(Number).filter(Number.isFinite) : [];
-            } catch (error) {
-                return [];
-            }
-        }
-
-        function parseBoolean(value, fallback = false) {
-            if (value === true || value === 1 || value === '1' || value === 'true') return true;
-            if (value === false || value === 0 || value === '0' || value === 'false') return false;
-            return fallback;
-        }
-
-        function normalizeState(data = {}) {
-            const merged = { ...appData, ...data };
-            merged.collected = parseCollectedCards(data.collected ?? data.collected_cards ?? merged.collected);
-            merged.bonusCards = Number(data.bonusCards ?? data.bonus_cards ?? merged.bonusCards) || 0;
-            merged.invitedFriends = Number(data.invitedFriends ?? data.invited_friends ?? merged.invitedFriends) || 0;
-            merged.lastDate = data.lastDate ?? data.last_date ?? merged.lastDate ?? null;
-            merged.firstLaunchTime = data.firstLaunchTime ?? data.first_launch_time ?? merged.firstLaunchTime ?? null;
-            merged.onboardingSeen = parseBoolean(
-                data.onboardingSeen ?? data.onboarding_seen,
-                Boolean(merged.onboardingSeen)
-            );
-            merged.timerSeen = parseBoolean(data.timerSeen ?? data.timer_seen, Boolean(merged.timerSeen));
-            return merged;
-        }
-
-        function readLocalState() {
-            try {
-                const raw = localStorage.getItem(STORAGE_KEY);
-                if (!raw) return null;
-                const parsed = JSON.parse(raw);
-                return parsed && typeof parsed === 'object' ? parsed : null;
-            } catch (error) {
-                try { localStorage.removeItem(STORAGE_KEY); } catch (storageError) {}
-                return null;
-            }
-        }
-
-        async function fetchWithTimeout(url, options, timeoutMs = WEBHOOK_TIMEOUT_MS) {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
-            try {
-                return await fetch(url, { ...options, signal: controller.signal });
-            } finally {
-                clearTimeout(timeoutId);
-            }
-        }
-
         async function loadState(callback) {
             if (freshPreview) {
                 appData = { lastDate:null, collected:[], onboardingSeen:false, timerSeen:false, firstLaunchTime:Date.now().toString(), bonusCards: 0, invitedFriends: 0 };
                 finishLoad(callback);
                 return;
             }
-            const localState = readLocalState();
-            if (localState) appData = normalizeState(localState);
-
             if (!hasRemoteIdentity) {
+                const local = localStorage.getItem(STORAGE_KEY);
+                if (local) appData = { ...appData, ...JSON.parse(local) };
                 finishLoad(callback);
                 return;
             }
             try {
-                const response = await fetchWithTimeout(LOAD_URL, {
+                const response = await fetch(LOAD_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        item: 'trend_deck_load_v2',
+                        item: 'trend_deck_load',
                         user_id: String(userId),
                         profile_key: profileKey,
                         platform: trendPlatform,
@@ -899,17 +823,27 @@
                         source: 'mirofaktura-app'
                     })
                 });
-                if (!response.ok) throw new Error(`Progress load failed: ${response.status}`);
-                const responseText = await response.text();
-                const data = responseText ? JSON.parse(responseText) : {};
+                const data = await response.json();
                 if (data.exists === true) {
-                    appData = normalizeState(data);
-                    if (!Object.prototype.hasOwnProperty.call(data, 'onboarding_seen')) appData.onboardingSeen = true;
+                    appData.firstLaunchTime = data.first_launch_time; 
+                    appData.lastDate = data.last_date;
+                    appData.collected = data.collected ? JSON.parse(data.collected) : [];
+                    appData.bonusCards = Number(data.bonus_cards) || 0;
+                    appData.invitedFriends = Number(data.invited_friends) || 0;
+                    if (Object.prototype.hasOwnProperty.call(data, 'onboarding_seen')) {
+                        appData.onboardingSeen = data.onboarding_seen === true
+                            || data.onboarding_seen === 1
+                            || data.onboarding_seen === '1'
+                            || data.onboarding_seen === 'true';
+                    } else {
+                        // Existing records predate the explicit onboarding flag.
+                        appData.onboardingSeen = true;
+                    }
                     appData.timerSeen = true;
+                } else {
+                    const local = localStorage.getItem(STORAGE_KEY); if (local) appData = { ...appData, ...JSON.parse(local) };
                 }
-            } catch (error) {
-                console.warn('Trend progress load skipped:', error.message || error);
-            }
+            } catch (error) { const local = localStorage.getItem(STORAGE_KEY); if (local) appData = { ...appData, ...JSON.parse(local) }; }
             finishLoad(callback);
         }
 
@@ -942,11 +876,11 @@
             if (freshPreview || !hasRemoteIdentity) return;
             try {
                 const cardsString = JSON.stringify(appData.collected);
-                await fetchWithTimeout(SAVE_URL, {
+                await fetch(SAVE_URL, { 
                     method: 'POST', 
                     headers: { 'Content-Type': 'application/json' }, 
                     body: JSON.stringify({ 
-                        item: 'trend_deck_save_v2',
+                        item: 'trend_deck_save',
                         user_id: String(userId),
                         profile_key: profileKey,
                         first_name: String(firstName),
@@ -991,26 +925,19 @@
 
             if (appData.bonusCards > 0) {
                 gameUi?.classList.remove('waiting-for-next-card');
-                setTopHeaderTitle('ТРЕНДЫ 2026 |');
-                setTopHeaderVisible(true);
                 btnBonus.style.display = 'block';
                 btnBonus.innerHTML = `🎁 Открыть бонусную карту (${appData.bonusCards})`;
                 timerBox.style.display = 'none';
                 inviteBanner.style.display = 'none';
             } else {
                 btnBonus.style.display = 'none';
-
+                
                 if (justFinished) {
                     gameUi?.classList.remove('waiting-for-next-card');
-                    setTopHeaderTitle('ТРЕНДЫ 2026 |');
-                    setTopHeaderVisible(true);
                     timerBox.style.display = 'none';
                     inviteBanner.style.display = 'none';
                 } else {
                     gameUi?.classList.add('waiting-for-next-card');
-                    updateHint('Карта дня уже открыта');
-                    setTopHeaderTitle('СЛЕДУЮЩАЯ КАРТА |');
-                    setTopHeaderVisible(true);
                     timerBox.style.display = 'block';
                     inviteBanner.style.display = 'block';
 
@@ -1064,9 +991,9 @@
         loadState(() => {
             selectCard();
             Promise.all([
-                loadScript('./assets/vendor/three-r128.min.js'),
-                loadScript('./assets/vendor/tween-18.6.4.umd.js'),
-                loadScript('./assets/vendor/canvas-confetti-1.6.0.min.js')
+                loadScript('https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'),
+                loadScript('https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js'),
+                loadScript('https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js')
             ]).then(initThreeJS);
         });
 
@@ -1146,13 +1073,9 @@
                     bCtx.clearRect(0, 0, 512, 768); if (cachedBackImg) bCtx.drawImage(cachedBackImg, 0, 0, 512, 768);
                     const btnW=280, btnH=60, btnX=40; bCtx.save(); const sc = isBtnHovered ? 1.02 : 1; bCtx.translate(btnX+btnW/2, 675+btnH/2); bCtx.scale(sc, sc); bCtx.translate(-(btnX+btnW/2), -(675+btnH/2));
                     const btnGradient = bCtx.createLinearGradient(btnX, 675, btnX + btnW, 675);
-                    if (isBtnHovered) {
-                        btnGradient.addColorStop(0, '#ffe878'); btnGradient.addColorStop(0.58, '#c9fff5'); btnGradient.addColorStop(1, '#79e5dc');
-                    } else {
-                        btnGradient.addColorStop(0, '#fff2a0'); btnGradient.addColorStop(0.58, '#dffff8'); btnGradient.addColorStop(1, '#bdf7f1');
-                    }
-                    bCtx.shadowColor='rgba(7,57,54,0.12)'; bCtx.shadowBlur=14; bCtx.shadowOffsetY=4; bCtx.beginPath(); if (bCtx.roundRect) bCtx.roundRect(btnX, 675, btnW, btnH, 30); else bCtx.rect(btnX, 675, btnW, btnH);
-                    bCtx.fillStyle=btnGradient; bCtx.fill(); bCtx.shadowColor='transparent'; bCtx.strokeStyle='rgba(255,255,255,0.85)'; bCtx.lineWidth=2; bCtx.stroke(); bCtx.font='800 20px system-ui, sans-serif'; bCtx.fillStyle='#073936'; bCtx.textAlign='center'; bCtx.textBaseline='middle'; bCtx.fillText('Открыть текст', btnX+btnW/2, 675+btnH/2);
+                    btnGradient.addColorStop(0, '#174f49'); btnGradient.addColorStop(0.58, '#087f7a'); btnGradient.addColorStop(1, '#13b8b1');
+                    bCtx.shadowColor='rgba(7,57,54,0.18)'; bCtx.shadowBlur=14; bCtx.shadowOffsetY=4; bCtx.beginPath(); if (bCtx.roundRect) bCtx.roundRect(btnX, 675, btnW, btnH, 30); else bCtx.rect(btnX, 675, btnW, btnH);
+                    bCtx.fillStyle=btnGradient; bCtx.fill(); bCtx.shadowColor='transparent'; bCtx.strokeStyle='rgba(255,255,255,0.7)'; bCtx.lineWidth=2; bCtx.stroke(); bCtx.font='800 20px system-ui, sans-serif'; bCtx.fillStyle='#ffffff'; bCtx.textAlign='center'; bCtx.textBaseline='middle'; bCtx.fillText('Открыть текст', btnX+btnW/2, 675+btnH/2);
                     bCtx.restore(); backTex.needsUpdate = true;
                 };
                 if (cachedBackImg && cachedBackImg.dataset.id === String(card.id)) { draw(); return; }
@@ -1181,8 +1104,6 @@
 
             if (!isDailyDone || appData.bonusCards > 0) { 
                 createClayLayer(); 
-                setTopHeaderTitle('ТРЕНДЫ 2026 |');
-                setTopHeaderVisible(true);
                 updateHint('Сотри защитный слой'); 
                 document.getElementById('active-ui').style.display = 'block'; 
                 document.getElementById('done-ui').style.display = 'none';
@@ -1216,11 +1137,11 @@
                 isFinishingProcess = true;
 
                 try {
-                    const response = await fetchWithTimeout(LOAD_URL, {
+                    const response = await fetch(LOAD_URL, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
-                            item: 'trend_deck_load_v2',
+                            item: 'trend_deck_load',
                             user_id: String(userId),
                             profile_key: profileKey,
                             platform: trendPlatform,
@@ -1228,9 +1149,7 @@
                             source: 'mirofaktura-app'
                         })
                     });
-                    if (!response.ok) throw new Error(`Progress sync failed: ${response.status}`);
-                    const responseText = await response.text();
-                    const data = responseText ? JSON.parse(responseText) : {};
+                    const data = await response.json();
                     if (data && data.exists === true) {
                         appData.bonusCards = Number(data.bonus_cards) || 0;
                         appData.invitedFriends = Number(data.invited_friends) || 0;
@@ -1282,8 +1201,6 @@
                 document.getElementById('done-ui').style.display = 'none';
                 document.getElementById('active-ui').style.display = 'block';
                 document.getElementById('hand-icon').style.display = 'flex';
-                setTopHeaderTitle('ТРЕНДЫ 2026 |');
-                setTopHeaderVisible(true);
                 updateHint('Сотри защитный слой');
             });
 
@@ -1418,8 +1335,6 @@
                     if (isDailyDone && document.getElementById('done-ui').style.display !== 'none') updateDoneUI();
 
                     if (isGameOver()) { 
-                        setTopHeaderTitle('ТРЕНДЫ 2026 |');
-                        setTopHeaderVisible(true);
                         document.getElementById('gameover-view').style.display='flex'; 
                         canvasDiv.style.opacity='0'; 
                         document.getElementById('game-ui').style.opacity='0'; 

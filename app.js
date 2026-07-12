@@ -65,8 +65,8 @@
   const quiz = [
     {
       kicker: 'Сначала — продукт',
-      title: 'Как сейчас устроено ваше предложение?',
-      hint: 'Выберите вариант, который ближе к вашей ситуации.',
+      title: 'Что вы сейчас продаёте?',
+      hint: 'Выберите вариант, который точнее описывает ситуацию сейчас.',
       image: assets.stepanProduct,
       note: 'Если предложение пока трудно описать одним предложением, это нормально. Для начала достаточно понять, что уже можно предложить клиенту.',
       answers: [
@@ -1221,7 +1221,7 @@
 
         <div class="quiz-actions">
           <button class="primary-btn" type="button" data-action="nextQuestion" ${selected ? '' : 'disabled'}>${state.step === quiz.length - 1 ? 'Показать результат' : 'Дальше'}</button>
-          ${state.step > 0 ? '<button class="soft-btn" type="button" data-action="prevQuestion">Назад</button>' : ''}
+          <button class="soft-btn" type="button" data-action="prevQuestion" ${state.step === 0 ? 'disabled' : ''}>Назад</button>
         </div>
       </article>
     `, 'quiz-screen');
@@ -1970,7 +1970,7 @@
       platform: PLATFORM.key,
       messenger: PLATFORM.messenger,
       source: 'mirofaktura-app',
-      v: '20260712-trends-v4',
+      v: '20260710-home-nav',
     });
     const platformUserId = getPlatformUserId();
     const platformUser = getPlatformUser();
@@ -2021,24 +2021,9 @@
     const wrap = frame?.closest('.trends-frame-wrap');
     if (!frame || !wrap) return;
 
-    let revealTimer;
-    const revealFrame = () => {
-      window.clearTimeout(revealTimer);
+    frame.addEventListener('load', () => {
       window.requestAnimationFrame(() => wrap.classList.add('is-loaded'));
-    };
-
-    frame.addEventListener('load', revealFrame, { once: true });
-
-    // A cached same-origin iframe can finish loading while app.innerHTML is
-    // still being assigned, before the load listener above is attached.
-    // Reveal it immediately in that case so the loader cannot block the deck.
-    try {
-      if (frame.contentDocument?.readyState === 'complete') revealFrame();
-    } catch (error) {}
-
-    // Do not leave an invisible overlay over the deck if a browser skips the
-    // iframe load event during history/cache restoration.
-    revealTimer = window.setTimeout(revealFrame, 2500);
+    }, { once: true });
   }
 
   function render(options = {}) {
