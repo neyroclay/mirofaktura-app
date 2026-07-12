@@ -896,9 +896,6 @@
   const APP_HISTORY_KEY = 'mirofakturaNavigation';
   let navigationDepth = 0;
   let navigationReady = false;
-  let cachedTrendsFrame = null;
-  let cachedTrendsFrameSrc = '';
-  let cachedTrendsFrameLoaded = false;
 
   function syncTelegramBackButton() {
     const backButton = telegramWebApp?.BackButton;
@@ -1987,7 +1984,7 @@
       platform: PLATFORM.key,
       messenger: PLATFORM.messenger,
       source: 'mirofaktura-app',
-      v: '20260712-persistent-trends-frame',
+      v: '20260712-card-button-hint',
     });
     const platformUserId = getPlatformUserId();
     const platformUser = getPlatformUser();
@@ -2015,7 +2012,7 @@
             <span class="trends-frame-loader__mark" aria-hidden="true"></span>
             <span class="trends-frame-loader__text">Открываем колоду…</span>
           </div>
-          <div class="trends-frame-slot" data-trends-frame-slot></div>
+          <iframe class="trends-frame" src="${trendsFrameSrc()}" title="Колода трендов 2026"></iframe>
         </div>
       </div>
     `, 'trends-screen');
@@ -2033,73 +2030,18 @@
     trends: renderTrends
   };
 
-  function trendsFrameCacheHost() {
-    let host = document.getElementById('trends-frame-cache');
-    if (!host) {
-      host = document.createElement('div');
-      host.id = 'trends-frame-cache';
-      host.className = 'trends-frame-cache';
-      host.setAttribute('aria-hidden', 'true');
-      document.body.appendChild(host);
-    }
-    return host;
-  }
-
-  function setTrendsFrameVisible(visible) {
-    try {
-      cachedTrendsFrame?.contentWindow?.postMessage({
-        type: 'mirofaktura:trend-visibility',
-        visible
-      }, '*');
-    } catch (_) {}
-  }
-
-  function getCachedTrendsFrame() {
-    const src = trendsFrameSrc();
-    if (!cachedTrendsFrame || cachedTrendsFrameSrc !== src) {
-      cachedTrendsFrame?.remove();
-      cachedTrendsFrame = document.createElement('iframe');
-      cachedTrendsFrame.className = 'trends-frame';
-      cachedTrendsFrame.title = 'Колода трендов 2026';
-      cachedTrendsFrame.src = src;
-      cachedTrendsFrameSrc = src;
-      cachedTrendsFrameLoaded = false;
-      cachedTrendsFrame.addEventListener('load', () => {
-        cachedTrendsFrameLoaded = true;
-        const wrap = cachedTrendsFrame.closest('.trends-frame-wrap');
-        if (wrap) window.requestAnimationFrame(() => wrap.classList.add('is-loaded'));
-        setTrendsFrameVisible(state.page === 'trends');
-      });
-    }
-    return cachedTrendsFrame;
-  }
-
-  function parkTrendsFrame() {
-    if (!cachedTrendsFrame || !cachedTrendsFrame.parentElement) return;
-    const host = trendsFrameCacheHost();
-    if (cachedTrendsFrame.parentElement !== host) {
-      host.appendChild(cachedTrendsFrame);
-    }
-    setTrendsFrameVisible(false);
-  }
-
   function prepareTrendsFrame() {
-    const slot = app.querySelector('[data-trends-frame-slot]');
-    const wrap = slot?.closest('.trends-frame-wrap');
-    if (!slot || !wrap) return;
+    const frame = app.querySelector('.trends-frame');
+    const wrap = frame?.closest('.trends-frame-wrap');
+    if (!frame || !wrap) return;
 
-    const frame = getCachedTrendsFrame();
-    slot.appendChild(frame);
-
-    if (cachedTrendsFrameLoaded) {
-      wrap.classList.add('is-loaded');
-    }
-    window.requestAnimationFrame(() => setTrendsFrameVisible(true));
+    frame.addEventListener('load', () => {
+      window.requestAnimationFrame(() => wrap.classList.add('is-loaded'));
+    }, { once: true });
   }
 
   function render(options = {}) {
     const renderPage = PAGE_RENDERERS[state.page] || renderHome;
-    parkTrendsFrame();
     app.innerHTML = renderPage();
     prepareImageReveals();
     prepareTrendsFrame();

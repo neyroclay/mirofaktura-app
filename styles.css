@@ -2342,14 +2342,15 @@ h3 {
   position: relative;
   width: 100%;
   margin: 0;
-  height: max(660px, calc(100vh - 124px));
-  height: max(660px, calc(100svh - 124px));
-  min-height: 0;
+  min-height: min(780px, calc(100vh - 124px));
   overflow: hidden;
   border-radius: 30px;
   background: transparent;
   border: 1px solid rgba(255, 255, 255, 0.58);
   box-shadow: none;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .trends-frame-loader {
@@ -2398,36 +2399,17 @@ h3 {
 .trends-frame {
   display: block;
   width: 100%;
-  height: 100%;
-  min-height: 0;
+  height: min(780px, calc(100vh - 124px));
+  min-height: 660px;
   border: 0;
   background: transparent;
   opacity: 0;
   transition: opacity 260ms ease;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .trends-frame-wrap.is-loaded .trends-frame {
-  opacity: 1;
-}
-
-.trends-frame-slot {
-  width: 100%;
-  height: 100%;
-}
-
-.trends-frame-cache {
-  position: fixed;
-  left: -200vw;
-  top: 0;
-  width: min(100vw, 760px);
-  height: max(660px, calc(100vh - 124px));
-  height: max(660px, calc(100svh - 124px));
-  overflow: hidden;
-  visibility: hidden;
-  pointer-events: none;
-}
-
-.trends-frame-cache .trends-frame {
   opacity: 1;
 }
 
