@@ -1969,7 +1969,7 @@
       platform: PLATFORM.key,
       messenger: PLATFORM.messenger,
       source: 'mirofaktura-app',
-      v: '20260712-performance-visual',
+      v: '20260712-status-position',
     });
     const platformUserId = getPlatformUserId();
     const platformUser = getPlatformUser();

@@ -404,7 +404,7 @@
             #${CONTAINER_ID} .hint-text { color:#1F2E2E; font-size:14px; margin-bottom:15px; letter-spacing:0.5px; font-weight:700; background:#FFF; padding:10px 20px; border-radius:30px; box-shadow:0 8px 20px rgba(0,0,0,0.06); pointer-events:none; transition:opacity 0.3s; }
             #${CONTAINER_ID} #game-ui.waiting-for-next-card .hint-text { height:18px; min-height:18px; width:1px; margin:0 0 12px; padding:0; overflow:hidden; background:transparent; box-shadow:none; opacity:0 !important; visibility:hidden !important; }
             #${CONTAINER_ID} #done-ui { position:relative; }
-            #${CONTAINER_ID} .waiting-card-status { display:none; position:absolute; left:50%; bottom:calc(100% + 18px); transform:translateX(-50%); color:#1F2E2E; font-size:14px; letter-spacing:0.5px; font-weight:700; background:#FFF; padding:10px 20px; border-radius:30px; box-shadow:0 8px 20px rgba(0,0,0,0.06); pointer-events:none; white-space:nowrap; }
+            #${CONTAINER_ID} .waiting-card-status { display:none; position:fixed; left:50%; top:clamp(72px, 10vh, 140px); z-index:24; transform:translateX(-50%); color:#1F2E2E; font-size:14px; letter-spacing:0.5px; font-weight:700; background:#FFF; padding:10px 20px; border-radius:30px; box-shadow:0 8px 20px rgba(0,0,0,0.06); pointer-events:none; white-space:nowrap; }
             #${CONTAINER_ID} #game-ui.waiting-for-next-card .waiting-card-status { display:block; }
             #${CONTAINER_ID} .progress-wrapper { pointer-events:none; width:160px; height:3px; background:#F7F7F7; margin:0 auto 10px auto; border-radius:2px; overflow:hidden; transition:opacity 0.5s ease; }
             #${CONTAINER_ID} .progress-fill { height:100%; width:0%; background:#00D2D3; transition:width 0.1s; }
