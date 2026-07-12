@@ -1064,9 +1064,9 @@
         loadState(() => {
             selectCard();
             Promise.all([
-                loadScript('https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'),
-                loadScript('https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js'),
-                loadScript('https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js')
+                loadScript('./assets/vendor/three-r128.min.js'),
+                loadScript('./assets/vendor/tween-18.6.4.umd.js'),
+                loadScript('./assets/vendor/canvas-confetti-1.6.0.min.js')
             ]).then(initThreeJS);
         });
 
