@@ -65,8 +65,8 @@
   const quiz = [
     {
       kicker: 'Сначала — продукт',
-      title: 'Что вы сейчас продаёте?',
-      hint: 'Выберите вариант, который точнее описывает ситуацию сейчас.',
+      title: 'Что у вас уже есть для продажи?',
+      hint: 'Выберите вариант, который точнее описывает вашу ситуацию.',
       image: assets.stepanProduct,
       note: 'Если предложение пока трудно описать одним предложением, это нормально. Для начала достаточно понять, что уже можно предложить клиенту.',
       answers: [
@@ -1186,7 +1186,6 @@
     const selectedNote = selectedAnswer?.[3] || item.note;
     const progress = Math.round(((state.step + 1) / quiz.length) * 100);
     return screen(`
-      <button class="back-link" type="button" data-page="home">← На главную</button>
       <div class="quiz-head">
         <div class="quiz-meta">
           <span>Вопрос ${state.step + 1} из ${quiz.length}</span>
@@ -1221,7 +1220,9 @@
 
         <div class="quiz-actions">
           <button class="primary-btn" type="button" data-action="nextQuestion" ${selected ? '' : 'disabled'}>${state.step === quiz.length - 1 ? 'Показать результат' : 'Дальше'}</button>
-          <button class="soft-btn" type="button" data-action="prevQuestion" ${state.step === 0 ? 'disabled' : ''}>Назад</button>
+          ${state.step === 0
+            ? '<button class="soft-btn" type="button" data-action="exitQuiz">Выйти из квиза</button>'
+            : '<button class="soft-btn" type="button" data-action="prevQuestion">Назад</button>'}
         </div>
       </article>
     `, 'quiz-screen');
@@ -1358,7 +1359,6 @@
         <p class="lead">Здесь собраны интерактивные материалы Мирофактуры. Короткая диагностика подскажет, какой из них сейчас будет полезнее.</p>
         <div class="library-actions">
           <button class="primary-btn" type="button" data-action="startQuiz">Подобрать материал</button>
-          <button class="soft-btn" type="button" data-page="home">На главную</button>
         </div>
       </div>
 
@@ -1970,7 +1970,7 @@
       platform: PLATFORM.key,
       messenger: PLATFORM.messenger,
       source: 'mirofaktura-app',
-      v: '20260712-card-status-safe',
+      v: '20260712-ui-cleanup',
     });
     const platformUserId = getPlatformUserId();
     const platformUser = getPlatformUser();
@@ -2093,6 +2093,13 @@
       state.step = 0;
       state.answers = {};
       navigateTo('quiz');
+      return;
+    }
+
+    if (action === 'exitQuiz') {
+      state.step = 0;
+      state.answers = {};
+      navigateTo('home');
       return;
     }
 

@@ -1076,7 +1076,16 @@
                 const draw = () => {
                     bCtx.clearRect(0, 0, 512, 768); if (cachedBackImg) bCtx.drawImage(cachedBackImg, 0, 0, 512, 768);
                     const btnW=280, btnH=60, btnX=40; bCtx.save(); const sc = isBtnHovered ? 1.02 : 1; bCtx.translate(btnX+btnW/2, 675+btnH/2); bCtx.scale(sc, sc); bCtx.translate(-(btnX+btnW/2), -(675+btnH/2));
-                    const btnGradient = bCtx.createLinearGradient(btnX, 675, btnX + btnW, 675);
+                    const gradientAngle = 110 * Math.PI / 180;
+                    const gradientX = Math.sin(gradientAngle), gradientY = -Math.cos(gradientAngle);
+                    const gradientHalf = (Math.abs(btnW * gradientX) + Math.abs(btnH * gradientY)) / 2;
+                    const gradientCenterX = btnX + btnW / 2, gradientCenterY = 675 + btnH / 2;
+                    const btnGradient = bCtx.createLinearGradient(
+                        gradientCenterX - gradientX * gradientHalf,
+                        gradientCenterY - gradientY * gradientHalf,
+                        gradientCenterX + gradientX * gradientHalf,
+                        gradientCenterY + gradientY * gradientHalf
+                    );
                     btnGradient.addColorStop(0, '#174f49'); btnGradient.addColorStop(0.58, '#087f7a'); btnGradient.addColorStop(1, '#13b8b1');
                     bCtx.shadowColor='rgba(7,57,54,0.18)'; bCtx.shadowBlur=14; bCtx.shadowOffsetY=4; bCtx.beginPath(); if (bCtx.roundRect) bCtx.roundRect(btnX, 675, btnW, btnH, 30); else bCtx.rect(btnX, 675, btnW, btnH);
                     bCtx.fillStyle=btnGradient; bCtx.fill(); bCtx.shadowColor='transparent'; bCtx.strokeStyle='rgba(255,255,255,0.7)'; bCtx.lineWidth=2; bCtx.stroke(); bCtx.font='800 20px system-ui, sans-serif'; bCtx.fillStyle='#ffffff'; bCtx.textAlign='center'; bCtx.textBaseline='middle'; bCtx.fillText('Открыть текст', btnX+btnW/2, 675+btnH/2);
