@@ -843,6 +843,7 @@
                     
                     <button id="btn-next-bonus" type="button" class="ask-ai-main-btn" style="display:none; margin-bottom:15px; font-size:14px; padding:14px; width:100%;">🎁 Открыть бонусную карту</button>
 
+                    <div class="native-waiting-sheet">
                     <div class="timer-box" id="daily-timer" style="display:none; width:100%; box-sizing:border-box;">
                         <div style="color:#8A9999;font-size:11px;">НОВАЯ КАРТА ЧЕРЕЗ</div>
                         <div class="timer-digits" id="timer-val">00:00:00</div>
@@ -855,6 +856,7 @@
                     </div>
 
                     <div class="collection-hint">Карта сохранена в <span id="link-to-collection" style="color:#087f7a;cursor:pointer;">КОЛЛЕКЦИИ</span></div>
+                    </div>
                 </div>
             </div>
             

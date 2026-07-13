@@ -90,35 +90,136 @@
   position: static !important;
 }
 
+.trends-native-screen #c37.trend-native-embedded .native-waiting-sheet {
+  display: contents;
+}
+
+.trends-native-screen #c37.trend-native-embedded #game-ui.waiting-for-next-card #done-ui::before {
+  height: 0 !important;
+}
+
+.trends-native-screen #c37.trend-native-embedded #game-ui.waiting-for-next-card .native-waiting-sheet {
+  position: absolute;
+  left: 50%;
+  bottom: calc(clamp(50px, calc(876px - 100vh), 158px) + env(safe-area-inset-bottom));
+  z-index: 54;
+  display: block;
+  width: min(calc(100% - 32px), 328px);
+  padding: 18px 18px 14px;
+  box-sizing: border-box;
+  border: 1px solid rgba(255, 255, 255, 0.92);
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at 8% 0%, rgba(249, 236, 159, 0.3), transparent 34%),
+    linear-gradient(145deg, rgba(255, 255, 252, 0.98), rgba(242, 253, 249, 0.96));
+  box-shadow:
+    0 26px 58px rgba(20, 71, 66, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(22px) saturate(1.08);
+  -webkit-backdrop-filter: blur(22px) saturate(1.08);
+  transform: translateX(-50%);
+  animation: native-waiting-sheet-in 360ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  pointer-events: auto;
+}
+
 .trends-native-screen #c37.trend-native-embedded .waiting-card-status {
   position: absolute !important;
   top: clamp(18px, 3vh, 28px) !important;
   left: 50% !important;
   z-index: 65;
   margin: 0 !important;
+  padding: 9px 16px !important;
+  color: #f8fffc !important;
+  background: rgba(7, 57, 54, 0.92) !important;
+  border: 1px solid rgba(255, 255, 255, 0.36);
+  box-shadow: 0 12px 28px rgba(7, 57, 54, 0.2) !important;
   transform: translateX(-50%) !important;
 }
 
-.trends-native-screen #c37.trend-native-embedded #invite-banner {
-  padding: 14px 12px !important;
-  margin-top: -10px !important;
-  margin-bottom: 0 !important;
+.trends-native-screen #c37.trend-native-embedded #game-ui.waiting-for-next-card #daily-timer {
+  padding: 0 0 15px !important;
+  margin: 0 0 15px !important;
+  border-bottom: 1px solid rgba(82, 124, 118, 0.16);
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
 }
 
-.trends-native-screen #c37.trend-native-embedded #invite-title {
+.trends-native-screen #c37.trend-native-embedded #game-ui.waiting-for-next-card .timer-digits {
+  margin-top: 3px;
+  font-size: 34px !important;
+  line-height: 1;
+  letter-spacing: -1px;
+}
+
+.trends-native-screen #c37.trend-native-embedded #game-ui.waiting-for-next-card #invite-banner {
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  text-align: left !important;
+}
+
+.trends-native-screen #c37.trend-native-embedded #game-ui.waiting-for-next-card #invite-title {
   margin-bottom: 8px !important;
+  font-size: 16px !important;
   line-height: 1.25 !important;
+  text-align: left;
 }
 
-.trends-native-screen #c37.trend-native-embedded #invite-desc {
-  margin-bottom: 10px !important;
+.trends-native-screen #c37.trend-native-embedded #game-ui.waiting-for-next-card #invite-desc {
+  margin-bottom: 12px !important;
   line-height: 1.4 !important;
+  text-align: left;
 }
 
-.trends-native-screen #c37.trend-native-embedded #invite-desc br {
+.trends-native-screen #c37.trend-native-embedded #game-ui.waiting-for-next-card #invite-desc br {
   display: none;
 }
 
-.trends-native-screen #c37.trend-native-embedded #btn-invite-friend {
-  padding: 12px !important;
+.trends-native-screen #c37.trend-native-embedded #game-ui.waiting-for-next-card #invite-desc > div {
+  display: flex !important;
+  width: 100%;
+  margin-top: 12px;
+  padding: 10px 12px !important;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
+  border: 0 !important;
+  border-radius: 14px !important;
+  background: rgba(249, 236, 159, 0.38) !important;
+}
+
+.trends-native-screen #c37.trend-native-embedded #game-ui.waiting-for-next-card #btn-invite-friend {
+  min-height: 46px;
+  padding: 12px 16px !important;
+  border: 1px solid rgba(255, 255, 255, 0.94) !important;
+  background: linear-gradient(105deg, #f9ec9f 0%, #def8f1 68%, #cff5f1 100%) !important;
+  box-shadow: 0 10px 22px rgba(14, 77, 72, 0.12) !important;
+}
+
+.trends-native-screen #c37.trend-native-embedded #game-ui.waiting-for-next-card .collection-hint {
+  margin: 12px 0 0 !important;
+  padding-top: 12px;
+  border-top: 1px solid rgba(82, 124, 118, 0.14);
+  font-size: 12px !important;
+}
+
+@keyframes native-waiting-sheet-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 12px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .trends-native-screen #c37.trend-native-embedded #game-ui.waiting-for-next-card .native-waiting-sheet {
+    animation: none;
+  }
 }
