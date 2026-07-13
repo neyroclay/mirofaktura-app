@@ -13,6 +13,7 @@
   const telegramWebApp = window.Telegram?.WebApp || null;
   const URL_PARAMS = new URLSearchParams(window.location.search);
   const USE_NATIVE_TRENDS = URL_PARAMS.get('trends_native') === '1';
+  const NATIVE_TRENDS_ASSET_VERSION = '20260713-native-isolated-1';
   const APP_PLATFORM = (() => {
     const params = URL_PARAMS;
     const raw = String(
@@ -998,8 +999,9 @@
 
   function screen(content, cls = '') {
     const hasBottomNav = PAGES_WITH_BOTTOM_NAV.has(state.page) || (USE_NATIVE_TRENDS && state.page === 'trends');
+    const hasNativeTrendsShell = USE_NATIVE_TRENDS && state.page === 'trends';
     return `
-      <main class="app-shell">
+      <main class="app-shell ${hasNativeTrendsShell ? 'trends-native-shell' : ''}">
         <section class="screen ${hasBottomNav ? 'has-bottom-nav' : ''} ${cls}">
           ${header()}
           ${content}
@@ -2061,22 +2063,52 @@
     }, { once: true });
   }
 
-  let trendDeckScriptPromise = null;
+  let nativeTrendDeckScriptPromise = null;
+  let nativeTrendDeckStylesPromise = null;
 
-  function loadTrendDeckScript() {
+  function loadNativeTrendDeckStyles() {
+    if (nativeTrendDeckStylesPromise) return nativeTrendDeckStylesPromise;
+
+    nativeTrendDeckStylesPromise = new Promise((resolve, reject) => {
+      const existing = document.getElementById('mirofaktura-trends-native-styles');
+      if (existing) {
+        resolve();
+        return;
+      }
+
+      const link = document.createElement('link');
+      link.id = 'mirofaktura-trends-native-styles';
+      link.rel = 'stylesheet';
+      link.href = `./trends-native.css?v=${NATIVE_TRENDS_ASSET_VERSION}`;
+      link.onload = () => resolve();
+      link.onerror = () => reject(new Error('native trend deck styles failed'));
+      document.head.appendChild(link);
+    });
+
+    return nativeTrendDeckStylesPromise;
+  }
+
+  function loadNativeTrendDeckScript() {
     if (window.MirofacturaTrendDeck) return Promise.resolve();
-    if (trendDeckScriptPromise) return trendDeckScriptPromise;
+    if (nativeTrendDeckScriptPromise) return nativeTrendDeckScriptPromise;
 
     window.MIROFAKTURA_TRENDS_MANUAL_MOUNT = true;
-    trendDeckScriptPromise = new Promise((resolve, reject) => {
+    nativeTrendDeckScriptPromise = new Promise((resolve, reject) => {
       const script = document.createElement('script');
-      script.src = './trend-deck-legacy.js?v=20260712-native-shell-4';
+      script.src = `./trend-deck-native.js?v=${NATIVE_TRENDS_ASSET_VERSION}`;
       script.onload = () => resolve();
-      script.onerror = () => reject(new Error('trend deck script failed'));
+      script.onerror = () => reject(new Error('native trend deck script failed'));
       document.body.appendChild(script);
     });
 
-    return trendDeckScriptPromise;
+    return nativeTrendDeckScriptPromise;
+  }
+
+  function loadNativeTrendDeckAssets() {
+    return Promise.all([
+      loadNativeTrendDeckStyles(),
+      loadNativeTrendDeckScript()
+    ]);
   }
 
   function prepareNativeTrends(host) {
@@ -2103,7 +2135,7 @@
       });
     });
 
-    loadTrendDeckScript()
+    loadNativeTrendDeckAssets()
       .then(() => {
         window.MirofacturaTrendDeck?.mount?.({
           containerId: host.id,
