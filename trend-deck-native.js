@@ -2,6 +2,7 @@
 (function() {
     let activeDeckInstance = null;
     let mountSerial = 0;
+    let pendingShareRequested = false;
     const DEFAULT_CONTAINER_ID = 'c37';
     // --- ТЕКСТЫ ДОКУМЕНТОВ ---
     const LEGAL_TEXT_PRIVACY = `Политика в отношении обработки персональных данных (политика конфиденциальности)
@@ -277,6 +278,7 @@
         function addCleanup(fn) { cleanupStack.push(fn); }
         const instance = {
             showTab: null,
+            share: null,
             destroy() {
                 if (destroyed) return;
                 destroyed = true;
@@ -1208,6 +1210,10 @@
 
         loadState(() => {
             selectCard();
+            if (pendingShareRequested && instance.share) {
+                pendingShareRequested = false;
+                instance.share();
+            }
             deckLibrariesReady.then(initThreeJS);
         });
 
@@ -1452,6 +1458,10 @@
 
             // НОВАЯ ЛОГИКА ШЕРИНГА (Web Share API)
             async function triggerShare() {
+                if (!currentCardData) {
+                    pendingShareRequested = true;
+                    return;
+                }
                 const shareUrl = `${trendEntryUrl}?start=${encodeURIComponent(String(userId))}`;
                 const text = `Мне выпал стратегический тренд 2026: ${currentCardData.title}\n\nЗагляни в будущее и собери свою коллекцию инсайтов 👇`;
                 const fullText = text + '\n' + shareUrl;
@@ -1505,6 +1515,8 @@
                 // Если нет поддержки share api (например, старый браузер или ПК)
                 fallbackCopy();
             }
+
+            instance.share = triggerShare;
 
             document.getElementById('btn-tab-home').addEventListener('click', () => {
                 if (window.parent !== window) {
@@ -1659,11 +1671,23 @@
         mount: mountTrendDeck,
         destroy() {
             mountSerial += 1;
+            pendingShareRequested = false;
             if (activeDeckInstance?.destroy) activeDeckInstance.destroy();
             activeDeckInstance = null;
         },
         isMounted() {
             return Boolean(activeDeckInstance);
+        },
+        share() {
+            if (activeDeckInstance?.share) {
+                activeDeckInstance.share();
+                return true;
+            }
+            if (mountSerial > 0) {
+                pendingShareRequested = true;
+                return true;
+            }
+            return false;
         },
         showTab(tab) {
             activeDeckInstance?.showTab?.(tab);

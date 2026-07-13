@@ -13,7 +13,7 @@
   const telegramWebApp = window.Telegram?.WebApp || null;
   const URL_PARAMS = new URLSearchParams(window.location.search);
   const USE_NATIVE_TRENDS = URL_PARAMS.get('trends_native') === '1';
-  const NATIVE_TRENDS_ASSET_VERSION = '20260713-native-isolated-9';
+  const NATIVE_TRENDS_ASSET_VERSION = '20260713-native-isolated-10';
   const APP_PLATFORM = (() => {
     const params = URL_PARAMS;
     const raw = String(
@@ -2439,6 +2439,10 @@
     }
 
     if (action === 'share') {
+      if (state.page === 'trends' && USE_NATIVE_TRENDS && window.MirofacturaTrendDeck?.share?.()) {
+        return;
+      }
+
       const text = 'Загляните в Мирофактуру — мастерскую цифровых миров. Здесь можно найти идеи и интерактивные инструменты для маркетинга, продуктов и продаж, а ещё вытянуть карту из авторской колоды «Тренды 2026».';
       const shareUrl = PLATFORM.entryUrl;
       if (APP_PLATFORM === 'telegram' && telegramWebApp) {
