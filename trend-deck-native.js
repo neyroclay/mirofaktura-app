@@ -854,7 +854,7 @@
                     <div id="invite-banner" style="background:#FFF; padding:20px 15px; border-radius:24px; margin-bottom:15px; box-shadow:0 10px 30px rgba(0,210,211,0.15); width:100%; box-sizing:border-box; display:none; text-align:center; border: 1px solid rgba(0,210,211,0.2);">
                         <div style="font-weight:900; font-size:16px; color:#1F2E2E; margin-bottom:12px; text-transform:uppercase; letter-spacing:0.5px;" id="invite-title">Расширьте картину будущего</div>
                         <div style="font-size:13px; color:#5C6B6B; margin-bottom:18px; line-height:1.5;" id="invite-desc"></div>
-                        <button id="btn-invite-friend" type="button" class="ask-ai-main-btn" style="width:100%; background:#1F2E2E; color:#FFF; box-shadow:0 4px 15px rgba(0,0,0,0.2); padding:14px; font-size:14px;"><span class="material-icons-round" style="font-size:18px;">person_add</span> Пригласить друга</button>
+                        <button id="btn-invite-friend" type="button" class="primary-btn"><span class="material-icons-round" style="font-size:18px;">person_add</span> Пригласить друга</button>
                     </div>
 
                     <div class="collection-hint">Карта сохранена в <span id="link-to-collection" style="color:#087f7a;cursor:pointer;">КОЛЛЕКЦИИ</span></div>
