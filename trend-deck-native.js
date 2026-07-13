@@ -500,10 +500,11 @@
             #${CONTAINER_ID} .onboard-btn:not(:disabled), #${CONTAINER_ID} .primary-btn, #${CONTAINER_ID} .consult-btn { box-shadow:0 4px 15px rgba(0,210,211,0.3); transition:all 0.3s; }
             #${CONTAINER_ID} .read-scroll-area { color:#1F2E2E; font-size:16px; line-height:1.6; margin-top:10px; margin-bottom:5px; max-height:40vh; overflow-y:auto; padding-right:10px; text-align:left; white-space:pre-wrap; touch-action:pan-y; overscroll-behavior:contain; -webkit-overflow-scrolling:touch; }
             #${CONTAINER_ID} .read-scroll-area::-webkit-scrollbar { width:4px; } #${CONTAINER_ID} .read-scroll-area::-webkit-scrollbar-track { background:rgba(0,0,0,0.05); } #${CONTAINER_ID} .read-scroll-area::-webkit-scrollbar-thumb { background:#8AB7AA; border-radius:2px; }
-            @keyframes fadeInUpCard { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
             @keyframes fadeInView { from { opacity:0; transform:translateY(15px); } to { opacity:1; transform:translateY(0); } }
             #${CONTAINER_ID} .lib-grid { display:flex; flex-wrap:wrap; justify-content:center; gap:30px; width:100%; max-width:1000px; margin:0 auto; }
-            #${CONTAINER_ID} .lib-card-container { perspective:1000px; aspect-ratio:2/3; cursor:pointer; width:280px; flex:0 0 280px; animation:fadeInUpCard 0.4s cubic-bezier(0.16,1,0.3,1) backwards; }
+            #${CONTAINER_ID} #library-view.visible .lib-grid,
+            #${CONTAINER_ID} #authors-view.visible .authors-container { animation:fadeInView 0.5s ease both; }
+            #${CONTAINER_ID} .lib-card-container { perspective:1000px; aspect-ratio:2/3; cursor:pointer; width:280px; flex:0 0 280px; }
             #${CONTAINER_ID} .lib-read-btn { background:linear-gradient(105deg,#F9EC9F 0%,#DEF8F1 68%,#CFF5F1 100%); color:#073936; padding:8px 32px; border-radius:30px; font-size:12px; font-weight:bold; text-decoration:none; border:1px solid rgba(255,255,255,0.92); width:auto; align-self:flex-start; transition:transform 0.25s ease,filter 0.25s ease; cursor:pointer; box-sizing:border-box; display:block; text-align:center; box-shadow:0 8px 18px rgba(14,77,72,0.12); }
             #${CONTAINER_ID} .collection-hint { color:#8A9999; font-size:13px; font-weight:600; margin-top:5px; margin-bottom:15px; text-align:center; pointer-events:auto; transition:opacity 0.3s; }
             #${CONTAINER_ID} .nav { position:absolute; bottom:max(20px, env(safe-area-inset-bottom)); left:50%; transform:translateX(-50%); width:calc(100% - 40px); max-width:400px; background:rgba(255,255,255,0.75); backdrop-filter:blur(25px); -webkit-backdrop-filter:blur(25px); display:flex; border:1px solid rgba(255,255,255,0.6); pointer-events:auto; z-index:50; padding:10px 15px; box-sizing:border-box; align-items:center; border-radius:40px; box-shadow:0 15px 35px rgba(0,0,0,0.1), inset 0 0 0 1px rgba(255,255,255,0.4); }
@@ -518,8 +519,12 @@
             #${CONTAINER_ID} .lib-card-container.flipped .lib-card-inner { transform:rotateY(180deg); }
             #${CONTAINER_ID} .lib-card-face { position:absolute; width:100%; height:100%; -webkit-backface-visibility:hidden; backface-visibility:hidden; border-radius:12px; background-size:cover; background-position:center; border:1px solid #F7F7F7; box-sizing:border-box; }
             #${CONTAINER_ID} .lib-card-back { transform:rotateY(180deg); background-image:url('${TEXT_BACK_IMG}'); background-color:#F7F7F7; display:flex; flex-direction:column; align-items:flex-start; justify-content:flex-end; padding:20px 20px 22px; }
-            #${CONTAINER_ID} .lib-card-locked { aspect-ratio:2/3; border-radius:12px; background-color:#1F2E2E; display:flex; align-items:center; justify-content:center; position:relative; box-sizing:border-box; border:1px solid rgba(255,255,255,0.1); overflow:hidden; width:280px; flex:0 0 280px; animation:fadeInUpCard 0.4s cubic-bezier(0.16,1,0.3,1) backwards; }
-            #${CONTAINER_ID} .authors-container { width:100%; max-width:600px; margin:0 auto; text-align:left; padding-bottom:10px; opacity:0; animation:fadeInView 0.5s ease forwards; }
+            #${CONTAINER_ID} .lib-card-locked { aspect-ratio:2/3; border-radius:12px; background-color:#1F2E2E; display:flex; align-items:center; justify-content:center; position:relative; box-sizing:border-box; border:1px solid rgba(255,255,255,0.1); overflow:hidden; width:280px; flex:0 0 280px; }
+            #${CONTAINER_ID} .authors-container { width:100%; max-width:600px; margin:0 auto; text-align:left; padding-bottom:10px; }
+            @media (prefers-reduced-motion: reduce) {
+                #${CONTAINER_ID} #library-view.visible .lib-grid,
+                #${CONTAINER_ID} #authors-view.visible .authors-container { animation:none; opacity:1; transform:none; }
+            }
             #${CONTAINER_ID} .author-card { display:flex; align-items:flex-start; margin-bottom:20px; background:#F7F7F7; padding:15px; border-radius:16px; border:1px solid #E0E0E0; text-decoration:none; cursor:pointer; transition:all 0.3s ease; }
             #${CONTAINER_ID} .author-card:hover { transform:scale(1.02); box-shadow:0 8px 25px rgba(0,210,211,0.15); border-color:rgba(0,210,211,0.4); }
             #${CONTAINER_ID} .author-img { width:60px; height:60px; border-radius:50%; object-fit:cover; margin-right:15px; border:2px solid #00D2D3; flex-shrink:0; }
@@ -765,7 +770,7 @@
                 <div class="lib-grid" id="lib-grid-content"></div>
             </div>
             
-            <div id="authors-view" class="fullscreen-view" style="display:none;">
+            <div id="authors-view" class="fullscreen-view">
                 <div class="authors-container">
                     
                     <div style="text-align:center;color:#1F2E2E;font-weight:800;margin-bottom:20px;letter-spacing:2px;font-size:14px;">АВТОРЫ ПРОЕКТА</div>
@@ -1350,7 +1355,7 @@
             function onMove(e) { updateParallax(e); if (isDragging) { if (e.cancelable) e.preventDefault(); const cx=e.touches?e.touches[0].clientX:e.clientX; const cy=e.touches?e.touches[0].clientY:e.clientY; if (Math.abs(cx-touchStartX)>15 || Math.abs(cy-touchStartY)>15) isTap=false; interact(e); } else { checkHover(e); } }
             function onUp(e) { isDragging=false; if (isScratching) { scratchSound.pause(); isScratching=false; } clearTimeout(scratchTimeout); if (isTap) { if ((isDailyDone && appData.bonusCards <= 0) || !clayMesh) { const m = getMouse(e); if (!isNaN(m.x)) { raycaster.setFromCamera(m, camera); if (isFlipped) { const hits = raycaster.intersectObject(backMesh); if (hits.length && hits[0].uv.y>0.04 && hits[0].uv.y<0.12) { window.app_openReadModal(currentCardData.id); isTap=false; return; } } const hits = raycaster.intersectObjects([frontMesh, backMesh]); if (hits.length) flipCard(); } } } isTap=false; }
             function checkHover(e) { const m=getMouse(e); if(isNaN(m.x)) return; mouse.set(m.x,m.y); raycaster.setFromCamera(mouse,camera); if (!clayMesh) { let hov=false; if (isFlipped) { const h=raycaster.intersectObject(backMesh); if(h.length&&h[0].uv.y>0.04&&h[0].uv.y<0.12) hov=true; } if (hov!==isBtnHovered) { isBtnHovered=hov; updateBackSide(currentCardData); } canvas.style.cursor='pointer'; return; } const h=raycaster.intersectObject(clayMesh); canvas.style.cursor=h.length?'crosshair':'default'; }
-            function interact(e) { if (document.getElementById('library-view').classList.contains('visible') || document.getElementById('authors-view').style.display==='flex' || document.getElementById('onboarding-view').classList.contains('visible') || document.getElementById('read-trend-modal').classList.contains('visible') || document.getElementById('legal-text-modal').classList.contains('visible') ) return; const m=getMouse(e); if(isNaN(m.x)) return; mouse.set(m.x,m.y); raycaster.setFromCamera(mouse,camera); if (clayMesh && (!isDailyDone || appData.bonusCards > 0)) { const h=raycaster.intersectObject(clayMesh); if (h.length) dig(h[0].uv.x, h[0].uv.y); } }
+            function interact(e) { if (document.getElementById('library-view').classList.contains('visible') || document.getElementById('authors-view').classList.contains('visible') || document.getElementById('onboarding-view').classList.contains('visible') || document.getElementById('read-trend-modal').classList.contains('visible') || document.getElementById('legal-text-modal').classList.contains('visible') ) return; const m=getMouse(e); if(isNaN(m.x)) return; mouse.set(m.x,m.y); raycaster.setFromCamera(mouse,camera); if (clayMesh && (!isDailyDone || appData.bonusCards > 0)) { const h=raycaster.intersectObject(clayMesh); if (h.length) dig(h[0].uv.x, h[0].uv.y); } }
             
             function dig(uvX, uvY) {
                 if (isAudioUnlocked && !isScratching) { isScratching=true; const p=scratchSound.play(); if(p) p.catch(()=>{}); } clearTimeout(scratchTimeout); scratchTimeout=setTimeout(()=>{ if(isScratching){scratchSound.pause();isScratching=false;} },100);
@@ -1539,14 +1544,14 @@
             function renderLibrary() {
                 const grid=document.getElementById('lib-grid-content'); grid.innerHTML='';
                 const sorted=[...CARDS_DB].sort((a,b)=>{ const ai=appData.collected.indexOf(a.id), bi=appData.collected.indexOf(b.id); const au=ai!==-1, bu=bi!==-1; if (au&&!bu) return -1; if (!au&&bu) return 1; if (au&&bu) return bi-ai; return a.id-b.id; });
-                sorted.forEach((card,i)=>{
-                    const unlocked=appData.collected.includes(card.id); const delay=i*0.03;
+                sorted.forEach((card)=>{
+                    const unlocked=appData.collected.includes(card.id);
                     if (unlocked) {
-                        const el=document.createElement('div'); el.className='lib-card-container'; el.style.animationDelay=`${delay}s`;
+                        const el=document.createElement('div'); el.className='lib-card-container';
                         el.innerHTML=`<div class="lib-card-inner"><div class="lib-card-face" style="background-image:url('${card.imgFront}')"></div><div class="lib-card-face lib-card-back" style="background-image:url('${card.imgBack||TEXT_BACK_IMG}')"><button class="lib-read-btn" type="button" onclick="event.stopPropagation();window.app_openReadModal(${card.id})">Открыть текст</button></div></div>`;
                         el.onclick=function(e){ if(!e.target.classList.contains('lib-read-btn')) this.classList.toggle('flipped'); }; grid.appendChild(el);
                     } else {
-                        const el=document.createElement('div'); el.className='lib-card-locked'; el.style.animationDelay=`${delay}s`;
+                        const el=document.createElement('div'); el.className='lib-card-locked';
                         el.innerHTML=`<div style="position:absolute;inset:0;background-image:url('${card.imgFront}');background-size:cover;background-position:center;filter:grayscale(60%) brightness(35%);"></div><div style="z-index:2;background:rgba(255,255,255,0.15);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,0.3);box-shadow:0 8px 20px rgba(0,0,0,0.2);"><span class="material-icons-round" style="font-size:24px;color:rgba(255,255,255,0.9);">lock</span></div>`;
                         grid.appendChild(el);
                     }
@@ -1555,7 +1560,7 @@
 
             function toggleView(viewId) {
                 container.dispatchEvent(new CustomEvent('mirofactura:trend-tab', { detail: { tab: viewId } }));
-                document.getElementById('library-view').classList.remove('visible'); document.getElementById('authors-view').style.display='none'; document.getElementById('gameover-view').style.display='none';
+                document.getElementById('library-view').classList.remove('visible'); document.getElementById('authors-view').classList.remove('visible'); document.getElementById('gameover-view').style.display='none';
                 
                 const topHeader = document.getElementById('top-header-nav');
                 if (topHeader) topHeader.style.display = 'flex';
@@ -1593,7 +1598,7 @@
                     }
                 } 
                 else if (viewId==='authors') { 
-                    document.getElementById('authors-view').style.display='flex'; canvasDiv.style.opacity='0'; document.getElementById('game-ui').style.opacity='0'; document.getElementById('btn-tab-authors').classList.add('active'); hand.style.display='none'; 
+                    document.getElementById('authors-view').classList.add('visible'); canvasDiv.style.opacity='0'; document.getElementById('game-ui').style.opacity='0'; document.getElementById('btn-tab-authors').classList.add('active'); hand.style.display='none'; 
                     
                     const st = document.getElementById('authors-view').scrollTop;
                     if (topHeader) {
