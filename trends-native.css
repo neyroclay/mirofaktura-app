@@ -147,6 +147,217 @@
 
 .trends-native-screen #c37.trend-native-embedded.native-onboarding-active #btn-legal-open {
   margin-top: 16px !important;
+  color: rgba(31, 46, 46, 0.5) !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+  text-underline-offset: 3px;
+}
+
+.native-legal-access {
+  display: flex;
+  justify-content: center;
+  margin-top: 18px !important;
+  padding: 0 0 4px;
+}
+
+.native-legal-access__button {
+  appearance: none;
+  padding: 8px 12px;
+  border: 0;
+  color: rgba(31, 46, 46, 0.5);
+  background: transparent;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 650;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.native-legal-access__button:hover,
+.native-legal-access__button:focus-visible {
+  color: #087f7a;
+}
+
+html.native-legal-open,
+html.native-legal-open body {
+  overflow: hidden;
+}
+
+.native-legal-portal {
+  position: fixed;
+  inset: 0;
+  z-index: 5000;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: rgba(12, 35, 34, 0.35);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 180ms ease, visibility 180ms ease;
+}
+
+.native-legal-portal.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.native-legal-dialog {
+  position: relative;
+  width: min(100%, 440px);
+  max-height: min(82vh, 680px);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 28px;
+  color: #1f2e2e;
+  background: rgba(250, 255, 252, 0.98);
+  box-shadow: 0 24px 60px rgba(12, 53, 50, 0.2);
+  transform: translateY(8px);
+  transition: transform 180ms ease;
+}
+
+.native-legal-portal.visible .native-legal-dialog {
+  transform: translateY(0);
+}
+
+.native-legal-close,
+.native-legal-document-close,
+.native-legal-back {
+  appearance: none;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  color: rgba(31, 46, 46, 0.58);
+  background: transparent;
+  font: inherit;
+  font-size: 25px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.native-legal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 2;
+}
+
+.native-legal-close:hover,
+.native-legal-close:focus-visible,
+.native-legal-document-close:hover,
+.native-legal-document-close:focus-visible,
+.native-legal-back:hover,
+.native-legal-back:focus-visible {
+  color: #087f7a;
+  background: rgba(138, 183, 170, 0.12);
+}
+
+.native-legal-list-view {
+  padding: 32px 24px 26px;
+}
+
+.native-legal-list-view h2 {
+  margin: 0 42px 22px;
+  color: #1f2e2e;
+  font-size: 19px;
+  line-height: 1.2;
+  font-weight: 850;
+  text-align: center;
+}
+
+.native-legal-list {
+  display: grid;
+  gap: 10px;
+}
+
+.native-legal-list__button {
+  appearance: none;
+  width: 100%;
+  padding: 15px 18px;
+  border: 1px solid rgba(138, 183, 170, 0.28);
+  border-radius: 18px;
+  color: #087f7a;
+  background: rgba(237, 250, 246, 0.72);
+  font: inherit;
+  font-size: 14px;
+  line-height: 1.35;
+  font-weight: 750;
+  text-align: left;
+  cursor: pointer;
+}
+
+.native-legal-list__button:hover,
+.native-legal-list__button:focus-visible {
+  border-color: rgba(8, 127, 122, 0.4);
+  background: rgba(222, 248, 241, 0.92);
+}
+
+.native-legal-document-view {
+  height: min(82vh, 680px);
+  background: #f7fbf9;
+}
+
+.native-legal-document-view[hidden],
+.native-legal-list-view[hidden] {
+  display: none;
+}
+
+.native-legal-document-header {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) 36px;
+  gap: 8px;
+  align-items: center;
+  padding: max(14px, env(safe-area-inset-top)) 14px 14px;
+  border-bottom: 1px solid rgba(138, 183, 170, 0.2);
+  background: rgba(255, 255, 255, 0.96);
+}
+
+.native-legal-back {
+  font-size: 21px;
+}
+
+.native-legal-document-title {
+  margin: 0;
+  color: #1f2e2e;
+  font-size: 13px;
+  line-height: 1.25;
+  font-weight: 800;
+  text-align: center;
+}
+
+.native-legal-document-text {
+  height: calc(100% - 65px);
+  overflow-y: auto;
+  padding: 20px 20px max(28px, env(safe-area-inset-bottom));
+  color: rgba(31, 46, 46, 0.82);
+  font-size: 13px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 520px) {
+  .native-legal-portal {
+    align-items: end;
+    padding: 10px;
+  }
+
+  .native-legal-dialog {
+    width: 100%;
+    max-height: calc(100dvh - 20px);
+    border-radius: 26px;
+  }
+
+  .native-legal-document-view {
+    height: calc(100dvh - 20px);
+  }
 }
 
 .app-shell.trends-native-shell.native-onboarding-active .trends-native-screen {

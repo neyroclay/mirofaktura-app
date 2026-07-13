@@ -14,7 +14,7 @@
   const URL_PARAMS = new URLSearchParams(window.location.search);
   const TELEGRAM_LAUNCH_PARAMS = new URLSearchParams(window.location.hash.replace(/^#/, ''));
   const NATIVE_TRENDS_MODE = URL_PARAMS.get('trends_native');
-  const NATIVE_TRENDS_ASSET_VERSION = '20260713-onboarding-clean-17';
+  const NATIVE_TRENDS_ASSET_VERSION = '20260713-native-legal-access-18';
   const IS_TELEGRAM_LAUNCH = Boolean(
     telegramWebApp?.initData
     || telegramWebApp?.initDataUnsafe?.user?.id
@@ -1903,6 +1903,15 @@
     const elenaChannelButton = APP_PLATFORM === 'telegram'
       ? `<button class="author-channel-link" type="button" data-action="openExternalLink" data-url="${ELENA_TELEGRAM_CHANNEL_URL}">Канал «Воронки впечатлений»</button>`
       : '';
+    const nativeDocumentsLink = USE_NATIVE_TRENDS
+      ? `
+        <section class="native-legal-access" aria-label="Документы">
+          <button class="native-legal-access__button" type="button" data-action="openNativeDocuments">
+            Политика и соглашения
+          </button>
+        </section>
+      `
+      : '';
 
     return screen(`
       <section class="contacts-hero">
@@ -1985,6 +1994,8 @@
         <p>Можно прийти с идеей, продуктом или уже работающим проектом. Сначала разберём задачу, затем предложим структуру и подходящий формат.</p>
         <button class="primary-btn" type="button" data-action="openEmail">Написать нам</button>
       </section>
+
+      ${nativeDocumentsLink}
 
     `, 'contacts-screen');
   }
@@ -2120,6 +2131,95 @@
     ]);
   }
 
+  function ensureNativeLegalPortal(documents) {
+    let portal = document.getElementById('native-legal-portal');
+    if (portal) return portal;
+
+    portal = document.createElement('div');
+    portal.id = 'native-legal-portal';
+    portal.className = 'native-legal-portal';
+    portal.setAttribute('aria-hidden', 'true');
+    portal.innerHTML = `
+      <div class="native-legal-dialog" role="dialog" aria-modal="true" aria-labelledby="native-legal-dialog-title">
+        <button class="native-legal-close" type="button" data-native-legal-close aria-label="Закрыть">×</button>
+        <div class="native-legal-list-view">
+          <h2 id="native-legal-dialog-title">Документы</h2>
+          <div class="native-legal-list"></div>
+        </div>
+        <div class="native-legal-document-view" hidden>
+          <header class="native-legal-document-header">
+            <button class="native-legal-back" type="button" aria-label="Вернуться к списку">←</button>
+            <h2 class="native-legal-document-title"></h2>
+            <button class="native-legal-document-close" type="button" data-native-legal-close aria-label="Закрыть">×</button>
+          </header>
+          <div class="native-legal-document-text"></div>
+        </div>
+      </div>
+    `;
+
+    const listView = portal.querySelector('.native-legal-list-view');
+    const documentView = portal.querySelector('.native-legal-document-view');
+    const list = portal.querySelector('.native-legal-list');
+    const title = portal.querySelector('.native-legal-document-title');
+    const text = portal.querySelector('.native-legal-document-text');
+    const closePortal = () => {
+      portal.classList.remove('visible');
+      portal.setAttribute('aria-hidden', 'true');
+      document.documentElement.classList.remove('native-legal-open');
+      window.setTimeout(() => {
+        documentView.hidden = true;
+        listView.hidden = false;
+      }, 180);
+    };
+
+    documents.forEach((documentItem) => {
+      const button = document.createElement('button');
+      button.className = 'native-legal-list__button';
+      button.type = 'button';
+      button.textContent = documentItem.label;
+      button.addEventListener('click', () => {
+        title.textContent = documentItem.title;
+        text.textContent = documentItem.text;
+        listView.hidden = true;
+        documentView.hidden = false;
+        text.scrollTop = 0;
+      });
+      list.appendChild(button);
+    });
+
+    portal.querySelectorAll('[data-native-legal-close]').forEach((button) => {
+      button.addEventListener('click', closePortal);
+    });
+    portal.querySelector('.native-legal-back').addEventListener('click', () => {
+      documentView.hidden = true;
+      listView.hidden = false;
+    });
+    portal.addEventListener('click', (event) => {
+      if (event.target === portal) closePortal();
+    });
+    portal.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') closePortal();
+    });
+
+    document.body.appendChild(portal);
+    return portal;
+  }
+
+  async function openNativeDocuments() {
+    try {
+      await loadNativeTrendDeckAssets();
+      const documents = window.MirofacturaTrendDeck?.getLegalDocuments?.() || [];
+      if (!documents.length) throw new Error('native legal documents unavailable');
+      const portal = ensureNativeLegalPortal(documents);
+      portal.classList.add('visible');
+      portal.setAttribute('aria-hidden', 'false');
+      document.documentElement.classList.add('native-legal-open');
+      window.requestAnimationFrame(() => portal.querySelector('.native-legal-close')?.focus());
+    } catch (_) {
+      showToast('Не удалось открыть документы');
+    }
+  }
+
   function prepareNativeTrends(host) {
     const tabs = [...app.querySelectorAll('.trends-native-tab')];
     const setActiveTab = (tab) => {
@@ -2161,6 +2261,9 @@
     const renderPage = PAGE_RENDERERS[state.page] || renderHome;
     window.MirofacturaTrendDeck?.destroy?.();
     app.innerHTML = renderPage();
+    if (USE_NATIVE_TRENDS && state.page === 'contacts') {
+      loadNativeTrendDeckStyles().catch(() => {});
+    }
     prepareImageReveals();
     prepareTrendsFrame();
     if (options.scroll !== false) {
@@ -2296,6 +2399,11 @@
 
     if (action === 'openContacts') {
       navigateTo('contacts');
+      return;
+    }
+
+    if (action === 'openNativeDocuments') {
+      await openNativeDocuments();
       return;
     }
 

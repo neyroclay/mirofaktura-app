@@ -1675,6 +1675,25 @@
 
     window.MirofacturaTrendDeck = {
         mount: mountTrendDeck,
+        getLegalDocuments() {
+            return [
+                {
+                    label: 'Политика конфиденциальности',
+                    title: 'Политика конфиденциальности',
+                    text: LEGAL_TEXT_PRIVACY
+                },
+                {
+                    label: 'Согласие на обработку персональных данных',
+                    title: 'Согласие на обработку персональных данных',
+                    text: LEGAL_TEXT_PD
+                },
+                {
+                    label: 'Согласие на получение рассылки',
+                    title: 'Согласие на получение рассылки',
+                    text: LEGAL_TEXT_ADS
+                }
+            ];
+        },
         destroy() {
             mountSerial += 1;
             pendingShareRequested = false;
