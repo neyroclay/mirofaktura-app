@@ -15,6 +15,14 @@
   --radius-xl: 32px;
   --radius-lg: 26px;
   --page-pad: clamp(22px, 6vw, 34px);
+  --type-display-title: clamp(46px, 12vw, 58px);
+  --type-page-title: clamp(36px, 8.8vw, 44px);
+  --type-long-title: clamp(34px, 8vw, 40px);
+  --type-section-title: clamp(28px, 7vw, 34px);
+  --type-lead: 17px;
+  --type-body: 16px;
+  --type-card-title: 21px;
+  --space-section: 36px;
   --font-ui: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --motion-fast: 160ms;
   --motion-base: 220ms;
@@ -387,7 +395,7 @@ summary:focus-visible {
 .brand-label {
   margin: 0;
   color: #008b8b;
-  font-size: 12.5px;
+  font-size: 12px;
   line-height: 1;
   font-weight: 800;
   letter-spacing: 0.12em;
@@ -403,7 +411,7 @@ p {
 
 h1 {
   color: var(--ink);
-  font-size: clamp(50px, 14vw, 76px);
+  font-size: var(--type-display-title);
   line-height: 0.98;
   font-weight: 800;
   letter-spacing: 0;
@@ -417,8 +425,8 @@ h3 {
 
 .lead {
   color: rgba(9, 38, 35, 0.72);
-  font-size: 19px;
-  line-height: 1.48;
+  font-size: var(--type-lead);
+  line-height: 1.44;
   font-weight: 600;
 }
 
@@ -511,7 +519,7 @@ h3 {
 .home-link strong {
   display: block;
   color: var(--ink);
-  font-size: 25px;
+  font-size: 23px;
   line-height: 1.08;
   font-weight: 800;
 }
@@ -525,8 +533,8 @@ h3 {
   display: block;
   margin-top: 7px;
   color: rgba(9, 38, 35, 0.62);
-  font-size: 16px;
-  line-height: 1.34;
+  font-size: 15px;
+  line-height: 1.4;
   font-weight: 500;
 }
 
@@ -795,11 +803,12 @@ h3 {
 .result-card h1,
 .library-title h1,
 .contacts-title h1 {
-  font-size: clamp(38px, 9.2vw, 50px);
+  font-size: var(--type-page-title);
 }
 
 .question-card h1 {
-  font-size: clamp(36px, 8.2vw, 46px);
+  font-size: clamp(34px, 8vw, 42px);
+  line-height: 1.02;
 }
 
 .primary-btn:disabled,
@@ -818,8 +827,8 @@ h3 {
 .hint {
   margin-top: 16px;
   color: rgba(9, 38, 35, 0.62);
-  font-size: 17px;
-  line-height: 1.42;
+  font-size: var(--type-body);
+  line-height: 1.44;
   font-weight: 600;
 }
 
@@ -869,7 +878,7 @@ h3 {
 
 .answer-copy strong {
   display: block;
-  font-size: 18px;
+  font-size: 17px;
   line-height: 1.12;
   font-weight: 700;
 }
@@ -1018,7 +1027,7 @@ h3 {
 }
 
 .result-panel h2 {
-  font-size: 24px;
+  font-size: 22px;
   line-height: 1.12;
   font-weight: 800;
 }
@@ -1026,7 +1035,7 @@ h3 {
 .result-panel p {
   margin-top: 9px;
   color: rgba(9, 38, 35, 0.68);
-  font-size: 16px;
+  font-size: var(--type-body);
   line-height: 1.42;
   font-weight: 600;
 }
@@ -1058,7 +1067,7 @@ h3 {
 
 .potap-panel h2 {
   margin-top: 5px;
-  font-size: 24px;
+  font-size: 22px;
   line-height: 1.1;
   font-weight: 800;
 }
@@ -1066,7 +1075,7 @@ h3 {
 .potap-panel p:not(.brand-label) {
   margin-top: 9px;
   color: rgba(9, 38, 35, 0.68);
-  font-size: 16px;
+  font-size: var(--type-body);
   line-height: 1.42;
   font-weight: 600;
 }
@@ -1086,7 +1095,7 @@ h3 {
 
 .library-title {
   display: grid;
-  gap: 18px;
+  gap: 16px;
 }
 
 .library-actions {
@@ -1097,7 +1106,7 @@ h3 {
 .aristarch {
   display: grid;
   place-items: center;
-  margin: 18px 0 8px;
+  margin: 24px 0 10px;
 }
 
 .aristarch img {
@@ -1141,11 +1150,11 @@ h3 {
 }
 
 .contacts-screen > section + section {
-  margin-top: 38px;
+  margin-top: var(--space-section);
 }
 
 .contacts-screen > .authors-panel {
-  margin-top: 44px;
+  margin-top: 40px;
 }
 
 .contacts-hero,
@@ -1153,11 +1162,11 @@ h3 {
 .authors-panel,
 .contacts-note {
   display: grid;
-  gap: 14px;
+  gap: 16px;
 }
 
 .contacts-hero {
-  padding: 28px 24px 24px;
+  padding: 26px 22px 24px;
   border-radius: 34px;
   color: #073936;
   border: 1px solid rgba(255, 255, 255, 0.72);
@@ -1171,8 +1180,8 @@ h3 {
 .contacts-hero h1 {
   max-width: 14ch;
   margin-bottom: 4px;
-  font-size: clamp(34px, 8vw, 44px);
-  line-height: 1.08;
+  font-size: var(--type-long-title);
+  line-height: 1.06;
   font-weight: 800;
 }
 
@@ -1184,7 +1193,7 @@ h3 {
   margin: 0 0 6px;
   text-align: center;
   color: #073936;
-  font-size: clamp(28px, 7vw, 34px);
+  font-size: var(--type-section-title);
   line-height: 1.08;
   font-weight: 800;
 }
@@ -1228,7 +1237,7 @@ h3 {
 
 .service-card h2 {
   color: #073936;
-  font-size: 22px;
+  font-size: var(--type-card-title);
   line-height: 1.08;
   font-weight: 800;
 }
@@ -1236,8 +1245,8 @@ h3 {
 .service-card p {
   margin-top: 8px;
   color: rgba(15, 47, 44, 0.68);
-  font-size: 16px;
-  line-height: 1.38;
+  font-size: var(--type-body);
+  line-height: 1.42;
   font-weight: 600;
 }
 
@@ -1260,15 +1269,15 @@ h3 {
 .contacts-cta h2 {
   max-width: 10ch;
   color: inherit;
-  font-size: clamp(34px, 8vw, 44px);
+  font-size: var(--type-long-title);
   line-height: 1.02;
   font-weight: 800;
 }
 
 .contacts-cta p:not(.brand-label) {
   color: rgba(247, 255, 251, 0.82);
-  font-size: 18px;
-  line-height: 1.42;
+  font-size: var(--type-lead);
+  line-height: 1.44;
   font-weight: 600;
 }
 
@@ -1312,8 +1321,8 @@ h3 {
 .authors-intro {
   margin: -2px 0 4px;
   color: rgba(15, 47, 44, 0.72);
-  font-size: 16.5px;
-  line-height: 1.5;
+  font-size: var(--type-body);
+  line-height: 1.46;
   font-weight: 600;
 }
 
@@ -1353,7 +1362,7 @@ h3 {
 
 .author-card strong {
   display: block;
-  font-size: 21px;
+  font-size: 20px;
   line-height: 1.12;
   font-weight: 800;
 }
@@ -1362,8 +1371,8 @@ h3 {
   display: block;
   margin-top: 7px;
   color: rgba(15, 47, 44, 0.66);
-  font-size: 15.5px;
-  line-height: 1.38;
+  font-size: 15px;
+  line-height: 1.42;
   font-weight: 600;
 }
 
@@ -1404,15 +1413,15 @@ h3 {
 
 .contacts-note p:not(.brand-label) {
   color: rgba(15, 47, 44, 0.66);
-  font-size: 16.5px;
-  line-height: 1.4;
+  font-size: var(--type-body);
+  line-height: 1.42;
   font-weight: 600;
 }
 
 .materials {
   display: grid;
   gap: 18px;
-  margin-top: 22px;
+  margin-top: 28px;
 }
 
 .material-card {
@@ -1513,15 +1522,15 @@ h3 {
 
 .material-card h2 {
   color: currentColor;
-  font-size: clamp(28px, 7.4vw, 38px);
+  font-size: clamp(27px, 6.8vw, 34px);
   line-height: 1.08;
   font-weight: 800;
 }
 
 .material-card p {
   color: rgba(10, 38, 36, 0.76);
-  font-size: 16.5px;
-  line-height: 1.46;
+  font-size: var(--type-body);
+  line-height: 1.44;
   font-weight: 500;
 }
 
@@ -1617,20 +1626,20 @@ h3 {
 }
 
 .lead-section {
-  margin-top: 26px;
+  margin-top: 30px;
 }
 
 .lead-section h2 {
   margin-top: 8px;
-  font-size: clamp(30px, 7.8vw, 40px);
-  line-height: 1.04;
+  font-size: var(--type-section-title);
+  line-height: 1.06;
 }
 
 .lead-section-copy {
-  margin: 10px 0 0;
+  margin: 12px 0 0;
   color: rgba(9, 38, 35, 0.66);
-  font-size: 16px;
-  line-height: 1.42;
+  font-size: var(--type-body);
+  line-height: 1.44;
   font-weight: 600;
 }
 
@@ -1759,8 +1768,8 @@ h3 {
 
 .lead-insight p {
   margin: 7px 0 0;
-  font-size: 16px;
-  line-height: 1.42;
+  font-size: var(--type-body);
+  line-height: 1.44;
   font-weight: 600;
 }
 
@@ -1894,7 +1903,7 @@ h3 {
 
 .lead-recommendation h3 {
   margin: 8px 0 0;
-  font-size: 26px;
+  font-size: 24px;
   line-height: 1.06;
   font-weight: 800;
 }
@@ -1925,7 +1934,7 @@ h3 {
 
 .lead-model h3 {
   margin: 12px 0 0;
-  font-size: 23px;
+  font-size: 22px;
   line-height: 1.08;
   font-weight: 800;
 }
@@ -2041,7 +2050,7 @@ h3 {
 }
 
 .lead-detail summary strong {
-  font-size: 18px;
+  font-size: 17px;
   line-height: 1.12;
   font-weight: 800;
 }
@@ -2196,15 +2205,15 @@ h3 {
 
 .lead-cta h2 {
   color: inherit;
-  font-size: clamp(28px, 6.4vw, 34px);
+  font-size: var(--type-section-title);
   line-height: 1.08;
 }
 
 .lead-cta p {
   margin: 10px 0 18px;
   color: rgba(248, 255, 252, 0.82);
-  font-size: 16px;
-  line-height: 1.42;
+  font-size: var(--type-body);
+  line-height: 1.44;
   font-weight: 600;
 }
 
@@ -2580,7 +2589,7 @@ h3 {
 .sales-zone h3 {
   margin: 0 0 12px;
   color: #073936;
-  font-size: 22px;
+  font-size: var(--type-card-title);
   line-height: 1.08;
 }
 
@@ -2752,7 +2761,7 @@ h3 {
   }
 
   h1 {
-    font-size: clamp(45px, 14vw, 60px);
+    font-size: clamp(42px, 12vw, 52px);
   }
 
   .mascot-zone {
