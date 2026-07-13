@@ -76,8 +76,25 @@
    the visible strips and the white flash. */
 .trends-native-screen #c37.trend-native-embedded #game-ui {
   background: transparent !important;
+  padding-bottom: calc(116px + env(safe-area-inset-bottom)) !important;
 }
 
 .trends-native-screen #c37.trend-native-embedded #mrf-preloader {
   background-color: transparent !important;
+}
+
+/* The native deck uses the app navigation instead of its legacy footer.
+   Keep the waiting screen above that fixed navigation, and anchor its status
+   in the free space above the card rather than in the timer flow. */
+.trends-native-screen #c37.trend-native-embedded #done-ui {
+  position: static !important;
+}
+
+.trends-native-screen #c37.trend-native-embedded .waiting-card-status {
+  position: absolute !important;
+  top: clamp(18px, 3vh, 28px) !important;
+  left: 50% !important;
+  z-index: 65;
+  margin: 0 !important;
+  transform: translateX(-50%) !important;
 }
