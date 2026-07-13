@@ -61,6 +61,16 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Tall Android tablets expose much more vertical room than phones, while the
+   native deck used to stop at 720px. Let only portrait tablet layouts use that
+   free space; phone and landscape compositions keep their existing geometry. */
+@media (min-width: 560px) and (min-height: 900px) and (orientation: portrait) {
+  .trends-native-screen .trends-native-host:not(.native-onboarding-active) {
+    min-height: min(960px, calc(100svh - 300px)) !important;
+    height: min(960px, calc(100svh - 300px)) !important;
+  }
+}
+
 /* On the first visit, let the onboarding card participate in the app page
    instead of creating a second scrollable viewport inside the deck. */
 .trends-native-screen .trends-native-host.native-onboarding-active {

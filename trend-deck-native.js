@@ -1240,8 +1240,12 @@
 
            const scene = new THREE.Scene(); scene.fog = new THREE.FogExp2(0xFFFFFF, 0.05);
            const width = container.clientWidth; const height = container.clientHeight; const aspect = width / height;
+           const usesTallPortraitLayout = () => nativeMode
+               && window.innerWidth >= 560
+               && window.innerHeight >= 900
+               && window.innerHeight > window.innerWidth;
            let cameraZ = 6, cardY = 0.3;
-           if (nativeMode && aspect > 0.6) { cameraZ = 7.8; cardY = 0.8; } else if (aspect > 0.6) { cameraZ = 8.2; cardY = 0.9; } else if (isIPad) { cameraZ = 7.5; cardY = 0.7; } else if (width < 768) { cameraZ = 7.5; cardY = 0.4; }
+           if (usesTallPortraitLayout()) { cameraZ = 8.6; cardY = 2.0; } else if (nativeMode && aspect > 0.6) { cameraZ = 7.8; cardY = 0.8; } else if (aspect > 0.6) { cameraZ = 8.2; cardY = 0.9; } else if (isIPad) { cameraZ = 7.5; cardY = 0.7; } else if (width < 768) { cameraZ = 7.5; cardY = 0.4; }
            const camera = new THREE.PerspectiveCamera(60, aspect, 0.1, 100); camera.position.z = cameraZ;
            
            renderer = null;
@@ -1650,7 +1654,7 @@
             const resizeScene = ()=>{
                 if (destroyed) return;
                 const w=container.clientWidth, h=container.clientHeight, a=w/h; camera.aspect=a; camera.updateProjectionMatrix(); renderer.setSize(w,h);
-                if (nativeMode && a>0.6) { camera.position.z=7.8; cardGroup.position.y=0.8; } else if (a>0.6) { camera.position.z=8.2; cardGroup.position.y=0.9; } else if (isIPad) { camera.position.z=7.5; cardGroup.position.y=0.7; } else if (w<768) { camera.position.z=7.5; cardGroup.position.y=0.4; } else { camera.position.z=6; cardGroup.position.y=0.3; }
+                if (usesTallPortraitLayout()) { camera.position.z=8.6; cardGroup.position.y=2.0; } else if (nativeMode && a>0.6) { camera.position.z=7.8; cardGroup.position.y=0.8; } else if (a>0.6) { camera.position.z=8.2; cardGroup.position.y=0.9; } else if (isIPad) { camera.position.z=7.5; cardGroup.position.y=0.7; } else if (w<768) { camera.position.z=7.5; cardGroup.position.y=0.4; } else { camera.position.z=6; cardGroup.position.y=0.3; }
             };
             window.addEventListener('resize', resizeScene);
             addCleanup(() => window.removeEventListener('resize', resizeScene));
