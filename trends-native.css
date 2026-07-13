@@ -101,6 +101,7 @@
 
 .trends-native-screen #c37.trend-native-embedded #invite-banner {
   padding: 14px 12px !important;
+  margin-top: -10px !important;
   margin-bottom: 0 !important;
 }
 
