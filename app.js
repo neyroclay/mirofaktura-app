@@ -14,7 +14,7 @@
   const URL_PARAMS = new URLSearchParams(window.location.search);
   const TELEGRAM_LAUNCH_PARAMS = new URLSearchParams(window.location.hash.replace(/^#/, ''));
   const NATIVE_TRENDS_MODE = URL_PARAMS.get('trends_native');
-  const NATIVE_TRENDS_ASSET_VERSION = '20260713-native-view-motion-25';
+  const NATIVE_TRENDS_ASSET_VERSION = '20260713-russian-copy-26';
   const IS_TELEGRAM_LAUNCH = Boolean(
     telegramWebApp?.initData
     || telegramWebApp?.initDataUnsafe?.user?.id
@@ -1898,7 +1898,7 @@
 
   function renderContacts() {
     const telegramAuthorsIntro = APP_PLATFORM === 'telegram'
-      ? '<p class="authors-intro">В Мирофактуре соединились два сильных подхода: Лиза отвечает за интерактивные форматы и digital-продукты, Елена — за системный маркетинг, продажи и клиентский опыт.</p>'
+      ? '<p class="authors-intro">В Мирофактуре соединились два сильных подхода: Лиза отвечает за интерактивные форматы и цифровые продукты, Елена — за системный маркетинг, продажи и клиентский опыт.</p>'
       : '';
     const elizavetaChannelButton = APP_PLATFORM === 'telegram'
       ? `<button class="author-channel-link" type="button" data-action="openExternalLink" data-url="${ELIZAVETA_TELEGRAM_CHANNEL_URL}">Канал «Игровые нейроны»</button>`
@@ -1935,7 +1935,7 @@
             <span class="author-avatar">Л</span>
             <span>
               <strong>Елизавета Викулова</strong>
-              <small>создаёт интерактивные форматы, мини-приложения и digital-продукты для бизнеса. Помогает связать идею, сценарий и технологии в понятную работающую систему</small>
+              <small>создаёт интерактивные форматы, мини-приложения и цифровые продукты для бизнеса. Помогает связать идею, сценарий и технологии в понятную работающую систему</small>
               ${elizavetaChannelButton}
             </span>
           </div>
@@ -2011,7 +2011,7 @@
       platform: PLATFORM.key,
       messenger: PLATFORM.messenger,
       source: 'mirofaktura-app',
-      v: '20260712-native-shell-4',
+      v: '20260713-russian-copy-26',
     });
     const platformUserId = getPlatformUserId();
     const platformUser = getPlatformUser();
