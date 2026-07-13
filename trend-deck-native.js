@@ -667,8 +667,10 @@
             
             <div id="read-trend-modal" class="modal-overlay">
                 <div class="modal-content">
-                    <span class="material-icons-round modal-close" id="btn-close-read">close</span>
+                    <div class="read-trend-heading">
                     <div id="read-trend-title" style="color:#1F2E2E;font-size:24px;font-weight:900;text-transform:uppercase;letter-spacing:1px;margin-bottom:15px;line-height:1.2;text-align:left;">НАЗВАНИЕ</div>
+                    <button class="material-icons-round modal-close" id="btn-close-read" type="button" aria-label="Закрыть">close</button>
+                    </div>
                     <div id="read-trend-text" class="read-scroll-area"></div>
                     <div id="read-trend-source" style="color:#8A9999;font-size:11px;margin-bottom:20px;font-style:italic;text-align:left;border-top:1px solid #E0E0E0;padding-top:15px;display:none;"></div>
                     <div style="display:flex;flex-direction:column;align-items:center;gap:12px;width:100%;">

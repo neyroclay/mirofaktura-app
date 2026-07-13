@@ -13,7 +13,7 @@
   const telegramWebApp = window.Telegram?.WebApp || null;
   const URL_PARAMS = new URLSearchParams(window.location.search);
   const USE_NATIVE_TRENDS = URL_PARAMS.get('trends_native') === '1';
-  const NATIVE_TRENDS_ASSET_VERSION = '20260713-native-isolated-7';
+  const NATIVE_TRENDS_ASSET_VERSION = '20260713-native-isolated-8';
   const APP_PLATFORM = (() => {
     const params = URL_PARAMS;
     const raw = String(

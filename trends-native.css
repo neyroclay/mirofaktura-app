@@ -83,6 +83,40 @@
   background-color: transparent !important;
 }
 
+/* Keep long trend names and the close control in separate columns. */
+.trends-native-screen #c37.trend-native-embedded #read-trend-modal .read-trend-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 36px;
+  gap: 10px;
+  align-items: start;
+  margin-bottom: 15px;
+}
+
+.trends-native-screen #c37.trend-native-embedded #read-trend-title {
+  min-width: 0;
+  margin-bottom: 0 !important;
+}
+
+.trends-native-screen #c37.trend-native-embedded #btn-close-read {
+  position: static !important;
+  display: grid;
+  width: 36px;
+  height: 36px;
+  padding: 0 !important;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  color: #728785;
+  background: rgba(231, 243, 240, 0.86);
+  line-height: 1;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.trends-native-screen #c37.trend-native-embedded #btn-close-read:active {
+  transform: scale(0.94);
+}
+
 /* The native deck uses the app navigation instead of its legacy footer.
    Keep the waiting screen above that fixed navigation, and anchor its status
    in the free space above the card rather than in the timer flow. */
