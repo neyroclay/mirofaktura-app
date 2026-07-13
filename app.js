@@ -12,8 +12,8 @@
   };
   const telegramWebApp = window.Telegram?.WebApp || null;
   const URL_PARAMS = new URLSearchParams(window.location.search);
-  const USE_NATIVE_TRENDS = URL_PARAMS.get('trends_native') === '1';
-  const NATIVE_TRENDS_ASSET_VERSION = '20260713-native-isolated-11';
+  const NATIVE_TRENDS_MODE = URL_PARAMS.get('trends_native');
+  const NATIVE_TRENDS_ASSET_VERSION = '20260713-native-default-12';
   const APP_PLATFORM = (() => {
     const params = URL_PARAMS;
     const raw = String(
@@ -25,6 +25,8 @@
     ).toLowerCase();
     return PLATFORM_ALIASES[raw] || 'max';
   })();
+  const USE_NATIVE_TRENDS = NATIVE_TRENDS_MODE === '1'
+    || (NATIVE_TRENDS_MODE !== '0' && APP_PLATFORM === 'telegram');
   const PLATFORM = {
     max: {
       key: 'max',

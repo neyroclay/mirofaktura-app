@@ -755,7 +755,7 @@
                     <div style="color:#1F2E2E;font-size:15px;font-weight:800;margin-bottom:10px;position:relative;z-index:2;">Готовы увидеть всю картину?</div>
                     <div style="color:#8A9999;font-size:13px;line-height:1.5;margin-bottom:25px;position:relative;z-index:2;">Полная колода из 28 трендов <span style="color:#00D2D3;font-weight:700;">(будет еще больше, сейчас пополняем)</span> — ваш личный стратегический навигатор для работы с клиентами, генерации идей и проведения стратсессий.</div>
                     
-                    <button type="button" onclick="window.app_openBotLink(event, '${fullDeckPurchaseUrl}')" class="consult-btn" style="display:block;width:100%;box-sizing:border-box;text-align:center;border:none;font-family:inherit;outline:none;cursor:pointer;position:relative;z-index:2;">Забрать полную колоду</button>
+                    <button type="button" onclick="window.app_openBotLink(event, '${fullDeckPurchaseUrl}')" class="consult-btn full-deck-cta" style="display:block;width:100%;box-sizing:border-box;text-align:center;border:none;font-family:inherit;outline:none;cursor:pointer;position:relative;z-index:2;">Забрать полную колоду</button>
                 </div>
             </div>
 
@@ -801,7 +801,7 @@
                             <div style="color:#1F2E2E;font-weight:800;font-size:16px;margin-bottom:10px;">Полная колода 2026</div>
                             <p style="color:#8A9999;font-size:13px;line-height:1.5;margin-bottom:18px;">Профессиональный бизнес-навигатор на интерактивной доске Холст (аналог Миро). Колода существует в цифровом формате, так как мы непрерывно анализируем рынок и пополняем её новыми трендами. Идеально для стратсессий и поиска прорывных решений.</p>
                             
-                            <button type="button" onclick="window.app_openBotLink(event, '${fullDeckPurchaseUrl}')" class="primary-btn" style="display:block;background:#1F2E2E;color:#FFF;padding:14px;border-radius:30px;font-weight:800;font-size:13px;text-align:center;width:100%;box-sizing:border-box;border:none;font-family:inherit;outline:none;cursor:pointer;">Забрать полную колоду</button>
+                            <button type="button" onclick="window.app_openBotLink(event, '${fullDeckPurchaseUrl}')" class="primary-btn full-deck-cta" style="display:block;background:#1F2E2E;color:#FFF;padding:14px;border-radius:30px;font-weight:800;font-size:13px;text-align:center;width:100%;box-sizing:border-box;border:none;font-family:inherit;outline:none;cursor:pointer;">Забрать полную колоду</button>
                         </div>
                     </div>
                 </div>
