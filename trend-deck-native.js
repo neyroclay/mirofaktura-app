@@ -778,14 +778,14 @@
                         <img src="${AUTHOR_1_IMG}" class="author-img" alt="Елизавета Викулова" loading="lazy" decoding="async">
                         <div class="author-info">
                             <div class="author-name">Елизавета Викулова</div>
-                            <div class="author-desc">Стратег и архитектор интерактивного опыта. Проектирует путь человека и собирает его в цифровые продукты.</div>
+                            <div class="author-desc">Создаёт интерактивные форматы, мини-приложения и игровые механики.</div>
                         </div>
                     </a>
                     <a href="${elenaProfileUrl}" class="author-card" onclick="window.app_openBotLink(event, '${elenaProfileUrl}')">
                         <img src="${AUTHOR_2_IMG}" class="author-img" alt="Елена Попова" loading="lazy" decoding="async">
                         <div class="author-info">
                             <div class="author-name">Елена Попова</div>
-                            <div class="author-desc">Эксперт по системному маркетингу, оптимизации продуктов и воронкам впечатлений.</div>
+                            <div class="author-desc">Выстраивает системный маркетинг и воронки впечатлений с игровыми механиками.</div>
                         </div>
                     </a>
 

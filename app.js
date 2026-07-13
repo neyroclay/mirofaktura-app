@@ -14,7 +14,7 @@
   const URL_PARAMS = new URLSearchParams(window.location.search);
   const TELEGRAM_LAUNCH_PARAMS = new URLSearchParams(window.location.hash.replace(/^#/, ''));
   const NATIVE_TRENDS_MODE = URL_PARAMS.get('trends_native');
-  const NATIVE_TRENDS_ASSET_VERSION = '20260713-russian-copy-26';
+  const NATIVE_TRENDS_ASSET_VERSION = '20260713-authors-copy-28';
   const IS_TELEGRAM_LAUNCH = Boolean(
     telegramWebApp?.initData
     || telegramWebApp?.initDataUnsafe?.user?.id
@@ -1175,7 +1175,7 @@
             <span><strong>Канал Мирофактуры в MAX</strong><span>Материалы о маркетинге, продуктах и цифровых мирах.</span></span>
           </button>
           <button class="home-link" type="button" data-action="openContacts">
-            <span><strong>Авторы</strong><span>Елена Попова и Елизавета Викулова: системный маркетинг, геймификация и новые способы вовлечения.</span></span>
+            <span><strong>Авторы</strong><span>Елизавета Викулова и Елена Попова: интерактивные продукты, системный маркетинг и воронки впечатлений.</span></span>
           </button>
         </div>
 
@@ -1898,7 +1898,7 @@
 
   function renderContacts() {
     const telegramAuthorsIntro = APP_PLATFORM === 'telegram'
-      ? '<p class="authors-intro">В Мирофактуре соединились два сильных подхода: Лиза отвечает за интерактивные форматы и цифровые продукты, Елена — за системный маркетинг, продажи и клиентский опыт.</p>'
+      ? '<p class="authors-intro">Лиза проектирует интерактивные форматы, мини-приложения и игровые механики. Елена выстраивает системный маркетинг и воронки впечатлений, используя игровые механики в привлечении и продажах.</p>'
       : '';
     const elizavetaChannelButton = APP_PLATFORM === 'telegram'
       ? `<button class="author-channel-link" type="button" data-action="openExternalLink" data-url="${ELIZAVETA_TELEGRAM_CHANNEL_URL}">Канал «Игровые нейроны»</button>`
@@ -1935,7 +1935,7 @@
             <span class="author-avatar">Л</span>
             <span>
               <strong>Елизавета Викулова</strong>
-              <small>создаёт интерактивные форматы, мини-приложения и цифровые продукты для бизнеса. Помогает связать идею, сценарий и технологии в понятную работающую систему</small>
+              <small>создаёт интерактивные форматы, мини-приложения и игровые механики для цифровых продуктов. Соединяет идею, сценарий и технологии в понятную работающую систему</small>
               ${elizavetaChannelButton}
             </span>
           </div>
@@ -1943,7 +1943,7 @@
             <span class="author-avatar">Е</span>
             <span>
               <strong>Елена Попова</strong>
-              <small>занимается системным маркетингом, оптимизацией продуктов и привлечением клиентов. Помогает выстроить продажи, повторные покупки и рекомендации так, чтобы они работали как единая система</small>
+              <small>выстраивает системный маркетинг и воронки впечатлений. Использует игровые механики в привлечении и продажах, чтобы вовлекать аудиторию, поддерживать повторные покупки и рекомендации</small>
               ${elenaChannelButton}
             </span>
           </div>
@@ -2011,7 +2011,7 @@
       platform: PLATFORM.key,
       messenger: PLATFORM.messenger,
       source: 'mirofaktura-app',
-      v: '20260713-russian-copy-26',
+      v: '20260713-authors-copy-28',
     });
     const platformUserId = getPlatformUserId();
     const platformUser = getPlatformUser();
