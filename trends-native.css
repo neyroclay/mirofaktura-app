@@ -101,7 +101,7 @@
 .trends-native-screen #c37.trend-native-embedded #game-ui.waiting-for-next-card .native-waiting-sheet {
   position: absolute;
   left: 50%;
-  bottom: calc(clamp(50px, calc(876px - 100vh), 158px) + env(safe-area-inset-bottom));
+  bottom: calc(clamp(62px, calc(890px - 100vh), 170px) + env(safe-area-inset-bottom));
   z-index: 54;
   display: block;
   width: min(calc(100% - 32px), 328px);
