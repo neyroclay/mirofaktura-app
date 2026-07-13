@@ -64,15 +64,21 @@
 /* On the first visit, let the onboarding card participate in the app page
    instead of creating a second scrollable viewport inside the deck. */
 .trends-native-screen .trends-native-host.native-onboarding-active {
-  height: auto;
-  min-height: 0;
-  overflow: visible;
+  height: auto !important;
+  min-height: 0 !important;
+  overflow: visible !important;
 }
 
 .trends-native-screen #c37.trend-native-embedded.native-onboarding-active {
-  height: auto;
-  min-height: 0;
-  overflow: visible;
+  height: auto !important;
+  min-height: 0 !important;
+  overflow: visible !important;
+  background: transparent !important;
+}
+
+.trends-native-screen #c37.trend-native-embedded.native-onboarding-active::before,
+.trends-native-screen #c37.trend-native-embedded.native-onboarding-active::after {
+  display: none;
 }
 
 .trends-native-screen #c37.trend-native-embedded.native-onboarding-active .ui-layer {
@@ -145,6 +151,10 @@
 
 .app-shell.trends-native-shell.native-onboarding-active .trends-native-screen {
   padding-bottom: calc(18px + env(safe-area-inset-bottom));
+}
+
+.app-shell.trends-native-shell.native-onboarding-active .trends-native-tabs {
+  display: none;
 }
 
 .app-shell.trends-native-shell.native-onboarding-active .bottom-nav {
