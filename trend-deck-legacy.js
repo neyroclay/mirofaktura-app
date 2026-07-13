@@ -446,7 +446,7 @@
             #${CONTAINER_ID} [style*="background:#00D2D3"] { background:linear-gradient(105deg,#F9EC9F 0%,#DEF8F1 68%,#CFF5F1 100%) !important; color:#073936 !important; box-shadow:0 8px 18px rgba(14,77,72,0.12) !important; }
             #${CONTAINER_ID} [style*="rgba(0,210,211"],
             #${CONTAINER_ID} [style*="rgba(0, 210, 211"] { background:rgba(249,236,159,0.22) !important; border-color:#8AB7AA !important; border-top-color:#8AB7AA !important; border-left-color:#8AB7AA !important; box-shadow:0 8px 20px rgba(14,77,72,0.08) !important; }
-            #${CONTAINER_ID} #invite-banner { border-color:rgba(138,183,170,0.16) !important; box-shadow:0 12px 28px rgba(14,77,72,0.07) !important; overflow:visible !important; padding-bottom:26px !important; }
+            #${CONTAINER_ID} #invite-banner { border-color:rgba(138,183,170,0.16) !important; box-shadow:0 12px 28px rgba(14,77,72,0.07) !important; overflow:hidden; }
             #${CONTAINER_ID} #invite-banner .ask-ai-main-btn { width:calc(100% - 12px) !important; margin-left:auto !important; margin-right:auto !important; }
             #${CONTAINER_ID} .full-deck-btn {
                 background:
@@ -1187,29 +1187,14 @@
 
         const readTrendTextEl = document.getElementById('read-trend-text');
         if (readTrendTextEl) {
-            let readTouchY = 0;
             const keepReadModalScroll = (e) => e.stopPropagation();
-            const startReadTouchScroll = (e) => {
-                readTouchY = e.touches?.[0]?.clientY || 0;
-                e.stopPropagation();
-            };
-            const moveReadTouchScroll = (e) => {
-                const nextY = e.touches?.[0]?.clientY || readTouchY;
-                const delta = readTouchY - nextY;
-                if (readTrendTextEl.scrollHeight > readTrendTextEl.clientHeight) {
-                    readTrendTextEl.scrollTop += delta;
-                    e.preventDefault();
-                }
-                readTouchY = nextY;
-                e.stopPropagation();
-            };
             readTrendTextEl.addEventListener('wheel', keepReadModalScroll, { passive: true });
-            readTrendTextEl.addEventListener('touchstart', startReadTouchScroll, { passive: true });
-            readTrendTextEl.addEventListener('touchmove', moveReadTouchScroll, { passive: false });
+            readTrendTextEl.addEventListener('touchstart', keepReadModalScroll, { passive: true });
+            readTrendTextEl.addEventListener('touchmove', keepReadModalScroll, { passive: true });
             addCleanup(() => {
                 readTrendTextEl.removeEventListener('wheel', keepReadModalScroll);
-                readTrendTextEl.removeEventListener('touchstart', startReadTouchScroll);
-                readTrendTextEl.removeEventListener('touchmove', moveReadTouchScroll);
+                readTrendTextEl.removeEventListener('touchstart', keepReadModalScroll);
+                readTrendTextEl.removeEventListener('touchmove', keepReadModalScroll);
             });
         }
 
