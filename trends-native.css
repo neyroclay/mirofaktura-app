@@ -98,3 +98,26 @@
   margin: 0 !important;
   transform: translateX(-50%) !important;
 }
+
+.trends-native-screen #c37.trend-native-embedded #invite-banner {
+  padding: 14px 12px !important;
+  margin-bottom: 0 !important;
+}
+
+.trends-native-screen #c37.trend-native-embedded #invite-title {
+  margin-bottom: 8px !important;
+  line-height: 1.25 !important;
+}
+
+.trends-native-screen #c37.trend-native-embedded #invite-desc {
+  margin-bottom: 10px !important;
+  line-height: 1.4 !important;
+}
+
+.trends-native-screen #c37.trend-native-embedded #invite-desc br {
+  display: none;
+}
+
+.trends-native-screen #c37.trend-native-embedded #btn-invite-friend {
+  padding: 12px !important;
+}
