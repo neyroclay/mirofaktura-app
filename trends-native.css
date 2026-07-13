@@ -435,6 +435,16 @@ html.native-legal-open body {
   background-color: transparent !important;
 }
 
+/* The embedded deck adds blurred decorative circles inside its own clipped
+   rectangle. Near the bottom of the card screen that clipping becomes visible
+   as a straight-edged panel above the app navigation. The app shell already
+   provides the page background, so the embedded decoration is unnecessary. */
+.trends-native-screen #c37.trend-native-embedded:not(.native-onboarding-active)::before,
+.trends-native-screen #c37.trend-native-embedded:not(.native-onboarding-active)::after {
+  display: none !important;
+  content: none !important;
+}
+
 /* Keep long trend names and the close control in separate columns. */
 .trends-native-screen #c37.trend-native-embedded #read-trend-modal .read-trend-heading {
   display: grid;
