@@ -61,6 +61,100 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+/* On the first visit, let the onboarding card participate in the app page
+   instead of creating a second scrollable viewport inside the deck. */
+.trends-native-screen .trends-native-host.native-onboarding-active {
+  height: auto;
+  min-height: 0;
+  overflow: visible;
+}
+
+.trends-native-screen #c37.trend-native-embedded.native-onboarding-active {
+  height: auto;
+  min-height: 0;
+  overflow: visible;
+}
+
+.trends-native-screen #c37.trend-native-embedded.native-onboarding-active .ui-layer {
+  position: relative;
+  height: auto;
+  min-height: 0;
+}
+
+.trends-native-screen #c37.trend-native-embedded.native-onboarding-active #canvas-container,
+.trends-native-screen #c37.trend-native-embedded.native-onboarding-active .spacer,
+.trends-native-screen #c37.trend-native-embedded.native-onboarding-active #game-ui {
+  display: none !important;
+}
+
+.trends-native-screen #c37.trend-native-embedded.native-onboarding-active #onboarding-view {
+  position: relative;
+  inset: auto;
+  min-height: 0;
+  padding: 26px 22px 28px;
+  overflow: visible;
+  border: 1px solid rgba(255, 255, 255, 0.88);
+  border-radius: 30px;
+  background:
+    radial-gradient(circle at 10% 4%, rgba(249, 236, 159, 0.24), transparent 30%),
+    linear-gradient(150deg, rgba(255, 255, 252, 0.88), rgba(235, 251, 247, 0.82));
+  box-shadow:
+    0 22px 48px rgba(20, 71, 66, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.trends-native-screen #c37.trend-native-embedded.native-onboarding-active #onboarding-view > div {
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 4px 0 0 !important;
+  justify-content: flex-start !important;
+}
+
+.trends-native-screen #c37.trend-native-embedded.native-onboarding-active #onboarding-view > div > div:first-child {
+  margin-bottom: 8px !important;
+  font-size: 24px !important;
+  letter-spacing: 0.04em !important;
+}
+
+.trends-native-screen #c37.trend-native-embedded.native-onboarding-active #onboarding-view > div > div:nth-child(2) {
+  max-width: 320px !important;
+  margin-bottom: 24px !important;
+  color: rgba(31, 46, 46, 0.72) !important;
+  font-size: 14px !important;
+  line-height: 1.55 !important;
+}
+
+.trends-native-screen #c37.trend-native-embedded.native-onboarding-active #onboarding-view > div > div:nth-child(3) {
+  width: 100%;
+  max-width: 320px !important;
+  gap: 12px !important;
+}
+
+.trends-native-screen #c37.trend-native-embedded.native-onboarding-active #btn-start-onboard {
+  max-width: 320px !important;
+  min-height: 58px;
+  margin-top: 26px !important;
+  font-size: 14px !important;
+}
+
+.trends-native-screen #c37.trend-native-embedded.native-onboarding-active #btn-legal-open {
+  margin-top: 16px !important;
+}
+
+.app-shell.trends-native-shell.native-onboarding-active .trends-native-screen {
+  padding-bottom: calc(18px + env(safe-area-inset-bottom));
+}
+
+.app-shell.trends-native-shell.native-onboarding-active .bottom-nav {
+  position: relative;
+  left: auto;
+  bottom: auto;
+  transform: none;
+  margin: 18px auto 0;
+}
+
 .trends-native-screen .trends-native-error {
   display: grid;
   min-height: 320px;

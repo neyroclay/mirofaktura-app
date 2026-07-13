@@ -270,6 +270,7 @@
         const nativeMode = options.mode === 'native';
         const container = document.getElementById(CONTAINER_ID);
         if (!container) return null;
+        const nativeAppShell = nativeMode ? container.closest('.app-shell') : null;
 
         const cleanupStack = [];
         let destroyed = false;
@@ -288,7 +289,8 @@
                 try { renderer?.dispose?.(); } catch (_) {}
                 container.innerHTML = '';
                 delete container.dataset.trendDeckMounted;
-                container.classList.remove('trend-native-embedded');
+                container.classList.remove('trend-native-embedded', 'native-onboarding-active');
+                nativeAppShell?.classList.remove('native-onboarding-active');
             }
         };
 
@@ -1604,6 +1606,8 @@
             
             if(!appData.onboardingSeen && !isGameOver()) {
                 shouldStartTelegramFollowup = trendPlatform === 'telegram' && hasRemoteIdentity;
+                container.classList.add('native-onboarding-active');
+                nativeAppShell?.classList.add('native-onboarding-active');
                 onboardView.classList.add('visible'); onboardView.style.opacity = '1';
                 canvasDiv.style.opacity = '0'; document.getElementById('game-ui').style.opacity = '0';
             } else {
@@ -1620,6 +1624,8 @@
                 onboardView.style.opacity = '0';
                 setTimeout(()=>{ 
                     onboardView.classList.remove('visible'); 
+                    container.classList.remove('native-onboarding-active');
+                    nativeAppShell?.classList.remove('native-onboarding-active');
                     appData.onboardingSeen=true; 
                     saveState(); 
                     startTelegramFollowupOnce();
