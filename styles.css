@@ -1313,9 +1313,9 @@ h3 {
 .authors-photo img {
   display: block;
   width: 100%;
-  aspect-ratio: 1.12;
+  aspect-ratio: 1;
   object-fit: cover;
-  object-position: center 38%;
+  object-position: center;
 }
 
 .authors-intro {

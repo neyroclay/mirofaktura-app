@@ -76,7 +76,7 @@
     stepanFinal: './assets/stepan-final-map.webp',
     aristarch: './assets/aristarch-recommendations.webp',
     potap: './assets/potap-digital-system.webp',
-    authors: './assets/authors-photo.webp'
+    authors: './assets/authors-photo-labeled.jpg'
   };
 
   const quiz = [
@@ -1928,7 +1928,7 @@
         <h2 class="contacts-section-title">Авторы Мирофактуры</h2>
         ${telegramAuthorsIntro}
         <div class="authors-photo">
-          <img src="${assets.authors}" alt="Авторы Мирофактуры" loading="lazy" decoding="async">
+          <img src="${assets.authors}" alt="Лиза и Лена — авторы Мирофактуры" loading="lazy" decoding="async">
         </div>
         <div class="author-list">
           <div class="author-card">
