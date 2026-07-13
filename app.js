@@ -1897,9 +1897,6 @@
   }
 
   function renderContacts() {
-    const telegramAuthorsIntro = APP_PLATFORM === 'telegram'
-      ? '<p class="authors-intro">Лиза проектирует интерактивные форматы, мини-приложения и игровые механики. Елена выстраивает системный маркетинг и воронки впечатлений, используя игровые механики в привлечении и продажах.</p>'
-      : '';
     const elizavetaChannelButton = APP_PLATFORM === 'telegram'
       ? `<button class="author-channel-link" type="button" data-action="openExternalLink" data-url="${ELIZAVETA_TELEGRAM_CHANNEL_URL}">Канал «Игровые нейроны»</button>`
       : '';
@@ -1926,7 +1923,6 @@
 
       <section class="authors-panel" aria-label="Авторы">
         <h2 class="contacts-section-title">Авторы Мирофактуры</h2>
-        ${telegramAuthorsIntro}
         <div class="authors-photo">
           <img src="${assets.authors}" alt="Лиза и Лена — авторы Мирофактуры" loading="lazy" decoding="async">
         </div>
@@ -1935,7 +1931,7 @@
             <span class="author-avatar">Л</span>
             <span>
               <strong>Елизавета Викулова</strong>
-              <small>создаёт интерактивные форматы, мини-приложения и игровые механики для цифровых продуктов. Соединяет идею, сценарий и технологии в понятную работающую систему</small>
+              <small>проектирует интерактивные форматы, мини-приложения и игровые механики. Соединяет идею, сценарий и технологии в работающие цифровые продукты</small>
               ${elizavetaChannelButton}
             </span>
           </div>
@@ -1943,7 +1939,7 @@
             <span class="author-avatar">Е</span>
             <span>
               <strong>Елена Попова</strong>
-              <small>выстраивает системный маркетинг и воронки впечатлений. Использует игровые механики в привлечении и продажах, чтобы вовлекать аудиторию, поддерживать повторные покупки и рекомендации</small>
+              <small>выстраивает системный маркетинг и воронки впечатлений. Использует игровые механики, чтобы вовлекать аудиторию и поддерживать продажи</small>
               ${elenaChannelButton}
             </span>
           </div>
