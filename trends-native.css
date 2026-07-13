@@ -76,7 +76,7 @@
    the visible strips and the white flash. */
 .trends-native-screen #c37.trend-native-embedded #game-ui {
   background: transparent !important;
-  padding-bottom: calc(116px + env(safe-area-inset-bottom)) !important;
+  padding-bottom: calc(132px + env(safe-area-inset-bottom)) !important;
 }
 
 .trends-native-screen #c37.trend-native-embedded #mrf-preloader {
