@@ -1440,12 +1440,7 @@
 
             // НОВАЯ ЛОГИКА ШЕРИНГА (Web Share API)
             async function triggerShare() {
-                const canGiveTrendReferralBonus = appData.onboardingSeen === true
-                    || appData.collected.length > 0
-                    || Boolean(appData.lastDate);
-                const shareUrl = canGiveTrendReferralBonus
-                    ? `${trendEntryUrl}?start=${encodeURIComponent(String(userId))}`
-                    : trendEntryUrl;
+                const shareUrl = `${trendEntryUrl}?start=${encodeURIComponent(String(userId))}`;
                 const text = `Мне выпал стратегический тренд 2026: ${currentCardData.title}\n\nЗагляни в будущее и собери свою коллекцию инсайтов 👇`;
                 const fullText = text + '\n' + shareUrl;
 
