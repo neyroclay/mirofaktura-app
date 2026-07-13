@@ -449,21 +449,10 @@
             #${CONTAINER_ID} #invite-banner { border-color:rgba(138,183,170,0.16) !important; box-shadow:0 12px 28px rgba(14,77,72,0.07) !important; overflow:hidden; }
             #${CONTAINER_ID} #invite-banner .ask-ai-main-btn { width:calc(100% - 12px) !important; margin-left:auto !important; margin-right:auto !important; }
             #${CONTAINER_ID} .full-deck-btn {
-                background:
-                    radial-gradient(circle at 14% 24%, rgba(255,216,74,0.58), transparent 28%),
-                    radial-gradient(circle at 92% 14%, rgba(105,245,236,0.58), transparent 36%),
-                    linear-gradient(135deg,#073936 0%,#07898a 49%,#20cbc5 100%) !important;
-                color:#fff !important;
-                border:1px solid rgba(255,255,255,0.44) !important;
-                box-shadow:inset 0 1px 0 rgba(255,255,255,0.24), 0 8px 18px rgba(8,126,124,0.12) !important;
-            }
-            #${CONTAINER_ID} .full-deck-btn:hover,
-            #${CONTAINER_ID} .full-deck-btn:focus-visible {
-                background:
-                    radial-gradient(circle at 14% 24%, rgba(255,224,92,0.68), transparent 30%),
-                    radial-gradient(circle at 92% 14%, rgba(120,255,247,0.68), transparent 38%),
-                    linear-gradient(135deg,#063431 0%,#079493 49%,#25d4cf 100%) !important;
-                box-shadow:inset 0 1px 0 rgba(255,255,255,0.3), 0 14px 26px rgba(8,85,82,0.17) !important;
+                background:linear-gradient(105deg,#FFF1A8 0%,#FFD98A 58%,#F4BF63 100%) !important;
+                color:#17302C !important;
+                border:1px solid rgba(255,255,255,0.88) !important;
+                box-shadow:0 10px 22px rgba(132,92,20,0.14) !important;
             }
             
             #${CONTAINER_ID} header { 
