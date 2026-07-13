@@ -12,15 +12,22 @@
   };
   const telegramWebApp = window.Telegram?.WebApp || null;
   const URL_PARAMS = new URLSearchParams(window.location.search);
+  const TELEGRAM_LAUNCH_PARAMS = new URLSearchParams(window.location.hash.replace(/^#/, ''));
   const NATIVE_TRENDS_MODE = URL_PARAMS.get('trends_native');
-  const NATIVE_TRENDS_ASSET_VERSION = '20260713-root-telegram-13';
+  const NATIVE_TRENDS_ASSET_VERSION = '20260713-root-telegram-14';
+  const IS_TELEGRAM_LAUNCH = Boolean(
+    telegramWebApp?.initData
+    || telegramWebApp?.initDataUnsafe?.user?.id
+    || TELEGRAM_LAUNCH_PARAMS.get('tgWebAppData')
+    || TELEGRAM_LAUNCH_PARAMS.get('tgWebAppPlatform')
+  );
   const APP_PLATFORM = (() => {
     const params = URL_PARAMS;
     const raw = String(
       window.MIROFAKTURA_PLATFORM
       || params.get('platform')
       || params.get('messenger')
-      || (telegramWebApp?.initData || telegramWebApp?.initDataUnsafe?.user?.id ? 'telegram' : '')
+      || (IS_TELEGRAM_LAUNCH ? 'telegram' : '')
       || ''
     ).toLowerCase();
     return PLATFORM_ALIASES[raw] || 'max';
