@@ -63,6 +63,9 @@
   if (APP_PLATFORM === 'telegram' && telegramWebApp) {
     telegramWebApp.ready();
     telegramWebApp.expand();
+    if (USE_NATIVE_TRENDS && typeof telegramWebApp.disableVerticalSwipes === 'function') {
+      telegramWebApp.disableVerticalSwipes();
+    }
   }
   const assets = {
     logo: './assets/logo-black-yellow.webp',
