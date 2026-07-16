@@ -53,9 +53,9 @@
   }[APP_PLATFORM];
   const STORY_DESTINATION_URL = PLATFORM.entryUrl;
   const STORY_DESTINATION_LABEL = STORY_DESTINATION_URL.replace(/^https?:\/\//, '').replace(/\/$/, '');
-  const STORY_DESTINATION_TEXT = APP_PLATFORM === 'telegram'
-    ? 'Получите совет для своего проекта в боте Мирофактуры.'
-    : 'Получите совет для своего проекта в канале Мирофактуры.';
+  const STORY_DESTINATION_CTA_ACTION = APP_PLATFORM === 'telegram'
+    ? 'Переходите в бот Мирофактуры и получите совет для своего проекта →'
+    : 'Переходите в канал Мирофактуры и получите совет для своего проекта →';
   const SUBSCRIPTION_WEBHOOK_URL = window.MIROFAKTURA_SUBSCRIPTION_WEBHOOK_URL || '';
   const ACCESS_MODE = (() => {
     const params = new URLSearchParams(window.location.search);
@@ -73,7 +73,7 @@
   }
   const assets = {
     logo: './assets/logo-black-yellow.webp',
-    logoStory: './assets/logo-black-yellow.png',
+    logoStory: './assets/logo-white-yellow.png',
     stepanStart: './assets/stepan-start.webp',
     stepanProduct: './assets/stepan-product-question.webp',
     stepanChannels: './assets/stepan-clients-channels.webp',
@@ -1510,17 +1510,15 @@
           <p>Её можно поставить на экран телефона или поделиться в сториз.</p>
         </div>
         <div class="story-card-preview story-card-preview-${key}" aria-label="Предпросмотр цитаты Аристарха">
-          <div class="story-card-logo-plate">
-            <img class="story-card-logo" src="${assets.logoStory}" alt="" aria-hidden="true">
+          <img class="story-card-logo" src="${assets.logoStory}" alt="" aria-hidden="true">
+          <div class="story-card-cta">
+            <strong>${STORY_DESTINATION_CTA_ACTION}</strong>
+            <small>${STORY_DESTINATION_LABEL}</small>
           </div>
           <p class="story-card-speaker">АРИСТАРХ ИЗ МИРОФАКТУРЫ</p>
           <span class="story-card-accent" aria-hidden="true"></span>
           <blockquote>${story.quote}</blockquote>
           <img class="story-card-mascot" src="${assets.aristarchStory}" alt="" aria-hidden="true">
-          <div class="story-card-footer">
-            <span>${STORY_DESTINATION_TEXT}</span>
-            <small>${STORY_DESTINATION_LABEL}</small>
-          </div>
         </div>
         <div class="story-result-actions">
           <button class="primary-btn" type="button" data-action="shareStoryCard" data-material="${key}">Поделиться цитатой</button>
@@ -2754,20 +2752,6 @@
     };
   }
 
-  function drawContainedImage(context, image, x, y, width, height) {
-    const size = storyImageSize(image);
-    const scale = Math.min(width / size.width, height / size.height);
-    const drawWidth = size.width * scale;
-    const drawHeight = size.height * scale;
-    context.drawImage(
-      image,
-      x + (width - drawWidth) / 2,
-      y + (height - drawHeight) / 2,
-      drawWidth,
-      drawHeight
-    );
-  }
-
   async function createStoryCardCanvas(key) {
     const story = materialStoryData(key);
     if (!story) throw new Error('Сначала завершите подбор');
@@ -2801,39 +2785,53 @@
     context.fillStyle = tealGlow;
     context.fillRect(-540, 960, 1240, 1240);
 
-    context.beginPath();
-    context.roundRect(62, 58, 420, 190, 38);
-    context.fillStyle = 'rgba(255, 250, 226, 0.96)';
-    context.fill();
+    const logoSize = storyImageSize(logo);
+    const logoCropY = Math.round(logoSize.height * 0.22);
+    const logoCropHeight = Math.round(logoSize.height * 0.62);
     context.save();
-    context.shadowColor = 'rgba(0, 24, 22, 0.22)';
-    context.shadowBlur = 34;
-    context.shadowOffsetY = 14;
-    context.strokeStyle = 'rgba(255, 223, 92, 0.52)';
-    context.lineWidth = 3;
-    context.stroke();
+    context.shadowColor = 'rgba(0, 18, 17, 0.28)';
+    context.shadowBlur = 24;
+    context.drawImage(
+      logo,
+      0,
+      logoCropY,
+      logoSize.width,
+      logoCropHeight,
+      72,
+      54,
+      360,
+      126
+    );
     context.restore();
-    drawContainedImage(context, logo, 82, 60, 380, 184);
 
     context.textBaseline = 'top';
+    context.textAlign = 'right';
+    context.fillStyle = '#fffbea';
+    context.font = '800 25px "Segoe UI", Arial, sans-serif';
+    drawCanvasText(context, STORY_DESTINATION_CTA_ACTION, 998, 82, 330, 33, 4);
+    context.fillStyle = '#ffd84a';
+    context.font = '650 20px "Segoe UI", Arial, sans-serif';
+    context.fillText(STORY_DESTINATION_LABEL, 998, 214);
+
+    context.textAlign = 'left';
     context.fillStyle = '#79f4e8';
     context.font = '800 29px "Segoe UI", Arial, sans-serif';
-    context.fillText('АРИСТАРХ ИЗ МИРОФАКТУРЫ', 82, 302);
+    context.fillText('АРИСТАРХ ИЗ МИРОФАКТУРЫ', 82, 266);
 
     context.fillStyle = '#ffd84a';
-    context.fillRect(82, 354, 205, 9);
+    context.fillRect(82, 316, 205, 9);
 
     context.fillStyle = '#fffbea';
     const quoteFontSize = key === 'products' ? 70 : key === 'traffic' ? 74 : 78;
     const quoteLineHeight = key === 'products' ? 82 : key === 'traffic' ? 86 : 90;
     context.font = `800 ${quoteFontSize}px "Segoe UI", Arial, sans-serif`;
-    drawCanvasText(context, story.quote, 82, 402, 900, quoteLineHeight, 7);
+    drawCanvasText(context, story.quote, 82, 360, 900, quoteLineHeight, 7);
 
     const mascotSize = storyImageSize(aristarch);
-    const mascotWidth = 720;
+    const mascotWidth = 760;
     const mascotHeight = mascotWidth * mascotSize.height / mascotSize.width;
-    const mascotX = 370;
-    const mascotY = 1920 - mascotHeight + 18;
+    const mascotX = (1080 - mascotWidth) / 2;
+    const mascotY = 1920 - mascotHeight - 18;
     const mascotGlow = context.createRadialGradient(790, 1450, 10, 790, 1450, 520);
     mascotGlow.addColorStop(0, 'rgba(255, 216, 74, 0.25)');
     mascotGlow.addColorStop(0.45, 'rgba(64, 226, 220, 0.25)');
@@ -2852,21 +2850,6 @@
     context.globalAlpha = 0.98;
     context.drawImage(aristarch, mascotX, mascotY, mascotWidth, mascotHeight);
     context.restore();
-
-    context.fillStyle = 'rgba(239, 255, 250, 0.86)';
-    context.font = '700 29px "Segoe UI", Arial, sans-serif';
-    drawCanvasText(
-      context,
-      STORY_DESTINATION_TEXT,
-      82,
-      1670,
-      340,
-      39,
-      4
-    );
-    context.fillStyle = '#ffd84a';
-    context.font = '600 23px "Segoe UI", Arial, sans-serif';
-    context.fillText(STORY_DESTINATION_LABEL, 82, 1818);
 
     return { canvas, story };
   }

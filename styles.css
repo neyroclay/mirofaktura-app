@@ -1228,7 +1228,7 @@ h3 {
 .story-card-preview {
   position: relative;
   isolation: isolate;
-  width: min(252px, 78vw);
+  width: min(274px, 84vw);
   aspect-ratio: 9 / 16;
   overflow: hidden;
   display: flex;
@@ -1264,31 +1264,45 @@ h3 {
   background: radial-gradient(circle, rgba(255, 216, 74, 0.34) 0%, rgba(40, 226, 215, 0.16) 46%, transparent 72%);
 }
 
-.story-card-logo-plate {
-  position: relative;
+.story-card-logo {
+  position: absolute;
+  top: -8px;
+  left: 15px;
   z-index: 2;
-  display: grid;
-  place-items: center;
-  width: 112px;
-  height: 56px;
-  padding: 2px 7px;
-  border: 1px solid rgba(255, 224, 99, 0.46);
-  border-radius: 14px;
-  background: rgba(255, 250, 228, 0.96);
-  box-shadow: 0 10px 24px rgba(0, 24, 22, 0.22);
+  width: 122px;
+  height: auto;
+  filter: drop-shadow(0 7px 12px rgba(0, 18, 17, 0.24));
 }
 
-.story-card-logo {
-  width: 100px;
-  height: 50px;
-  object-fit: contain;
-  object-position: left center;
+.story-card-cta {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  z-index: 3;
+  width: 122px;
+  display: grid;
+  gap: 2px;
+  text-align: right;
+}
+
+.story-card-cta strong {
+  color: #fffbea;
+  font-size: 7.2px;
+  line-height: 1.24;
+  font-weight: 850;
+}
+
+.story-card-cta small {
+  color: #ffd84a;
+  font-size: 5.5px;
+  line-height: 1.2;
+  font-weight: 750;
 }
 
 .story-card-speaker {
-  margin: 9px 0 0;
+  margin: 56px 0 0;
   color: #7af3e8;
-  font-size: 8px;
+  font-size: 7.5px;
   line-height: 1.2;
   font-weight: 900;
   letter-spacing: 0.11em;
@@ -1299,7 +1313,7 @@ h3 {
   z-index: 2;
   width: 48px;
   height: 3px;
-  margin-top: 9px;
+  margin-top: 7px;
   border-radius: 999px;
   background: #ffd84a;
 }
@@ -1307,59 +1321,37 @@ h3 {
 .story-card-preview blockquote {
   position: relative;
   z-index: 2;
-  margin: 13px 0 0;
+  margin: 10px 0 0;
   color: #fffbea;
-  font-size: 22px;
+  font-size: 19px;
   line-height: 1.01;
   font-weight: 850;
   letter-spacing: -0.035em;
 }
 
 .story-card-preview-products blockquote {
-  font-size: 21px;
+  font-size: 18px;
 }
 
 .story-card-preview-traffic blockquote {
-  font-size: 19px;
+  font-size: 17px;
   line-height: 1;
 }
 
 .story-card-mascot {
   position: absolute;
-  right: -24px;
-  bottom: -58px;
+  right: auto;
+  bottom: 7px;
+  left: 50%;
   z-index: 1;
-  width: 180px;
-  max-height: 272px;
+  width: 190px;
+  max-height: none;
   object-fit: contain;
   opacity: 0.98;
+  transform: translateX(-50%);
   filter:
     drop-shadow(0 14px 18px rgba(0, 18, 17, 0.34))
     drop-shadow(0 0 22px rgba(80, 235, 222, 0.14));
-}
-
-.story-card-footer {
-  position: absolute;
-  right: 154px;
-  bottom: 14px;
-  left: 17px;
-  z-index: 2;
-  display: grid;
-  gap: 4px;
-}
-
-.story-card-footer span {
-  color: rgba(235, 255, 251, 0.82);
-  font-size: 7px;
-  line-height: 1.28;
-  font-weight: 750;
-}
-
-.story-card-footer small {
-  color: #ffd84a;
-  font-size: 6px;
-  line-height: 1.2;
-  font-weight: 700;
 }
 
 .story-result-actions {
