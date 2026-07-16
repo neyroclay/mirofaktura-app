@@ -1,0 +1,1230 @@
+{
+  "title": "Мирофактура — старт и реферальная ветка Telegram",
+  "logic": {
+    "nextLocalId": 3200,
+    "nextStepId": 274,
+    "nodes": [
+      {
+        "type": "event",
+        "start_mode": "reopen",
+        "ui": {
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "step": 3
+        },
+        "localId": 10,
+        "ports": [
+          {
+            "name": "defaultInput",
+            "localId": 11,
+            "type": "input",
+            "group": "waitAll"
+          },
+          {
+            "name": "defaultOutput",
+            "localId": 12,
+            "type": "output"
+          }
+        ],
+        "text": "",
+        "events": [
+          {
+            "localId": 15,
+            "type": "event/core/message/new",
+            "filterEffect": 13,
+            "filter": []
+          }
+        ],
+        "effects": [
+          {
+            "type": "effect/core/graph/condition/jump",
+            "localId": 13,
+            "spec": {
+              "truePorts": [
+                12
+              ],
+              "mode": "and",
+              "conditions": [
+                {
+                  "type": "condition/core/event/message/text",
+                  "localId": 14,
+                  "spec": {
+                    "method": "contains",
+                    "values": [
+                      "/start"
+                    ],
+                    "cs": false,
+                    "by_json": false
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "type": "condition",
+        "ui": {
+          "position": {
+            "x": 330,
+            "y": 0
+          },
+          "step": 189
+        },
+        "localId": 1472,
+        "ports": [
+          {
+            "name": "defaultInput",
+            "localId": 1473,
+            "type": "input",
+            "group": "waitAll"
+          },
+          {
+            "name": "defaultOutput",
+            "localId": 1474,
+            "type": "output"
+          },
+          {
+            "name": "condition",
+            "localId": 1475,
+            "type": "output",
+            "group": "branching"
+          },
+          {
+            "name": "failure",
+            "localId": 1476,
+            "type": "output",
+            "group": "branching"
+          }
+        ],
+        "effects": [
+          {
+            "type": "effect/core/graph/jump/to",
+            "localId": 1477,
+            "spec": {
+              "localIds": [
+                1474
+              ],
+              "type": "jump",
+              "ignore_next": false
+            }
+          },
+          {
+            "type": "effect/core/graph/condition/jump",
+            "localId": 1478,
+            "spec": {
+              "truePorts": [
+                1475
+              ],
+              "mode": "and",
+              "conditions": [
+                {
+                  "type": "condition/core/var/bool/check",
+                  "localId": 1479,
+                  "spec": {
+                    "var": "{var:object.ref}"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "effect/core/graph/jump/to",
+            "localId": 1480,
+            "spec": {
+              "localIds": [
+                1476
+              ],
+              "type": "jump",
+              "ignore_next": false
+            }
+          }
+        ],
+        "text": "Есть реферальный параметр?"
+      },
+      {
+        "type": "condition",
+        "ui": {
+          "position": {
+            "x": 660,
+            "y": 0
+          },
+          "step": 191
+        },
+        "localId": 1486,
+        "ports": [
+          {
+            "name": "defaultInput",
+            "localId": 1487,
+            "type": "input",
+            "group": "waitAll"
+          },
+          {
+            "name": "defaultOutput",
+            "localId": 1488,
+            "type": "output"
+          },
+          {
+            "name": "condition",
+            "localId": 1489,
+            "type": "output",
+            "group": "branching"
+          },
+          {
+            "name": "failure",
+            "localId": 1490,
+            "type": "output",
+            "group": "branching"
+          }
+        ],
+        "effects": [
+          {
+            "type": "effect/core/graph/jump/to",
+            "localId": 1491,
+            "spec": {
+              "localIds": [
+                1488
+              ],
+              "type": "jump",
+              "ignore_next": false
+            }
+          },
+          {
+            "type": "effect/core/graph/condition/jump",
+            "localId": 1492,
+            "spec": {
+              "truePorts": [
+                1489
+              ],
+              "mode": "and",
+              "conditions": [
+                {
+                  "type": "condition/core/var/number/compare",
+                  "localId": 1493,
+                  "spec": {
+                    "var": "{var:object.ref}",
+                    "method": "equal",
+                    "value": "{user:platform.id}",
+                    "to_number": true
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "effect/core/graph/jump/to",
+            "localId": 1494,
+            "spec": {
+              "localIds": [
+                1490
+              ],
+              "type": "jump",
+              "ignore_next": false
+            }
+          }
+        ],
+        "text": "Пользователь открыл собственную ссылку?"
+      },
+      {
+        "type": "condition",
+        "ui": {
+          "position": {
+            "x": 990,
+            "y": 0
+          },
+          "step": 192
+        },
+        "localId": 1495,
+        "ports": [
+          {
+            "name": "defaultInput",
+            "localId": 1496,
+            "type": "input",
+            "group": "waitAll"
+          },
+          {
+            "name": "defaultOutput",
+            "localId": 1497,
+            "type": "output"
+          },
+          {
+            "name": "condition",
+            "localId": 1498,
+            "type": "output",
+            "group": "branching"
+          },
+          {
+            "name": "failure",
+            "localId": 1499,
+            "type": "output",
+            "group": "branching"
+          }
+        ],
+        "effects": [
+          {
+            "type": "effect/core/graph/jump/to",
+            "localId": 1500,
+            "spec": {
+              "localIds": [
+                1497
+              ],
+              "type": "jump",
+              "ignore_next": false
+            }
+          },
+          {
+            "type": "effect/core/graph/condition/jump",
+            "localId": 1501,
+            "spec": {
+              "truePorts": [
+                1498
+              ],
+              "mode": "and",
+              "conditions": [
+                {
+                  "type": "condition/core/var/bool/check",
+                  "localId": 1502,
+                  "spec": {
+                    "var": "{field:partner}"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "effect/core/graph/jump/to",
+            "localId": 1503,
+            "spec": {
+              "localIds": [
+                1499
+              ],
+              "type": "jump",
+              "ignore_next": false
+            }
+          }
+        ],
+        "text": "Этот пользователь уже был засчитан?"
+      },
+      {
+        "type": "condition",
+        "ui": {
+          "position": {
+            "x": 0,
+            "y": 220
+          },
+          "step": 210
+        },
+        "localId": 1630,
+        "ports": [
+          {
+            "name": "defaultInput",
+            "localId": 1631,
+            "type": "input",
+            "group": "waitAll"
+          },
+          {
+            "name": "defaultOutput",
+            "localId": 1632,
+            "type": "output"
+          },
+          {
+            "name": "condition",
+            "localId": 1633,
+            "type": "output",
+            "group": "branching"
+          },
+          {
+            "name": "failure",
+            "localId": 1634,
+            "type": "output",
+            "group": "branching"
+          }
+        ],
+        "effects": [
+          {
+            "type": "effect/core/graph/jump/to",
+            "localId": 1635,
+            "spec": {
+              "localIds": [
+                1632
+              ],
+              "type": "jump",
+              "ignore_next": false
+            }
+          },
+          {
+            "type": "effect/core/graph/condition/jump",
+            "localId": 1636,
+            "spec": {
+              "truePorts": [
+                1633
+              ],
+              "mode": "and",
+              "conditions": [
+                {
+                  "type": "condition/core/crm/contact/exists",
+                  "localId": 1637,
+                  "spec": {
+                    "contact_type": "telegram_id",
+                    "values": [
+                      "{var:object.ref}"
+                    ],
+                    "only_current": false
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "type": "effect/core/graph/jump/to",
+            "localId": 1638,
+            "spec": {
+              "localIds": [
+                1634
+              ],
+              "type": "jump",
+              "ignore_next": false
+            }
+          }
+        ],
+        "text": "Пригласивший найден в Telegram?"
+      },
+      {
+        "type": "action",
+        "ui": {
+          "position": {
+            "x": 330,
+            "y": 220
+          },
+          "step": 193
+        },
+        "localId": 1504,
+        "ports": [
+          {
+            "name": "defaultInput",
+            "localId": 1505,
+            "type": "input",
+            "group": "waitAll"
+          },
+          {
+            "name": "defaultOutput",
+            "localId": 1506,
+            "type": "output"
+          }
+        ],
+        "effects": [
+          {
+            "type": "effect/core/crm/field/number/set",
+            "localId": 1507,
+            "spec": {
+              "code_var": "",
+              "operation": "set",
+              "value": "{var:object.ref}",
+              "set_code_by_var": false,
+              "code": "partner"
+            }
+          },
+          {
+            "type": "effect/core/graph/jump/to",
+            "localId": 1510,
+            "spec": {
+              "localIds": [
+                1506
+              ],
+              "type": "jump",
+              "ignore_next": false
+            }
+          }
+        ],
+        "text": "Запомнить пригласившего"
+      },
+      {
+        "type": "action",
+        "ui": {
+          "position": {
+            "x": 660,
+            "y": 220
+          },
+          "step": 241
+        },
+        "localId": 1913,
+        "ports": [
+          {
+            "name": "defaultInput",
+            "localId": 1914,
+            "type": "input",
+            "group": "waitAll"
+          },
+          {
+            "name": "defaultOutput",
+            "localId": 1915,
+            "type": "output"
+          }
+        ],
+        "effects": [
+          {
+            "type": "effect/program/api/request/send",
+            "localId": 1916,
+            "spec": {
+              "method": "GET",
+              "response_method": "json",
+              "add_headers": true,
+              "add_parameters": false,
+              "add_files": false,
+              "add_params": false,
+              "deep_merge": false,
+              "add_auth": false,
+              "auth_method": "Bearer",
+              "set_request_delay": false,
+              "request_delay_ms": "",
+              "follow_redirects": false,
+              "vpn": false,
+              "save_result": true,
+              "result_var": "baserow_ref",
+              "url": "https://api.baserow.io/api/database/rows/table/893270/?user_field_names=true&filter__user_id__equal={var:object.ref}&filter_type=AND&filter__messenger__equal=TELEGRAM",
+              "headers": [
+                {
+                  "name": "Authorization",
+                  "value": "Token __BASEROW_TOKEN__"
+                }
+              ]
+            }
+          },
+          {
+            "type": "effect/core/graph/jump/to",
+            "localId": 1917,
+            "spec": {
+              "localIds": [
+                1915
+              ],
+              "type": "jump",
+              "ignore_next": false
+            }
+          }
+        ],
+        "text": "Найти пригласившего в Baserow"
+      },
+      {
+        "type": "condition",
+        "ui": {
+          "position": {
+            "x": 990,
+            "y": 220
+          },
+          "step": 266
+        },
+        "localId": 2122,
+        "ports": [
+          {
+            "name": "defaultInput",
+            "localId": 2123,
+            "type": "input",
+            "group": "waitAll"
+          },
+          {
+            "name": "defaultOutput",
+            "localId": 2124,
+            "type": "output"
+          },
+          {
+            "name": "condition",
+            "localId": 2125,
+            "type": "output",
+            "group": "branching",
+            "ui": {
+              "title": "Найден"
+            }
+          },
+          {
+            "name": "failure",
+            "localId": 2126,
+            "type": "output",
+            "group": "branching"
+          }
+        ],
+        "effects": [
+          {
+            "type": "effect/core/graph/jump/to",
+            "localId": 2127,
+            "spec": {
+              "localIds": [
+                2124
+              ],
+              "type": "jump",
+              "ignore_next": false
+            }
+          },
+          {
+            "type": "effect/core/graph/condition/jump",
+            "localId": 2128,
+            "spec": {
+              "truePorts": [
+                2125
+              ],
+              "mode": "and",
+              "conditions": [
+                {
+                  "type": "condition/core/var/number/compare",
+                  "localId": 2129,
+                  "spec": {
+                    "var": "{var:baserow_ref.count}",
+                    "method": "more",
+                    "value": "0",
+                    "to_number": true
+                  }
+                },
+                {
+                  "type": "condition/core/var/number/compare",
+                  "localId": 2130,
+                  "spec": {
+                    "var": "{var:baserow_ref.results.0.invited_friends|0}",
+                    "method": "less",
+                    "value": "3",
+                    "to_number": true
+                  }
+                }
+              ]
+            },
+            "title": "Найден"
+          },
+          {
+            "type": "effect/core/graph/jump/to",
+            "localId": 2131,
+            "spec": {
+              "localIds": [
+                2126
+              ],
+              "type": "jump",
+              "ignore_next": false
+            }
+          }
+        ],
+        "text": "Можно начислить бонусную карту?"
+      },
+      {
+        "type": "action",
+        "ui": {
+          "position": {
+            "x": 0,
+            "y": 440
+          },
+          "step": 267
+        },
+        "localId": 2132,
+        "ports": [
+          {
+            "name": "defaultInput",
+            "localId": 2133,
+            "type": "input",
+            "group": "waitAll"
+          },
+          {
+            "name": "defaultOutput",
+            "localId": 2134,
+            "type": "output"
+          }
+        ],
+        "effects": [
+          {
+            "type": "effect/core/var/number/set",
+            "localId": 2135,
+            "spec": {
+              "operation": "set",
+              "data_type": "float",
+              "var": "new_bonus",
+              "value": "{var:baserow_ref.results.0.bonus_cards|0}"
+            }
+          },
+          {
+            "type": "effect/core/var/number/set",
+            "localId": 2136,
+            "spec": {
+              "operation": "increase",
+              "data_type": "float",
+              "var": "new_bonus",
+              "value": "1"
+            }
+          },
+          {
+            "type": "effect/core/var/number/set",
+            "localId": 2137,
+            "spec": {
+              "operation": "set",
+              "data_type": "float",
+              "var": "new_invited",
+              "value": "{var:baserow_ref.results.0.invited_friends|0}"
+            }
+          },
+          {
+            "type": "effect/core/var/number/set",
+            "localId": 2138,
+            "spec": {
+              "operation": "increase",
+              "data_type": "float",
+              "var": "new_invited",
+              "value": "1"
+            }
+          },
+          {
+            "type": "effect/program/api/request/send",
+            "localId": 2139,
+            "spec": {
+              "method": "PATCH",
+              "response_method": "json",
+              "add_headers": true,
+              "add_parameters": false,
+              "add_files": false,
+              "add_params": true,
+              "deep_merge": false,
+              "add_auth": false,
+              "auth_method": "Bearer",
+              "set_request_delay": false,
+              "request_delay_ms": "",
+              "follow_redirects": false,
+              "vpn": false,
+              "save_result": false,
+              "url": "https://api.baserow.io/api/database/rows/table/893270/{var:baserow_ref.results.0.id}/?user_field_names=true",
+              "headers": [
+                {
+                  "name": "Authorization",
+                  "value": "Token __BASEROW_TOKEN__"
+                }
+              ],
+              "params": "{\n  \"bonus_cards\": \"{var:new_bonus}\",\n  \"invited_friends\": \"{var:new_invited}\"\n}"
+            }
+          },
+          {
+            "type": "effect/core/graph/jump/to",
+            "localId": 2140,
+            "spec": {
+              "localIds": [
+                2134
+              ],
+              "type": "jump",
+              "ignore_next": false
+            }
+          }
+        ],
+        "text": "Начислить бонус и увеличить счётчик"
+      },
+      {
+        "type": "action",
+        "ui": {
+          "position": {
+            "x": 330,
+            "y": 440
+          },
+          "step": 268
+        },
+        "localId": 2141,
+        "ports": [
+          {
+            "name": "defaultInput",
+            "localId": 2142,
+            "type": "input",
+            "group": "waitAll"
+          },
+          {
+            "name": "defaultOutput",
+            "localId": 2143,
+            "type": "output"
+          }
+        ],
+        "effects": [
+          {
+            "type": "effect/core/var/context/chat",
+            "localId": 2144,
+            "spec": {
+              "var": "{var:object.ref}",
+              "from_var": true,
+              "by_user_id": false
+            }
+          },
+          {
+            "type": "effect/core/graph/jump/to",
+            "localId": 2145,
+            "spec": {
+              "localIds": [
+                2143
+              ],
+              "type": "jump",
+              "ignore_next": false
+            }
+          }
+        ],
+        "text": "Переключиться на чат пригласившего"
+      },
+      {
+        "type": "message",
+        "ui": {
+          "position": {
+            "x": 660,
+            "y": 440
+          },
+          "step": 265
+        },
+        "localId": 2116,
+        "ports": [
+          {
+            "name": "defaultInput",
+            "localId": 2117,
+            "type": "input",
+            "group": "waitAll"
+          },
+          {
+            "name": "defaultOutput",
+            "localId": 2118,
+            "type": "output"
+          }
+        ],
+        "effects": [
+          {
+            "type": "effect/core/chat/message/send",
+            "localId": 2119,
+            "spec": {
+              "options": true,
+              "keyboard": [
+                [
+                  {
+                    "id": 2120,
+                    "label": "Открыть бонусную карту",
+                    "type": "app",
+                    "color": "default",
+                    "spec": {
+                      "url": "https://neyroclay.github.io/mirofaktura-app/?platform=telegram"
+                    },
+                    "payload": ""
+                  }
+                ]
+              ],
+              "json_keyboard": "[[{\n  \"label\": \"String\",\n  \"type\": \"text\",\n  \"color\": \"primary\",\n  \"payload\": \"1\"\n}]]",
+              "remove_keyboard": false,
+              "inline_keyboard": true,
+              "permanent_keyboard": false,
+              "keyboard_as_json": false,
+              "allow_link_preview": false,
+              "do_nothing_on_empty": true,
+              "reply": false,
+              "reply_id": "{var:object.id}",
+              "pass_topic": false,
+              "topic_id": "{var:object.topic.id}",
+              "forward": false,
+              "forward_ids": [
+                "{var:object.id}"
+              ],
+              "attach": false,
+              "attachment": [],
+              "protect_content": false,
+              "text": "По вашей ссылке в Мирофактуру пришёл новый участник. Мы добавили вам бонусную карту тренда — она уже доступна в колоде."
+            }
+          },
+          {
+            "type": "effect/core/graph/jump/to",
+            "localId": 2121,
+            "spec": {
+              "localIds": [
+                2118
+              ],
+              "type": "jump",
+              "ignore_next": false
+            }
+          }
+        ],
+        "text": "Сообщить пригласившему о бонусной карте"
+      },
+      {
+        "type": "action",
+        "ui": {
+          "position": {
+            "x": 990,
+            "y": 440
+          },
+          "step": 270
+        },
+        "localId": 2151,
+        "ports": [
+          {
+            "name": "defaultInput",
+            "localId": 2152,
+            "type": "input",
+            "group": "waitAll"
+          },
+          {
+            "name": "defaultOutput",
+            "localId": 2153,
+            "type": "output"
+          }
+        ],
+        "effects": [
+          {
+            "type": "effect/core/var/number/set",
+            "localId": 2154,
+            "spec": {
+              "operation": "set",
+              "data_type": "float",
+              "var": "new_invited",
+              "value": "{var:baserow_ref.results.0.invited_friends|0}"
+            }
+          },
+          {
+            "type": "effect/core/var/number/set",
+            "localId": 2155,
+            "spec": {
+              "operation": "increase",
+              "data_type": "float",
+              "var": "new_invited",
+              "value": "1"
+            }
+          },
+          {
+            "type": "effect/program/api/request/send",
+            "localId": 2156,
+            "spec": {
+              "method": "PATCH",
+              "response_method": "json",
+              "add_headers": true,
+              "add_parameters": false,
+              "add_files": false,
+              "add_params": true,
+              "deep_merge": false,
+              "add_auth": false,
+              "auth_method": "Bearer",
+              "set_request_delay": false,
+              "request_delay_ms": "",
+              "follow_redirects": false,
+              "vpn": false,
+              "save_result": false,
+              "url": "https://api.baserow.io/api/database/rows/table/893270/{var:baserow_ref.results.0.id}/?user_field_names=true",
+              "headers": [
+                {
+                  "name": "Authorization",
+                  "value": "Token __BASEROW_TOKEN__"
+                }
+              ],
+              "params": "{\n  \"invited_friends\": \"{var:new_invited}\"\n}"
+            }
+          },
+          {
+            "type": "effect/core/graph/jump/to",
+            "localId": 2157,
+            "spec": {
+              "localIds": [
+                2153
+              ],
+              "type": "jump",
+              "ignore_next": false
+            }
+          }
+        ],
+        "text": "Увеличить счётчик без бонуса"
+      },
+      {
+        "type": "action",
+        "ui": {
+          "position": {
+            "x": 0,
+            "y": 660
+          },
+          "step": 271
+        },
+        "localId": 3101,
+        "ports": [
+          {
+            "name": "defaultInput",
+            "localId": 3102,
+            "type": "input",
+            "group": "waitAll"
+          },
+          {
+            "name": "defaultOutput",
+            "localId": 3103,
+            "type": "output"
+          }
+        ],
+        "effects": [
+          {
+            "type": "effect/core/var/number/set",
+            "localId": 3104,
+            "spec": {
+              "operation": "set",
+              "data_type": "float",
+              "var": "invitee_id",
+              "value": "{user:platform.id}"
+            }
+          },
+          {
+            "type": "effect/core/graph/jump/to",
+            "localId": 3105,
+            "spec": {
+              "localIds": [
+                3103
+              ],
+              "type": "jump",
+              "ignore_next": false
+            }
+          }
+        ],
+        "text": "Запомнить нового пользователя перед переключением чата"
+      },
+      {
+        "type": "action",
+        "ui": {
+          "position": {
+            "x": 330,
+            "y": 660
+          },
+          "step": 272
+        },
+        "localId": 3110,
+        "ports": [
+          {
+            "name": "defaultInput",
+            "localId": 3111,
+            "type": "input",
+            "group": "waitAll"
+          },
+          {
+            "name": "defaultOutput",
+            "localId": 3112,
+            "type": "output"
+          }
+        ],
+        "effects": [
+          {
+            "type": "effect/core/var/context/chat",
+            "localId": 3113,
+            "spec": {
+              "var": "{var:invitee_id}",
+              "from_var": true,
+              "by_user_id": false
+            }
+          },
+          {
+            "type": "effect/core/graph/jump/to",
+            "localId": 3114,
+            "spec": {
+              "localIds": [
+                3112
+              ],
+              "type": "jump",
+              "ignore_next": false
+            }
+          }
+        ],
+        "text": "Вернуться в чат нового пользователя"
+      },
+      {
+        "type": "message",
+        "ui": {
+          "position": {
+            "x": 660,
+            "y": 660
+          },
+          "step": 273,
+          "related": []
+        },
+        "localId": 3120,
+        "ports": [
+          {
+            "name": "defaultInput",
+            "localId": 3121,
+            "type": "input",
+            "group": "waitAll"
+          },
+          {
+            "name": "defaultOutput",
+            "localId": 3122,
+            "type": "output"
+          }
+        ],
+        "effects": [
+          {
+            "type": "effect/core/chat/photo/send",
+            "localId": 3123,
+            "spec": {
+              "message_id": "",
+              "options": false,
+              "add_url": false,
+              "show_caption_above_media": false,
+              "reply": false,
+              "reply_id": "{var:object.id}",
+              "pass_topic": false,
+              "topic_id": "{var:object.topic.id}",
+              "protect_content": false,
+              "has_spoiler": false,
+              "disable_notification": false,
+              "keyboard": [
+                [
+                  {
+                    "id": 170,
+                    "label": "Открыть Мирофактуру",
+                    "type": "app",
+                    "color": "default",
+                    "spec": {
+                      "url": "https://neyroclay.github.io/mirofaktura-app/"
+                    },
+                    "payload": ""
+                  }
+                ]
+              ],
+              "add_keyboard": true,
+              "inline_keyboard": true,
+              "remove_keyboard": false,
+              "permanent_keyboard": false,
+              "keyboard_as_json": false,
+              "json_keyboard": "[[{\"label\": \"String\",\"type\": \"text\"}]]",
+              "code": "https://neyroclay.github.io/mirofaktura-app/assets/authors-photo.webp",
+              "caption": "Привет, {user:first_name}!\n\nВы в «Карманной Вселенной» — боте Мирофактуры. Мы — Елизавета Викулова и Елена Попова, авторы проекта.\n\nПомогаем собрать маркетинг в единую систему: от позиционирования и продукта до привлечения, продаж, автоматизации и ИИ-инструментов. Добавляем геймификацию и интерактив, чтобы людям было интереснее знакомиться с брендом и проще выбирать.\n\nВ приложении можно проверить, где сейчас теряются клиенты, получить подарок под свою задачу, открыть интерактивные инструменты и вытянуть карту из колоды «Тренды 2026».\n\nНажмите кнопку ниже. Можно начать с короткого квиза или сразу заглянуть в Кладовую."
+            }
+          }
+        ],
+        "text": "Показать приветствие и вход в приложение"
+      }
+    ],
+    "edges": [
+      {
+        "localId": 3001,
+        "srcNode": 10,
+        "srcPort": 12,
+        "dstNode": 3101,
+        "dstPort": 3102
+      },
+      {
+        "localId": 3012,
+        "srcNode": 3101,
+        "srcPort": 3103,
+        "dstNode": 1472,
+        "dstPort": 1473
+      },
+      {
+        "localId": 3002,
+        "srcNode": 1472,
+        "srcPort": 1475,
+        "dstNode": 1486,
+        "dstPort": 1487
+      },
+      {
+        "localId": 3003,
+        "srcNode": 1486,
+        "srcPort": 1490,
+        "dstNode": 1495,
+        "dstPort": 1496
+      },
+      {
+        "localId": 3004,
+        "srcNode": 1495,
+        "srcPort": 1499,
+        "dstNode": 1630,
+        "dstPort": 1631
+      },
+      {
+        "localId": 3005,
+        "srcNode": 1630,
+        "srcPort": 1633,
+        "dstNode": 1504,
+        "dstPort": 1505
+      },
+      {
+        "localId": 3006,
+        "srcNode": 1504,
+        "srcPort": 1506,
+        "dstNode": 1913,
+        "dstPort": 1914
+      },
+      {
+        "localId": 3007,
+        "srcNode": 1913,
+        "srcPort": 1915,
+        "dstNode": 2122,
+        "dstPort": 2123
+      },
+      {
+        "localId": 3008,
+        "srcNode": 2122,
+        "srcPort": 2125,
+        "dstNode": 2132,
+        "dstPort": 2133
+      },
+      {
+        "localId": 3009,
+        "srcNode": 2132,
+        "srcPort": 2134,
+        "dstNode": 2141,
+        "dstPort": 2142
+      },
+      {
+        "localId": 3010,
+        "srcNode": 2141,
+        "srcPort": 2143,
+        "dstNode": 2116,
+        "dstPort": 2117
+      },
+      {
+        "localId": 3011,
+        "srcNode": 2122,
+        "srcPort": 2126,
+        "dstNode": 2151,
+        "dstPort": 2152
+      },
+      {
+        "localId": 3013,
+        "srcNode": 1472,
+        "srcPort": 1476,
+        "dstNode": 3120,
+        "dstPort": 3121
+      },
+      {
+        "localId": 3014,
+        "srcNode": 1486,
+        "srcPort": 1489,
+        "dstNode": 3120,
+        "dstPort": 3121
+      },
+      {
+        "localId": 3015,
+        "srcNode": 1495,
+        "srcPort": 1498,
+        "dstNode": 3120,
+        "dstPort": 3121
+      },
+      {
+        "localId": 3016,
+        "srcNode": 1630,
+        "srcPort": 1634,
+        "dstNode": 3120,
+        "dstPort": 3121
+      },
+      {
+        "localId": 3017,
+        "srcNode": 2151,
+        "srcPort": 2153,
+        "dstNode": 3120,
+        "dstPort": 3121
+      },
+      {
+        "localId": 3018,
+        "srcNode": 2116,
+        "srcPort": 2118,
+        "dstNode": 3110,
+        "dstPort": 3111
+      },
+      {
+        "localId": 3019,
+        "srcNode": 3110,
+        "srcPort": 3112,
+        "dstNode": 3120,
+        "dstPort": 3121
+      }
+    ],
+    "ui": {
+      "position": {
+        "x": 420,
+        "y": 260,
+        "zoom": 0.72
+      },
+      "chosenNodeId": 0
+    }
+  }
+}
