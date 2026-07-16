@@ -1508,7 +1508,6 @@
         <div class="story-card-preview story-card-preview-${key}" aria-label="Предпросмотр цитаты Аристарха">
           <img class="story-card-logo" src="${assets.logoStory}" alt="" aria-hidden="true">
           <p class="story-card-speaker">АРИСТАРХ ИЗ МИРОФАКТУРЫ</p>
-          <span class="story-card-quote-mark" aria-hidden="true">«</span>
           <blockquote>${story.quote}</blockquote>
           <img class="story-card-mascot" src="${assets.aristarchStory}" alt="" aria-hidden="true">
           <div class="story-card-footer">
@@ -2820,29 +2819,27 @@
     context.font = '800 29px "Segoe UI", Arial, sans-serif';
     context.fillText('АРИСТАРХ ИЗ МИРОФАКТУРЫ', 82, 310);
 
-    context.save();
-    context.globalAlpha = 0.22;
-    context.fillStyle = '#008b8b';
-    context.font = '800 230px Georgia, serif';
-    context.fillText('«', 62, 350);
-    context.restore();
+    context.fillStyle = '#f2c21b';
+    context.fillRect(82, 360, 205, 9);
 
     context.fillStyle = '#092623';
-    context.font = '800 84px "Segoe UI", Arial, sans-serif';
-    drawCanvasText(context, story.quote, 82, 478, 900, 96, 7);
+    const quoteFontSize = key === 'products' ? 80 : key === 'traffic' ? 84 : 92;
+    const quoteLineHeight = key === 'products' ? 92 : key === 'traffic' ? 96 : 104;
+    context.font = `800 ${quoteFontSize}px "Segoe UI", Arial, sans-serif`;
+    drawCanvasText(context, story.quote, 82, 412, 900, quoteLineHeight, 7);
 
     const mascotSize = storyImageSize(aristarch);
-    const mascotWidth = 470;
+    const mascotWidth = 610;
     const mascotHeight = mascotWidth * mascotSize.height / mascotSize.width;
-    const mascotX = 610;
-    const mascotY = 1920 - mascotHeight + 8;
-    const mascotGlow = context.createRadialGradient(830, 1540, 10, 830, 1540, 410);
-    mascotGlow.addColorStop(0, 'rgba(40, 212, 206, 0.25)');
+    const mascotX = 500;
+    const mascotY = 1920 - mascotHeight + 16;
+    const mascotGlow = context.createRadialGradient(800, 1500, 10, 800, 1500, 470);
+    mascotGlow.addColorStop(0, 'rgba(40, 212, 206, 0.32)');
     mascotGlow.addColorStop(1, 'rgba(40, 212, 206, 0)');
     context.fillStyle = mascotGlow;
-    context.fillRect(400, 1100, 850, 850);
+    context.fillRect(330, 980, 1000, 940);
     context.save();
-    context.globalAlpha = 0.94;
+    context.globalAlpha = 0.98;
     context.drawImage(aristarch, mascotX, mascotY, mascotWidth, mascotHeight);
     context.restore();
 
@@ -2853,9 +2850,9 @@
       'Получите персональный совет для своего проекта в приложении Мирофактуры.',
       82,
       1670,
-      520,
+      410,
       39,
-      3
+      4
     );
     context.fillStyle = '#52706b';
     context.font = '600 23px "Segoe UI", Arial, sans-serif';
