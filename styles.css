@@ -1200,18 +1200,45 @@ h3 {
 }
 
 .story-result {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   margin-top: 22px;
-  padding-top: 22px;
-  border-top: 1px solid rgba(8, 145, 145, 0.16);
+  padding: 26px 18px 20px;
+  border: 1px solid rgba(122, 242, 230, 0.18);
+  border-radius: 32px;
+  background:
+    radial-gradient(circle at 90% 4%, rgba(255, 216, 74, 0.33), transparent 30%),
+    radial-gradient(circle at 8% 80%, rgba(45, 226, 214, 0.25), transparent 34%),
+    linear-gradient(155deg, #052e2c 0%, #07544f 58%, #007a74 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 24px 52px rgba(5, 50, 47, 0.22);
+}
+
+.story-result::before {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  content: "";
+  opacity: 0.07;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.7) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.7) 1px, transparent 1px);
+  background-size: 26px 26px;
 }
 
 .story-result-copy {
   text-align: center;
 }
 
+.story-result-copy .brand-label {
+  color: #ffd84a;
+}
+
 .story-result-copy h3 {
   margin-top: 8px;
-  color: #073936;
+  color: #fffbea;
   font-size: 22px;
   line-height: 1.08;
 }
@@ -1219,7 +1246,7 @@ h3 {
 .story-result-copy > p:not(.brand-label) {
   max-width: 330px;
   margin: 9px auto 0;
-  color: rgba(9, 38, 35, 0.66);
+  color: rgba(231, 255, 250, 0.78);
   font-size: 14px;
   line-height: 1.42;
   font-weight: 600;
@@ -1235,16 +1262,17 @@ h3 {
   flex-direction: column;
   margin: 18px auto;
   padding: 19px 17px 16px;
-  border: 1px solid rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(255, 223, 94, 0.48);
   border-radius: 28px;
-  color: #073936;
+  color: #fffbea;
   background:
-    radial-gradient(circle at 86% 7%, rgba(255, 216, 74, 0.6), transparent 27%),
-    radial-gradient(circle at 5% 88%, rgba(35, 212, 205, 0.36), transparent 32%),
-    linear-gradient(145deg, #dcfff8 0%, #f7f9e9 57%, #fff0cd 100%);
+    radial-gradient(circle at 88% 4%, rgba(255, 216, 74, 0.72), transparent 29%),
+    radial-gradient(circle at 4% 84%, rgba(64, 236, 221, 0.34), transparent 34%),
+    linear-gradient(150deg, #052e2c 0%, #07534e 56%, #00827b 100%);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.82),
-    0 22px 38px rgba(6, 65, 61, 0.14);
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 28px 52px rgba(0, 18, 17, 0.36),
+    0 0 0 6px rgba(95, 238, 225, 0.07);
 }
 
 .story-card-preview::before {
@@ -1252,10 +1280,10 @@ h3 {
   inset: 0;
   z-index: -1;
   content: "";
-  opacity: 0.24;
+  opacity: 0.08;
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.64) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.64) 1px, transparent 1px);
+    linear-gradient(rgba(255, 255, 255, 0.8) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.8) 1px, transparent 1px);
   background-size: 20px 20px;
 }
 
@@ -1268,30 +1296,54 @@ h3 {
   height: 230px;
   border-radius: 50%;
   content: "";
-  background: radial-gradient(circle, rgba(40, 212, 206, 0.34) 0%, rgba(40, 212, 206, 0.08) 52%, transparent 72%);
+  background: radial-gradient(circle, rgba(255, 216, 74, 0.34) 0%, rgba(40, 226, 215, 0.16) 46%, transparent 72%);
+}
+
+.story-card-logo-plate {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 112px;
+  height: 56px;
+  padding: 2px 7px;
+  border: 1px solid rgba(255, 224, 99, 0.46);
+  border-radius: 14px;
+  background: rgba(255, 250, 228, 0.96);
+  box-shadow: 0 10px 24px rgba(0, 24, 22, 0.22);
 }
 
 .story-card-logo {
-  width: 98px;
-  height: 52px;
+  width: 100px;
+  height: 50px;
   object-fit: contain;
   object-position: left center;
 }
 
 .story-card-speaker {
   margin: 9px 0 0;
-  color: #008b8b;
+  color: #7af3e8;
   font-size: 8px;
   line-height: 1.2;
   font-weight: 900;
   letter-spacing: 0.11em;
 }
 
+.story-card-accent {
+  position: relative;
+  z-index: 2;
+  width: 48px;
+  height: 3px;
+  margin-top: 9px;
+  border-radius: 999px;
+  background: #ffd84a;
+}
+
 .story-card-preview blockquote {
   position: relative;
   z-index: 2;
-  margin: 18px 0 0;
-  color: #092623;
+  margin: 13px 0 0;
+  color: #fffbea;
   font-size: 22px;
   line-height: 1.01;
   font-weight: 850;
@@ -1316,7 +1368,9 @@ h3 {
   max-height: 272px;
   object-fit: contain;
   opacity: 0.98;
-  filter: drop-shadow(0 12px 16px rgba(6, 65, 61, 0.12));
+  filter:
+    drop-shadow(0 14px 18px rgba(0, 18, 17, 0.34))
+    drop-shadow(0 0 22px rgba(80, 235, 222, 0.14));
 }
 
 .story-card-footer {
@@ -1330,14 +1384,14 @@ h3 {
 }
 
 .story-card-footer span {
-  color: rgba(9, 38, 35, 0.7);
+  color: rgba(235, 255, 251, 0.82);
   font-size: 7px;
   line-height: 1.28;
   font-weight: 750;
 }
 
 .story-card-footer small {
-  color: rgba(9, 38, 35, 0.54);
+  color: #ffd84a;
   font-size: 6px;
   line-height: 1.2;
   font-weight: 700;
@@ -1348,10 +1402,15 @@ h3 {
   gap: 10px;
 }
 
+.story-result-actions .soft-btn {
+  border-color: rgba(255, 255, 255, 0.32);
+  background: rgba(255, 255, 249, 0.94);
+}
+
 .story-link-hint {
   max-width: 330px;
   margin: 9px auto 0;
-  color: rgba(9, 38, 35, 0.54);
+  color: rgba(231, 255, 250, 0.65);
   font-size: 11px;
   line-height: 1.4;
   font-weight: 600;
@@ -1360,7 +1419,7 @@ h3 {
 
 .story-link-hint button {
   padding: 0;
-  color: #008b8b;
+  color: #ffd84a;
   font: inherit;
   font-weight: 850;
   text-decoration: underline;
@@ -1372,7 +1431,7 @@ h3 {
 
 .story-link-hint button:hover,
 .story-link-hint button:focus-visible {
-  color: #073936;
+  color: #fffbea;
   outline: none;
 }
 

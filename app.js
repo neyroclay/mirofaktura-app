@@ -1510,8 +1510,11 @@
           <p>Её можно поставить на экран телефона или поделиться в сториз.</p>
         </div>
         <div class="story-card-preview story-card-preview-${key}" aria-label="Предпросмотр цитаты Аристарха">
-          <img class="story-card-logo" src="${assets.logoStory}" alt="" aria-hidden="true">
+          <div class="story-card-logo-plate">
+            <img class="story-card-logo" src="${assets.logoStory}" alt="" aria-hidden="true">
+          </div>
           <p class="story-card-speaker">АРИСТАРХ ИЗ МИРОФАКТУРЫ</p>
+          <span class="story-card-accent" aria-hidden="true"></span>
           <blockquote>${story.quote}</blockquote>
           <img class="story-card-mascot" src="${assets.aristarchStory}" alt="" aria-hidden="true">
           <div class="story-card-footer">
@@ -2780,14 +2783,14 @@
     if (!context) throw new Error('Не удалось подготовить карточку');
 
     const background = context.createLinearGradient(0, 0, 1080, 1920);
-    background.addColorStop(0, '#dcfff8');
-    background.addColorStop(0.56, '#f7f9e9');
-    background.addColorStop(1, '#fff0cd');
+    background.addColorStop(0, '#052e2c');
+    background.addColorStop(0.52, '#07544f');
+    background.addColorStop(1, '#00847d');
     context.fillStyle = background;
     context.fillRect(0, 0, 1080, 1920);
 
     context.save();
-    context.globalAlpha = 0.18;
+    context.globalAlpha = 0.08;
     context.strokeStyle = '#ffffff';
     context.lineWidth = 2;
     for (let x = 0; x <= 1080; x += 76) {
@@ -2804,50 +2807,71 @@
     }
     context.restore();
 
-    const yellowGlow = context.createRadialGradient(880, 160, 20, 880, 160, 360);
-    yellowGlow.addColorStop(0, 'rgba(255, 216, 74, 0.58)');
+    const yellowGlow = context.createRadialGradient(900, 120, 20, 900, 120, 480);
+    yellowGlow.addColorStop(0, 'rgba(255, 216, 74, 0.88)');
     yellowGlow.addColorStop(1, 'rgba(255, 216, 74, 0)');
     context.fillStyle = yellowGlow;
-    context.fillRect(520, -180, 720, 720);
+    context.fillRect(420, -360, 960, 960);
 
-    const tealGlow = context.createRadialGradient(110, 1570, 20, 110, 1570, 500);
-    tealGlow.addColorStop(0, 'rgba(40, 212, 206, 0.36)');
+    const tealGlow = context.createRadialGradient(80, 1580, 20, 80, 1580, 620);
+    tealGlow.addColorStop(0, 'rgba(68, 239, 225, 0.5)');
     tealGlow.addColorStop(1, 'rgba(40, 212, 206, 0)');
     context.fillStyle = tealGlow;
-    context.fillRect(-390, 1070, 1000, 1000);
+    context.fillRect(-540, 960, 1240, 1240);
 
-    drawContainedImage(context, logo, 70, 42, 390, 238);
+    context.beginPath();
+    context.roundRect(62, 58, 420, 190, 38);
+    context.fillStyle = 'rgba(255, 250, 226, 0.96)';
+    context.fill();
+    context.save();
+    context.shadowColor = 'rgba(0, 24, 22, 0.22)';
+    context.shadowBlur = 34;
+    context.shadowOffsetY = 14;
+    context.strokeStyle = 'rgba(255, 223, 92, 0.52)';
+    context.lineWidth = 3;
+    context.stroke();
+    context.restore();
+    drawContainedImage(context, logo, 82, 60, 380, 184);
 
     context.textBaseline = 'top';
-    context.fillStyle = '#008b8b';
+    context.fillStyle = '#79f4e8';
     context.font = '800 29px "Segoe UI", Arial, sans-serif';
-    context.fillText('АРИСТАРХ ИЗ МИРОФАКТУРЫ', 82, 310);
+    context.fillText('АРИСТАРХ ИЗ МИРОФАКТУРЫ', 82, 302);
 
-    context.fillStyle = '#f2c21b';
-    context.fillRect(82, 360, 205, 9);
+    context.fillStyle = '#ffd84a';
+    context.fillRect(82, 354, 205, 9);
 
-    context.fillStyle = '#092623';
+    context.fillStyle = '#fffbea';
     const quoteFontSize = key === 'products' ? 70 : key === 'traffic' ? 74 : 78;
     const quoteLineHeight = key === 'products' ? 82 : key === 'traffic' ? 86 : 90;
     context.font = `800 ${quoteFontSize}px "Segoe UI", Arial, sans-serif`;
-    drawCanvasText(context, story.quote, 82, 412, 900, quoteLineHeight, 7);
+    drawCanvasText(context, story.quote, 82, 402, 900, quoteLineHeight, 7);
 
     const mascotSize = storyImageSize(aristarch);
-    const mascotWidth = 680;
+    const mascotWidth = 720;
     const mascotHeight = mascotWidth * mascotSize.height / mascotSize.width;
-    const mascotX = 400;
-    const mascotY = 1920 - mascotHeight + 16;
-    const mascotGlow = context.createRadialGradient(800, 1500, 10, 800, 1500, 470);
-    mascotGlow.addColorStop(0, 'rgba(40, 212, 206, 0.32)');
+    const mascotX = 370;
+    const mascotY = 1920 - mascotHeight + 18;
+    const mascotGlow = context.createRadialGradient(790, 1450, 10, 790, 1450, 520);
+    mascotGlow.addColorStop(0, 'rgba(255, 216, 74, 0.25)');
+    mascotGlow.addColorStop(0.45, 'rgba(64, 226, 220, 0.25)');
     mascotGlow.addColorStop(1, 'rgba(40, 212, 206, 0)');
     context.fillStyle = mascotGlow;
-    context.fillRect(330, 980, 1000, 940);
+    context.fillRect(260, 860, 1080, 1060);
+    context.save();
+    context.globalAlpha = 0.22;
+    context.strokeStyle = '#65eee2';
+    context.lineWidth = 5;
+    context.beginPath();
+    context.arc(810, 1430, 390, 0, Math.PI * 2);
+    context.stroke();
+    context.restore();
     context.save();
     context.globalAlpha = 0.98;
     context.drawImage(aristarch, mascotX, mascotY, mascotWidth, mascotHeight);
     context.restore();
 
-    context.fillStyle = '#31534f';
+    context.fillStyle = 'rgba(239, 255, 250, 0.86)';
     context.font = '700 29px "Segoe UI", Arial, sans-serif';
     drawCanvasText(
       context,
@@ -2858,7 +2882,7 @@
       39,
       4
     );
-    context.fillStyle = '#52706b';
+    context.fillStyle = '#ffd84a';
     context.font = '600 23px "Segoe UI", Arial, sans-serif';
     context.fillText(STORY_DESTINATION_LABEL, 82, 1818);
 
