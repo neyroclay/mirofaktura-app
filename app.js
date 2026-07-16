@@ -121,11 +121,11 @@
       title: 'Что хотите получить в итоге?',
       hint: 'Выберите результат, который будет полезнее прямо сейчас.',
       image: assets.stepanFinal,
-      note: 'Готово. Аристарх сравнит ответы и покажет, с какого материала лучше начать.',
+      note: 'Готово. Аристарх возьмёт выбранную задачу и покажет материал, с которого удобно начать.',
       answers: [
-        ['map', 'Увидеть общую картину', 'Понять, что уже работает и чего не хватает.', 'Хорошо. Сначала соберём картину без догадок, потом выберем один следующий шаг.'],
-        ['test', 'Выбрать один канал для теста', 'Решить, что и как проверить первым.', 'Один тест даст больше пользы, чем пять каналов, запущенных одновременно.'],
-        ['repeat', 'Продумать следующую покупку', 'Связать первый продукт с понятным продолжением.', 'Тогда смотрим не только на первую продажу. Важно понять, зачем клиенту возвращаться.']
+        ['recommendation', 'Получить короткую рекомендацию', 'Сразу увидеть, с чего лучше начать.', 'Хорошо. Сначала покажем несколько подходящих вариантов, а не весь список сразу.'],
+        ['map', 'Сравнить все варианты', 'Посмотреть карту и понять различия.', 'Тогда сначала откроем общую карту, а уже потом можно выбрать один вариант.'],
+        ['draft', 'Собрать свой черновик', 'Ответить на вопросы и сохранить итог.', 'Значит, нужен не только материал для чтения, но и результат, который можно забрать с собой.']
       ]
     }
   ];
@@ -235,28 +235,32 @@
         number: '01',
         title: 'Покупка чаще разовая',
         text: 'Клиент покупает один продукт или услугу, а дальше понятного продолжения пока нет.',
-        result: 'Начните с одного следующего шага: что человек может купить после первого результата.'
+        result: 'Начните с одного следующего шага: что человек может купить после первого результата.',
+        scores: { funnel: 2 }
       },
       {
         id: 'random',
         number: '02',
         title: 'Возвращаются, но случайно',
         text: 'Повторные покупки бывают, но зависят от личного контакта, напоминания или удачного момента.',
-        result: 'Зафиксируйте 2–3 ситуации, когда клиенту уместно предложить следующий продукт.'
+        result: 'Зафиксируйте 2–3 ситуации, когда клиенту уместно предложить следующий продукт.',
+        scores: { chaos: 2, development: 1 }
       },
       {
         id: 'task',
         number: '03',
         title: 'Покупают под новую задачу',
         text: 'Люди возвращаются, когда появляется новый проект, сезон, уровень или проблема.',
-        result: 'Здесь хорошо работает линейка по этапам: старт, основное решение и продолжение.'
+        result: 'Разделите предложения по ситуациям клиента: с чего он начинает, что ему нужно на следующем уровне и с какой новой задачей он может вернуться.',
+        scores: { development: 2 }
       },
       {
         id: 'system',
         number: '04',
         title: 'Система уже есть',
         text: 'Вы понимаете, что предложить после покупки, и часть клиентов регулярно идет дальше.',
-        result: 'Следующий шаг — точнее разделить предложения: кому допродажа, кому меньшая версия, кому новый продукт.'
+        result: 'Следующий шаг — точнее разделить предложения: кому допродажа, кому меньшая версия, кому новый продукт.',
+        scores: { funnel: 1, development: 1, chaos: 1, impression: 1 }
       }
     ],
     models: [
@@ -266,7 +270,7 @@
         title: 'Классическая воронка',
         text: 'Последовательно знакомит человека с компанией и подводит к основному продукту.',
         fit: 'Когда есть один главный продукт и понятный путь к покупке.',
-        tags: ['one-main', 'launch', 'new-clients'],
+        tags: ['one-main', 'launch', 'core-sale'],
         template: ['lead', 'tripwire', 'core', 'upsell', 'downsell', 'refusal']
       },
       {
@@ -275,7 +279,7 @@
         title: 'Развитие клиента',
         text: 'Продукты выстраиваются по этапам: старт, следующий уровень, экспертность и новые задачи.',
         fit: 'Для долгой работы, B2B, обучения, спорта и помогающих практик.',
-        tags: ['long', 'stages', 'service'],
+        tags: ['long', 'stages', 'growth'],
         template: ['lead', 'core', 'next']
       },
       {
@@ -301,7 +305,7 @@
       {
         id: 'funnel',
         title: 'Классическая воронка',
-        text: 'Подходит, когда есть один главный продукт. Человек сначала знакомится с вами, затем пробует недорогой вход, покупает основной продукт и получает понятное продолжение.',
+        text: 'Подходит, когда есть один главный продукт. Человек сначала знакомится с вами, затем пробует недорогой вход, покупает основной продукт и видит, что можно купить после него.',
         points: [
           'Лид-магнит обозначает задачу и помогает снизить стоимость привлечения.',
           'Недорогой вход снимает барьер первой оплаты и показывает качество работы.',
@@ -368,13 +372,33 @@
         id: 'driver',
         title: 'Что ведет к следующей покупке?',
         options: [
-          ['new-clients', 'Решение следующей задачи'],
-          ['service', 'Рост клиента'],
+          ['core-sale', 'Переход к основному продукту'],
+          ['growth', 'Новая задача или новый уровень клиента'],
           ['personal', 'Персональная рекомендация'],
           ['emotion', 'Желание продолжить или собрать']
         ]
       }
     ],
+    selectorScores: {
+      portfolio: {
+        'one-main': { funnel: 6, development: 1 },
+        many: { chaos: 6, development: 1 },
+        stages: { development: 6, funnel: 1 },
+        collection: { impression: 6, chaos: 1 }
+      },
+      relationship: {
+        launch: { funnel: 5, impression: 1 },
+        long: { development: 5, chaos: 1 },
+        catalog: { chaos: 5, funnel: 1 },
+        community: { impression: 5, development: 1 }
+      },
+      driver: {
+        'core-sale': { funnel: 7 },
+        growth: { development: 7 },
+        personal: { chaos: 7 },
+        emotion: { impression: 7 }
+      }
+    },
     stages: [
       ['lead', 'Лид-магнит', 'Первое полезное касание'],
       ['tripwire', 'Недорогой вход', 'Маленькая первая покупка'],
@@ -401,13 +425,12 @@
     ],
     questions: [
       {
-        id: 'business',
-        title: 'Какой у вас бизнес?',
+        id: 'audience',
+        title: 'Кто обычно покупает?',
         options: [
-          ['b2c', 'Товары и B2C'],
-          ['b2b', 'Услуги и B2B'],
-          ['local', 'Локальный бизнес'],
-          ['all', 'Смешанная модель']
+          ['people', 'Частные клиенты'],
+          ['companies', 'Компании'],
+          ['both', 'Частные клиенты и компании']
         ]
       },
       {
@@ -432,12 +455,23 @@
       },
       {
         id: 'format',
-        title: 'Как удобнее продавать?',
+        title: 'Где может происходить продажа?',
         options: [
           ['online', 'Дистанционно'],
-          ['local', 'Лично'],
-          ['partners', 'Через партнеров'],
-          ['all', 'Готовы тестировать разное']
+          ['local', 'В конкретном месте или на выезде'],
+          ['partners', 'Через партнёров'],
+          ['all', 'Подходят разные форматы']
+        ]
+      },
+      {
+        id: 'current',
+        title: 'Что уже приносит продажи?',
+        options: [
+          ['none', 'Стабильного канала пока нет'],
+          ['online', 'Онлайн'],
+          ['offline', 'Офлайн и мероприятия'],
+          ['direct', 'Отдел продаж и прямые контакты'],
+          ['partners', 'Партнёры и рекомендации']
         ]
       }
     ],
@@ -588,11 +622,10 @@
       }
     ],
     rules: {
-      business: {
-        b2c: ['online', 'offline', 'events', 'remote', 'retail', 'vending', 'mobile', 'everyone', 'network'],
-        b2b: ['sales-team', 'online', 'partners', 'competitors', 'remote', 'events', 'tenders', 'corporate', 'regional', 'franchise'],
-        local: ['offline', 'online', 'events', 'mobile', 'vending', 'everyone', 'regional'],
-        all: ['online', 'sales-team', 'events', 'remote', 'everyone', 'partners']
+      audience: {
+        people: ['online', 'offline', 'events', 'remote', 'retail', 'vending', 'mobile', 'everyone', 'network'],
+        companies: ['sales-team', 'partners', 'online', 'competitors', 'tenders', 'corporate', 'events', 'remote', 'regional', 'franchise'],
+        both: ['online', 'events', 'sales-team', 'partners', 'everyone', 'remote', 'offline']
       },
       goal: {
         fast: ['sales-team', 'online', 'remote', 'events', 'competitors', 'everyone'],
@@ -611,6 +644,13 @@
         local: ['offline', 'mobile', 'vending', 'events', 'retail', 'regional'],
         partners: ['partners', 'competitors', 'everyone', 'network', 'franchise', 'retail'],
         all: ['online', 'sales-team', 'events', 'partners', 'everyone', 'remote']
+      },
+      current: {
+        none: ['online', 'sales-team', 'events', 'partners', 'offline', 'remote'],
+        online: ['sales-team', 'events', 'partners', 'offline', 'everyone', 'remote', 'corporate'],
+        offline: ['online', 'partners', 'sales-team', 'remote', 'everyone', 'corporate'],
+        direct: ['online', 'events', 'partners', 'corporate', 'everyone', 'offline'],
+        partners: ['online', 'sales-team', 'events', 'remote', 'offline', 'corporate']
       }
     }
   };
@@ -618,13 +658,30 @@
   const trafficAtlasMaterial = {
     questions: [
       {
-        id: 'business',
-        title: 'Какой у вас бизнес?',
+        id: 'offer',
+        title: 'Что вы продвигаете?',
         options: [
           ['services', 'Услуги и экспертиза', 'Консалтинг, обучение, медицина, ремонт, бьюти.'],
           ['products', 'Товары', 'Интернет-магазин, производство, розница.'],
-          ['local', 'Локальный бизнес', 'Кафе, салон, студия, офис или магазин.'],
-          ['b2b', 'B2B', 'Работа с компаниями и корпоративными клиентами.']
+          ['both', 'Товары и услуги', 'В предложении есть оба направления.']
+        ]
+      },
+      {
+        id: 'audience',
+        title: 'Кто ваши клиенты?',
+        options: [
+          ['people', 'Частные клиенты', 'Люди выбирают и оплачивают продукт для себя.'],
+          ['companies', 'Компании', 'Решение выбирают для бизнеса или команды.'],
+          ['both', 'И люди, и компании', 'Вы работаете и с B2C, и с B2B.']
+        ]
+      },
+      {
+        id: 'reach',
+        title: 'Где нужны новые клиенты?',
+        options: [
+          ['local', 'В вашем городе или районе', 'Клиенты должны приехать в конкретное место.'],
+          ['national', 'Без привязки к городу', 'Можно продавать и работать дистанционно.'],
+          ['both', 'И локально, и шире', 'Нужны оба направления.']
         ]
       },
       {
@@ -678,6 +735,26 @@
         channels: ['seo-geo', 'content', 'partnerships', 'geo', 'threads']
       }
     ],
+    channelMeta: {
+      vk: { audiences: ['people', 'companies'], reach: ['national'], minBudget: 'small' },
+      yandex: { audiences: ['people', 'companies'], reach: ['local', 'national'], minBudget: 'small' },
+      max: { audiences: ['people', 'companies'], reach: ['national'], minBudget: 'small' },
+      banks: { audiences: ['people', 'companies'], reach: ['national'], minBudget: 'medium' },
+      avito: { audiences: ['people', 'companies'], reach: ['local', 'national'], minBudget: 'small' },
+      marketplaces: { audiences: ['people'], reach: ['national'], minBudget: 'large' },
+      mts: { audiences: ['people', 'companies'], reach: ['local', 'national'], minBudget: 'small' },
+      performances: { audiences: ['people', 'companies'], reach: ['local', 'national'], minBudget: 'none' },
+      media: { audiences: ['people', 'companies'], reach: ['national'], minBudget: 'none' },
+      outdoor: { audiences: ['people'], reach: ['local'], minBudget: 'medium' },
+      foreign: { audiences: ['people', 'companies'], reach: ['national'], minBudget: 'small' },
+      'telegram-ads': { audiences: ['people', 'companies'], reach: ['national'], minBudget: 'medium' },
+      'telegram-seeding': { audiences: ['people', 'companies'], reach: ['national'], minBudget: 'small' },
+      'seo-geo': { audiences: ['people', 'companies'], reach: ['local', 'national'], minBudget: 'none' },
+      content: { audiences: ['people', 'companies'], reach: ['national'], minBudget: 'none' },
+      partnerships: { audiences: ['people', 'companies'], reach: ['local', 'national'], minBudget: 'none' },
+      geo: { audiences: ['people', 'companies'], reach: ['local'], minBudget: 'none' },
+      threads: { audiences: ['people'], reach: ['national'], minBudget: 'none' }
+    },
     channels: [
       {
         id: 'vk',
@@ -923,8 +1000,8 @@
         group: 'Условно бесплатные каналы',
         title: 'Threads',
         short: 'Может давать охваты, но не всегда нужную аудиторию.',
-        fit: 'Эксперты и бренды, готовые экспериментировать с короткими текстами.',
-        text: 'Большой охват ещё не означает, что компания собрала свою целевую аудиторию. Этот канал лучше воспринимать как эксперимент.',
+        fit: 'Только для проектов, которые учли действующие ограничения и готовы экспериментировать с короткими текстами.',
+        text: 'Большой охват ещё не означает, что компания собрала свою целевую аудиторию. Канал лучше воспринимать как эксперимент и отдельно проверять правовые условия его использования.',
         weights: {
           business: { services: 5, products: 3, local: 2, b2b: 4 },
           goal: { 'quick-leads': 1, 'new-audience': 6, recognition: 8, 'long-term': 4 },
@@ -1292,26 +1369,146 @@
   }
 
   function resultKey() {
-    const values = Object.values(state.answers);
-    if (values.includes('products') || values.includes('repeat')) return 'products';
-    if (values.includes('sales') || values.includes('map')) return 'sales';
+    const selectedTask = state.answers[2];
+    if (selectedTask === 'products') return 'products';
+    if (selectedTask === 'sales') return 'sales';
+    if (selectedTask === 'traffic') return 'traffic';
     return 'traffic';
+  }
+
+  function resultIntentCopy(key) {
+    const intent = state.answers[3];
+    if (intent === 'map') {
+      return key === 'products'
+        ? 'Внутри есть четыре модели продуктовой линейки. Сравните их, а затем соберите подходящую цепочку.'
+        : 'Внутри есть общая карта и короткие пояснения. Можно спокойно сравнить варианты, а затем перейти к навигатору.';
+    }
+    if (intent === 'draft') {
+      return key === 'products'
+        ? 'Ответьте на вопросы, соберите черновик продуктовой линейки и скопируйте итог в заметки или рабочий чат.'
+        : 'Ответьте на вопросы внутри материала, получите короткий список вариантов и скопируйте итог в заметки или рабочий чат.';
+    }
+    return key === 'products'
+      ? 'Начните с короткого подбора: он покажет, какая модель продуктовой линейки лучше подходит вашей ситуации.'
+      : 'Начните с короткого навигатора: он сузит выбор и покажет несколько подходящих вариантов.';
   }
 
   function materialNextStep(key) {
     const steps = {
-      traffic: 'Выберите один канал из рекомендаций и запишите, что будете проверять: стоимость обращения, количество заявок, качество аудитории или отклик на формат.',
-      sales: 'Отметьте канал, который уже приносит продажи, и выберите один новый канал для следующего теста.',
-      products: 'Вернитесь к разделу «Соберите свою цепочку» и оставьте в ней три главных этапа: продукт для первого знакомства, основное предложение и продукт после первой покупки.'
+      traffic: 'Выберите один канал из четырёх рекомендаций. Запишите, кому покажете предложение, сколько времени или денег выделите на тест, сколько дней он продлится и по какому результату вы решите, стоит ли продолжать.',
+      sales: state.salesChannelAnswers.current === 'none'
+        ? 'Выберите один канал из трёх кандидатов. Заранее определите, что нужно подготовить, сколько времени или денег вы готовы вложить, сколько продлится тест и какой результат покажет, что канал стоит развивать.'
+        : 'Сначала оцените канал, который уже приносит продажи. Если он работает нестабильно, разберите, где теряются заявки. Если он работает устойчиво, выберите один новый канал из трёх кандидатов и заранее определите срок и показатель теста.',
+      products: 'Проверьте в конструкторе три опорные точки: чем человек знакомится с вами, что покупает как основное решение и что вы предлагаете после первого результата. Если одной из точек нет, начните с неё.'
     };
     return steps[key] || steps.traffic;
   }
 
-  function renderMaterialNextStep(key) {
+  function questionOptionLabel(questions, questionId, value) {
+    const question = questions.find((item) => item.id === questionId);
+    return question?.options.find(([id]) => id === value)?.[1] || '';
+  }
+
+  function materialOutcomeData(key) {
+    if (key === 'products') {
+      const recommendations = recommendedProductLineModels();
+      const topScore = recommendations[0]?.score;
+      const matchingModels = recommendations.filter((model) => model.score === topScore).slice(0, 2);
+      const stages = productLinesMaterial.stages
+        .filter(([id]) => state.productLineStages.includes(id))
+        .map(([, title]) => title);
+      const repeat = productLinesMaterial.diagnostic.find((item) => item.id === state.productLineRepeat);
+
+      return {
+        complete: productLineSelectorComplete() && stages.length > 0,
+        title: 'Черновик продуктовой линейки',
+        lines: [
+          repeat ? ['Текущая ситуация', repeat.title] : null,
+          matchingModels.length
+            ? ['Подходящая модель', matchingModels.map((model) => model.title).join(' или ')]
+            : null,
+          stages.length ? ['Цепочка', stages.join(' → ')] : null
+        ].filter(Boolean)
+      };
+    }
+
+    if (key === 'sales') {
+      const recommendations = recommendedSalesChannels();
+      return {
+        complete: salesChannelsComplete(),
+        title: 'Каналы для следующей проверки',
+        lines: [
+          ['Клиенты', questionOptionLabel(salesChannelsMaterial.questions, 'audience', state.salesChannelAnswers.audience)],
+          ['Главная задача', questionOptionLabel(salesChannelsMaterial.questions, 'goal', state.salesChannelAnswers.goal)],
+          ['Условия', [
+            questionOptionLabel(salesChannelsMaterial.questions, 'resource', state.salesChannelAnswers.resource),
+            questionOptionLabel(salesChannelsMaterial.questions, 'format', state.salesChannelAnswers.format)
+          ].join('; ')],
+          ['Что уже работает', questionOptionLabel(salesChannelsMaterial.questions, 'current', state.salesChannelAnswers.current)],
+          ['Каналы-кандидаты', recommendations.map((channel) => channel.title).join(', ')]
+        ]
+      };
+    }
+
+    const recommendations = recommendedTrafficChannels();
+    return {
+      complete: trafficAtlasComplete(),
+      title: 'Каналы для первого теста',
+      lines: [
+        ['Предложение', questionOptionLabel(trafficAtlasMaterial.questions, 'offer', state.trafficAtlasAnswers.offer)],
+        ['Клиенты', questionOptionLabel(trafficAtlasMaterial.questions, 'audience', state.trafficAtlasAnswers.audience)],
+        ['Охват и бюджет', [
+          questionOptionLabel(trafficAtlasMaterial.questions, 'reach', state.trafficAtlasAnswers.reach),
+          questionOptionLabel(trafficAtlasMaterial.questions, 'budget', state.trafficAtlasAnswers.budget)
+        ].join('; ')],
+        ['Задача', questionOptionLabel(trafficAtlasMaterial.questions, 'goal', state.trafficAtlasAnswers.goal)],
+        ['Каналы-кандидаты', recommendations.map((channel) => channel.title).join(', ')]
+      ]
+    };
+  }
+
+  function materialResultText(key) {
+    const material = materials[key];
+    const outcome = materialOutcomeData(key);
+    if (!outcome.complete) return '';
+
+    return [
+      `Мирофактура — ${material.title}`,
+      '',
+      ...outcome.lines.map(([label, value]) => `${label}: ${value}`),
+      '',
+      `Следующий шаг: ${materialNextStep(key)}`
+    ].join('\n');
+  }
+
+  function renderMaterialOutcome(key, navigatorId) {
+    const outcome = materialOutcomeData(key);
+    if (!outcome.complete) {
+      return `
+        <section class="material-outcome muted">
+          <p class="brand-label">Ваш результат</p>
+          <h2>Сначала завершите подбор</h2>
+          <p>Ответьте на вопросы выше, чтобы получить короткий итог и сохранить его.</p>
+          <button class="soft-btn" type="button" data-action="focusMaterialNavigator" data-target="${navigatorId}">Вернуться к вопросам</button>
+        </section>
+      `;
+    }
+
     return `
-      <section class="material-next-step">
-        <p class="brand-label">Следующий шаг</p>
-        <p>${materialNextStep(key)}</p>
+      <section class="material-outcome">
+        <p class="brand-label">Ваш результат</p>
+        <h2>${outcome.title}</h2>
+        <div class="material-outcome-list">
+          ${outcome.lines.map(([label, value]) => `
+            <p><strong>${label}</strong><span>${value}</span></p>
+          `).join('')}
+        </div>
+        <div class="material-next-step">
+          <p class="brand-label">Следующий шаг</p>
+          <p>${materialNextStep(key)}</p>
+        </div>
+        <button class="soft-btn" type="button" data-action="copyMaterialResult" data-material="${key}">Скопировать результат</button>
+        <small>Результат можно вставить в заметки или отправить коллеге.</small>
       </section>
     `;
   }
@@ -1347,7 +1544,7 @@
       <article class="result-card">
         <p class="brand-label">Ваш подарок</p>
         <h1>Вот с чего лучше начать</h1>
-        <p class="lead">По вашим ответам Аристарх подобрал материал под выбранную задачу.</p>
+        <p class="lead">${resultIntentCopy(key)}</p>
 
         <div class="result-panel">
           <h2>${material.title}</h2>
@@ -1484,23 +1681,30 @@
     return productLinesMaterial.selectorQuestions.every((question) => state.productLineAnswers[question.id]);
   }
 
-  function recommendedProductLineModel() {
-    const values = Object.values(state.productLineAnswers).filter(Boolean);
-    const scored = productLinesMaterial.models
-      .map((model) => ({
-        ...model,
-        score: values.reduce((sum, value) => sum + (model.tags.includes(value) ? 3 : 0), 0)
-      }))
+  function recommendedProductLineModels() {
+    const repeat = productLinesMaterial.diagnostic.find((item) => item.id === state.productLineRepeat);
+    return productLinesMaterial.models
+      .map((model) => {
+        const selectorScore = Object.entries(state.productLineAnswers).reduce((sum, [question, answer]) => {
+          return sum + (productLinesMaterial.selectorScores?.[question]?.[answer]?.[model.id] || 0);
+        }, 0);
+        return {
+          ...model,
+          score: selectorScore + (repeat?.scores?.[model.id] || 0)
+        };
+      })
       .sort((a, b) => b.score - a.score || Number(a.number) - Number(b.number));
-
-    return scored[0] || productLinesMaterial.models[0];
   }
 
   function renderProductLinesMaterial() {
     const repeat = productLinesMaterial.diagnostic.find((item) => item.id === state.productLineRepeat);
     const selectedStages = productLinesMaterial.stages.filter(([id]) => state.productLineStages.includes(id));
     const selectorComplete = productLineSelectorComplete();
-    const recommendedModel = recommendedProductLineModel();
+    const recommendedModels = recommendedProductLineModels();
+    const recommendedModel = recommendedModels[0] || productLinesMaterial.models[0];
+    const tiedModel = selectorComplete && recommendedModels[1]?.score === recommendedModel.score
+      ? recommendedModels[1]
+      : null;
     const templateModel = productLinesMaterial.models.find((model) => model.id === state.productLineTemplate);
 
     return screen(`
@@ -1555,36 +1759,26 @@
           `).join('')}
         </div>
         <div class="lead-recommendation ${selectorComplete ? '' : 'muted'}" id="product-line-recommendation" aria-live="polite">
-          <span>${selectorComplete ? 'Подходит модель' : 'Рекомендация появится здесь'}</span>
+          <span>${selectorComplete ? (tiedModel ? 'Подойдут две модели' : 'С чего начать') : 'Рекомендация появится здесь'}</span>
           <h3>${selectorComplete ? recommendedModel.title : 'Ответьте на 3 вопроса'}</h3>
           <p>${selectorComplete ? recommendedModel.fit : 'Нужны все три ответа: как устроены продукты, как долго вы работаете с клиентом и что приводит к следующей покупке.'}</p>
-          ${selectorComplete ? `<button class="soft-btn" type="button" data-action="applyProductLineTemplate" data-model="${recommendedModel.id}">Собрать пример</button>` : ''}
+          ${tiedModel ? `<p class="recommendation-alternative"><strong>Также подходит «${tiedModel.title}».</strong> ${tiedModel.fit}</p>` : ''}
+          ${selectorComplete ? `
+            <div class="recommendation-actions">
+              <button class="soft-btn" type="button" data-action="applyProductLineTemplate" data-model="${recommendedModel.id}">Собрать «${recommendedModel.title}»</button>
+              ${tiedModel ? `<button class="soft-btn" type="button" data-action="applyProductLineTemplate" data-model="${tiedModel.id}">Собрать «${tiedModel.title}»</button>` : ''}
+            </div>
+          ` : ''}
         </div>
       </section>
 
       <section class="lead-section">
         <p class="brand-label">Четыре модели</p>
-        <h2>Четыре модели продуктовой линейки</h2>
-        <div class="lead-models">
-          ${productLinesMaterial.models.map((model) => `
-            <article class="lead-model">
-              <b>${model.number}</b>
-              <h3>${model.title}</h3>
-              <p>${model.text}</p>
-              <small>${model.fit}</small>
-              <button class="model-template-btn" type="button" data-action="applyProductLineTemplate" data-model="${model.id}">Показать пример цепочки</button>
-            </article>
-          `).join('')}
-        </div>
-      </section>
-
-      <section class="lead-section">
-        <p class="brand-label">Подробнее</p>
-        <h2>Что входит в каждую модель</h2>
-        <p class="lead-section-copy">Раскройте нужную модель, чтобы посмотреть её логику и основные элементы.</p>
+        <h2>Сравните варианты</h2>
+        <p class="lead-section-copy">Откройте модель, если хотите понять её логику или собрать пример цепочки.</p>
         <div class="lead-detail-list">
           ${productLinesMaterial.modelDetails.map((detail, index) => `
-            <details class="lead-detail" ${index === 0 ? 'open' : ''}>
+            <details class="lead-detail" ${(selectorComplete ? detail.id === recommendedModel.id : index === 0) ? 'open' : ''}>
               <summary>
                 <span>${String(index + 1).padStart(2, '0')}</span>
                 <strong>${detail.title}</strong>
@@ -1617,7 +1811,7 @@
             <span>${String(index + 1).padStart(2, '0')} ${title}</span>
           `).join('') : '<p>Выберите хотя бы один этап.</p>'}
         </div>
-        <button class="soft-btn" type="button" data-action="resetProductStages">Вернуть исходную цепочку</button>
+        <button class="soft-btn" type="button" data-action="resetProductStages">Начать с двух основных этапов</button>
       </section>
 
       <section class="lead-section">
@@ -1633,7 +1827,7 @@
         </div>
       </section>
 
-      ${renderMaterialNextStep('products')}
+      ${renderMaterialOutcome('products', 'product-line-builder')}
 
       <section class="lead-cta">
         <h2>Нужно разобрать ваши продукты?</h2>
@@ -1648,16 +1842,48 @@
   }
 
   function trafficAtlasScore(channel, answers = state.trafficAtlasAnswers) {
-    return Object.entries(answers).reduce((sum, [question, answer]) => {
-      return sum + (channel.weights?.[question]?.[answer] || 0);
-    }, 0);
+    const offerWeights = channel.weights?.business || {};
+    const offerScore = answers.offer === 'both'
+      ? Math.max(offerWeights.services || 0, offerWeights.products || 0) - 1
+      : (offerWeights[answers.offer] || 0);
+    const meta = trafficAtlasMaterial.channelMeta[channel.id] || {};
+    const audienceScore = answers.audience === 'both'
+      ? (meta.audiences?.length > 1 ? 4 : 2)
+      : (meta.audiences?.includes(answers.audience) ? 4 : 0);
+    const reachScore = answers.reach === 'both'
+      ? (meta.reach?.length > 1 ? 4 : 2)
+      : (meta.reach?.includes(answers.reach) ? 4 : 0);
+
+    return Math.max(0, offerScore)
+      + audienceScore
+      + reachScore
+      + (channel.weights?.goal?.[answers.goal] || 0)
+      + (channel.weights?.budget?.[answers.budget] || 0);
+  }
+
+  function trafficChannelFitsBudget(channel, answers = state.trafficAtlasAnswers) {
+    const budgetOrder = { none: 0, small: 1, medium: 2, large: 3 };
+    const minBudget = trafficAtlasMaterial.channelMeta[channel.id]?.minBudget || 'none';
+    return (budgetOrder[answers.budget] ?? 0) >= (budgetOrder[minBudget] ?? 0);
   }
 
   function recommendedTrafficChannels(answers = state.trafficAtlasAnswers) {
-    return trafficAtlasMaterial.channels
+    const channels = trafficAtlasMaterial.channels
+      .filter((channel) => !answers.budget || trafficChannelFitsBudget(channel, answers))
       .map((channel) => ({ ...channel, score: trafficAtlasScore(channel, answers) }))
       .sort((a, b) => b.score - a.score || Number(a.number) - Number(b.number))
       .slice(0, 4);
+
+    if (channels.length >= 4) return channels;
+
+    return [
+      ...channels,
+      ...trafficAtlasMaterial.channels
+        .filter((channel) => !channels.some((item) => item.id === channel.id))
+        .map((channel) => ({ ...channel, score: trafficAtlasScore(channel, answers) }))
+        .sort((a, b) => b.score - a.score || Number(a.number) - Number(b.number))
+        .slice(0, 4 - channels.length)
+    ];
   }
 
   function renderTrafficAtlasMaterial() {
@@ -1677,7 +1903,7 @@
         <div>
           <p class="brand-label">Атлас трафика 2026</p>
           <h1>Куда идти за новой аудиторией?</h1>
-          <p class="lead">Сузьте выбор источников трафика с учётом вашей задачи и доступных ресурсов. После трёх вопросов вы получите короткий список каналов, с которых можно начать.</p>
+          <p class="lead">Сузьте выбор источников трафика с учётом предложения, аудитории, географии, задачи и бюджета. После пяти коротких вопросов вы получите список каналов, с которых можно начать. Наблюдения о площадках обновлены в июне 2026 года.</p>
         </div>
       </article>
 
@@ -1698,7 +1924,7 @@
       <section class="lead-section" id="traffic-atlas-navigator">
         <p class="brand-label">Навигатор</p>
         <h2>Что проверить первым?</h2>
-        <p class="lead-section-copy">Выберите по одному варианту в каждом блоке. После третьего ответа появятся четыре канала для первой проверки.</p>
+        <p class="lead-section-copy">Выберите по одному варианту в каждом блоке. После пятого ответа появятся четыре канала для первой проверки.</p>
         <div class="sales-answer-status traffic-answer-status" aria-live="polite">
           <span>${answeredCount} из ${trafficAtlasMaterial.questions.length}</span>
           <strong>${complete ? 'Маршрут готов' : answeredCount ? 'Продолжайте выбирать' : 'Начните с первого блока'}</strong>
@@ -1724,8 +1950,8 @@
 
         <div class="lead-recommendation ${complete ? '' : 'muted'}" id="traffic-atlas-recommendation" aria-live="polite">
           <span>${complete ? 'С чего начать' : `Ответов ${answeredCount} из ${trafficAtlasMaterial.questions.length}`}</span>
-          <h3>${complete ? 'Каналы для первой проверки' : 'Ответьте на 3 вопроса'}</h3>
-          <p>${complete ? 'Это не медиаплан, а короткий список для старта. Нажмите на канал, чтобы прочитать пояснение.' : 'Нужны все три ответа: тип бизнеса, главная задача и бюджет на первый тест.'}</p>
+          <h3>${complete ? 'Каналы для первой проверки' : 'Ответьте на 5 вопросов'}</h3>
+          <p>${complete ? 'Это не медиаплан, а короткий список для старта. Нажмите на канал, чтобы прочитать пояснение.' : 'Нужны все пять ответов: предложение, аудитория, география, главная задача и бюджет на первый тест.'}</p>
           ${complete ? `
             <div class="channel-recommendations">
               ${recommendations.map((channel) => `
@@ -1780,25 +2006,7 @@
         </div>
       </section>
 
-      <section class="lead-section">
-        <p class="brand-label">Справочник</p>
-        <h2>Кратко по каждому каналу</h2>
-        <p class="lead-section-copy">Раскройте канал, чтобы посмотреть, кому он подходит и что важно учесть перед тестом.</p>
-        <div class="lead-detail-list">
-          ${trafficAtlasMaterial.channels.map((channel, index) => `
-            <details class="lead-detail" ${index === 0 ? 'open' : ''}>
-              <summary>
-                <span>${channel.number}</span>
-                <strong>${channel.title}</strong>
-              </summary>
-              <p>${channel.fit}</p>
-              <p>${channel.text}</p>
-            </details>
-          `).join('')}
-        </div>
-      </section>
-
-      ${renderMaterialNextStep('traffic')}
+      ${renderMaterialOutcome('traffic', 'traffic-atlas-navigator')}
 
       <section class="lead-cta">
         <h2>Нужна помощь с выбором канала?</h2>
@@ -1818,6 +2026,28 @@
     return Math.max(2, 10 - position);
   }
 
+  function salesCurrentChannelPenalty(channelId, current) {
+    const currentGroups = {
+      online: ['online'],
+      offline: ['offline', 'events', 'mobile', 'vending', 'retail'],
+      direct: ['sales-team', 'remote'],
+      partners: ['partners', 'competitors', 'everyone', 'network']
+    };
+    return currentGroups[current]?.includes(channelId) ? 6 : 0;
+  }
+
+  function salesTagBonus(channel, answers) {
+    const audienceBonus = answers.audience === 'people'
+      ? (channel.tags.includes('b2c') ? 5 : channel.tags.includes('all') ? 3 : 0)
+      : answers.audience === 'companies'
+        ? (channel.tags.includes('b2b') ? 5 : channel.tags.includes('all') ? 3 : 0)
+        : (channel.tags.includes('all') ? 5 : (channel.tags.includes('b2c') || channel.tags.includes('b2b')) ? 3 : 0);
+    const goalBonus = channel.tags.includes(answers.goal) ? 5 : 0;
+    const resourceBonus = channel.tags.includes(answers.resource) ? 4 : 0;
+    const formatBonus = channel.tags.includes(answers.format) ? 4 : 0;
+    return audienceBonus + goalBonus + resourceBonus + formatBonus;
+  }
+
   function recommendedSalesChannels(answers = state.salesChannelAnswers) {
     return salesChannelsMaterial.channels
       .map((channel) => {
@@ -1825,7 +2055,12 @@
           const rankedIds = salesChannelsMaterial.rules[question]?.[answer] || [];
           return sum + salesRuleScore(channel.id, rankedIds);
         }, 0);
-        return { ...channel, score };
+        return {
+          ...channel,
+          score: score
+            + salesTagBonus(channel, answers)
+            - salesCurrentChannelPenalty(channel.id, answers.current)
+        };
       })
       .sort((a, b) => b.score - a.score || Number(a.number) - Number(b.number))
       .slice(0, 3);
@@ -1849,7 +2084,7 @@
         <div>
           <p class="brand-label">Каналы продаж</p>
           <h1>Какой канал продаж проверить следующим?</h1>
-          <p class="lead">Сравните способы продаж с учётом продукта, аудитории и ресурсов. После четырёх вопросов вы получите три варианта, на которых стоит сосредоточиться в первую очередь.</p>
+          <p class="lead">Сравните способы продаж с учётом клиентов, задачи, ресурсов, подходящего формата и канала, который уже работает. После пяти вопросов вы получите три варианта для следующей проверки.</p>
         </div>
       </article>
 
@@ -1870,7 +2105,7 @@
       <section class="lead-section" id="sales-channel-navigator">
         <p class="brand-label">Навигатор</p>
         <h2>Какой канал проверить следующим?</h2>
-        <p class="lead-section-copy">Выберите по одному варианту в каждом блоке. После четвёртого ответа появятся три канала для первой проверки.</p>
+        <p class="lead-section-copy">Выберите по одному варианту в каждом блоке. После пятого ответа появятся три канала для следующей проверки.</p>
         <div class="sales-answer-status" aria-live="polite">
           <span>${answeredCount} из ${salesChannelsMaterial.questions.length}</span>
           <strong>${complete ? 'Подбор готов' : answeredCount ? 'Продолжайте выбирать' : 'Начните с первого блока'}</strong>
@@ -1895,8 +2130,8 @@
 
         <div class="lead-recommendation ${complete ? '' : 'muted'}" id="sales-channel-recommendation" aria-live="polite">
           <span>${complete ? 'Сначала посмотрите' : `Ответов ${answeredCount} из ${salesChannelsMaterial.questions.length}`}</span>
-          <h3>${complete ? 'Три канала-кандидата' : 'Ответьте на 4 вопроса'}</h3>
-          <p>${complete ? 'Это варианты для первого теста, а не готовая стратегия. Нажмите на канал, чтобы прочитать пояснение.' : 'Нужны все четыре ответа: тип бизнеса, задача, доступный ресурс и удобный формат продаж.'}</p>
+          <h3>${complete ? 'Три канала-кандидата' : 'Ответьте на 5 вопросов'}</h3>
+          <p>${complete ? 'Это варианты для следующей проверки, а не готовая стратегия. Нажмите на канал, чтобы прочитать пояснение.' : 'Нужны все пять ответов: кто покупает, какая задача стоит сейчас, какой ресурс доступен, где может происходить продажа и что уже приносит продажи.'}</p>
           ${complete ? `
             <div class="channel-recommendations">
               ${recommendations.map((channel) => `
@@ -1947,25 +2182,7 @@
         </div>
       </section>
 
-      <section class="lead-section">
-        <p class="brand-label">Полный справочник</p>
-        <h2>Как работает каждый канал</h2>
-        <p class="lead-section-copy">Раскройте канал, чтобы посмотреть, что в него входит и какие условия нужны для запуска.</p>
-        <div class="lead-detail-list">
-          ${salesChannelsMaterial.channels.map((channel, index) => `
-            <details class="lead-detail" ${index === 0 ? 'open' : ''}>
-              <summary>
-                <span>${channel.number}</span>
-                <strong>${channel.title}</strong>
-              </summary>
-              <p>${channel.short}</p>
-              <p>${channel.text}</p>
-            </details>
-          `).join('')}
-        </div>
-      </section>
-
-      ${renderMaterialNextStep('sales')}
+      ${renderMaterialOutcome('sales', 'sales-channel-navigator')}
 
       <section class="lead-cta">
         <h2>Нужна помощь с выбором канала?</h2>
@@ -2383,6 +2600,25 @@
     }, 1800);
   }
 
+  async function copyPlainText(text) {
+    if (!text) return false;
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch (_) {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.setAttribute('readonly', '');
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      const copied = document.execCommand('copy');
+      textarea.remove();
+      return copied;
+    }
+  }
+
   function openTelegramShare(shareUrl) {
     telegramWebApp.openTelegramLink(shareUrl);
     window.setTimeout(() => telegramWebApp.close(), 120);
@@ -2639,6 +2875,19 @@
       window.setTimeout(() => {
         document.getElementById('sales-channel-focus')?.scrollIntoView({ block: 'start', behavior: 'smooth' });
       }, 40);
+      return;
+    }
+
+    if (action === 'focusMaterialNavigator') {
+      const targetId = target.getAttribute('data-target');
+      document.getElementById(targetId)?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+      return;
+    }
+
+    if (action === 'copyMaterialResult') {
+      const key = target.getAttribute('data-material');
+      const copied = await copyPlainText(materialResultText(key));
+      showToast(copied ? 'Результат скопирован' : 'Не удалось скопировать результат');
       return;
     }
 
