@@ -2789,24 +2789,6 @@
     context.fillStyle = background;
     context.fillRect(0, 0, 1080, 1920);
 
-    context.save();
-    context.globalAlpha = 0.08;
-    context.strokeStyle = '#ffffff';
-    context.lineWidth = 2;
-    for (let x = 0; x <= 1080; x += 76) {
-      context.beginPath();
-      context.moveTo(x, 0);
-      context.lineTo(x, 1920);
-      context.stroke();
-    }
-    for (let y = 0; y <= 1920; y += 76) {
-      context.beginPath();
-      context.moveTo(0, y);
-      context.lineTo(1080, y);
-      context.stroke();
-    }
-    context.restore();
-
     const yellowGlow = context.createRadialGradient(900, 120, 20, 900, 120, 480);
     yellowGlow.addColorStop(0, 'rgba(255, 216, 74, 0.88)');
     yellowGlow.addColorStop(1, 'rgba(255, 216, 74, 0)');
