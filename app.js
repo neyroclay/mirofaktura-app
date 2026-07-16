@@ -1470,54 +1470,26 @@
     };
   }
 
-  function outcomeValue(outcome, label) {
-    return outcome.lines.find(([itemLabel]) => itemLabel === label)?.[1] || '';
-  }
-
   function materialStoryData(key) {
     const outcome = materialOutcomeData(key);
     if (!outcome.complete) return null;
 
     if (key === 'products') {
       return {
-        eyebrow: 'МОЙ ФОКУС НА СЕЙЧАС',
-        statement: 'Собрать путь от первого знакомства до следующей покупки',
-        title: 'Продуктовая линейка',
-        lead: outcomeValue(outcome, 'Текущая ситуация'),
-        highlights: [
-          ['ПОДХОДЯЩАЯ МОДЕЛЬ', outcomeValue(outcome, 'Подходящая модель')],
-          ['ЦЕПОЧКА', outcomeValue(outcome, 'Цепочка')]
-        ],
-        quote: 'Не спешите придумывать ещё один продукт. Сначала найдите недостающую ступень.',
+        quote: 'Новый продукт — не всегда лучшее решение. Иногда всё необходимое у вас уже есть.',
         filename: 'mirofaktura-product-line.png'
       };
     }
 
     if (key === 'sales') {
       return {
-        eyebrow: 'МОЙ ФОКУС НА СЕЙЧАС',
-        statement: 'Проверить один канал, а не распыляться на всё сразу',
-        title: 'Каналы для следующей проверки',
-        lead: [outcomeValue(outcome, 'Клиенты'), outcomeValue(outcome, 'Главная задача')].filter(Boolean).join(' · '),
-        highlights: [
-          ['КАНАЛЫ-КАНДИДАТЫ', outcomeValue(outcome, 'Каналы-кандидаты')],
-          ['УСЛОВИЯ', outcomeValue(outcome, 'Условия')]
-        ],
-        quote: 'Один честный тест полезнее пяти каналов «на всякий случай».',
+        quote: 'Один проверенный канал полезнее пяти «на всякий случай».',
         filename: 'mirofaktura-sales-channels.png'
       };
     }
 
     return {
-      eyebrow: 'МОЙ ФОКУС НА СЕЙЧАС',
-      statement: 'Запустить один понятный тест, а не идти во все каналы сразу',
-      title: 'Куда идти за новой аудиторией',
-      lead: [outcomeValue(outcome, 'Предложение'), outcomeValue(outcome, 'Клиенты')].filter(Boolean).join(' · '),
-      highlights: [
-        ['КАНАЛЫ-КАНДИДАТЫ', outcomeValue(outcome, 'Каналы-кандидаты')],
-        ['ОХВАТ И БЮДЖЕТ', outcomeValue(outcome, 'Охват и бюджет')]
-      ],
-      quote: 'Хороший тест заранее отвечает на вопрос: что мы будем считать успехом?',
+      quote: 'Большой охват ещё не результат. До запуска решите, что будете считать успехом.',
       filename: 'mirofaktura-traffic-test.png'
     };
   }
@@ -1529,30 +1501,23 @@
     return `
       <section class="story-result">
         <div class="story-result-copy">
-          <p class="brand-label">Карточка для сториз</p>
-          <h3>Ваш результат — в одной красивой карточке</h3>
-          <p>Сохраните её себе или покажите, на чём решили сосредоточиться.</p>
+          <p class="brand-label">Карточка от Аристарха</p>
+          <h3>Сохраните цитату себе</h3>
+          <p>Её можно поставить на экран телефона или поделиться в сториз.</p>
         </div>
-        <div class="story-card-preview" aria-label="Предпросмотр карточки с вашим результатом">
+        <div class="story-card-preview story-card-preview-${key}" aria-label="Предпросмотр цитаты Аристарха">
           <img class="story-card-logo" src="${assets.logoStory}" alt="" aria-hidden="true">
-          <p class="story-card-eyebrow">${story.eyebrow}</p>
-          <h4>${story.statement}</h4>
-          <p class="story-card-topic">${story.title}</p>
-          <p class="story-card-lead">${story.lead}</p>
-          <div class="story-card-highlights">
-            ${story.highlights.map(([label, value]) => `
-              <p><strong>${label}</strong><span>${value}</span></p>
-            `).join('')}
-          </div>
-          <div class="story-card-quote">
-            <strong>АРИСТАРХ СЧИТАЕТ</strong>
-            <span>${story.quote}</span>
-          </div>
+          <p class="story-card-speaker">АРИСТАРХ ИЗ МИРОФАКТУРЫ</p>
+          <span class="story-card-quote-mark" aria-hidden="true">«</span>
+          <blockquote>${story.quote}</blockquote>
           <img class="story-card-mascot" src="${assets.aristarchStory}" alt="" aria-hidden="true">
-          <small>Соберите свой результат в Мирофактуре</small>
+          <div class="story-card-footer">
+            <span>Получите персональный совет для своего проекта в приложении Мирофактуры.</span>
+            <small>neyroclay.github.io/mirofaktura-app</small>
+          </div>
         </div>
         <div class="story-result-actions">
-          <button class="primary-btn" type="button" data-action="shareStoryCard" data-material="${key}">Поделиться результатом</button>
+          <button class="primary-btn" type="button" data-action="shareStoryCard" data-material="${key}">Поделиться цитатой</button>
           <button class="soft-btn" type="button" data-action="saveStoryCard" data-material="${key}">Сохранить картинку</button>
         </div>
         <p class="story-link-hint">Для сториз: <button type="button" data-action="copyStoryLink">скопируйте ссылку</button> и добавьте её через стикер «Ссылка».</p>
@@ -1611,15 +1576,15 @@
     const options = {
       traffic: {
         title: 'Вовлечение и игровые механики',
-        text: 'Можем придумать интерактивный формат вокруг продукта и связать его с контентом, подходящим предложением и сбором ответов от аудитории.'
+        text: 'Создадим квиз, игру или мини-приложение — цифровой мир, в котором человек знакомится с продуктом через вопросы, выбор и действия. Так он лучше понимает, чем продукт полезен именно ему, запоминает его и замечает отличия от похожих предложений. После этого ему легче выбрать подходящий вариант и перейти к покупке.'
       },
       sales: {
         title: 'Упаковка и путь к покупке',
-        text: 'Можем упростить выбор продукта, подготовить страницы и сообщения или собрать квиз, игру и другой формат для продажи.'
+        text: 'Поможем ясно объяснить ценность продукта и показать разницу между вариантами. Человеку будет легче понять, какой вариант подходит именно ему, выбрать предложение и перейти к покупке. Для этого разберём, что важно объяснить о продукте, перепишем тексты и при необходимости создадим квиз, игру или мини-приложение.'
       },
       products: {
         title: 'Продуктовая система и продукты-миры',
-        text: 'Можем связать продукты, продумать повторные покупки или создать отдельную игру, квиз, бот и мини-приложение вокруг этой задачи.'
+        text: 'Поможем показать, чем отличаются ваши продукты, кому подходит каждый из них и что можно предложить клиенту после первой покупки. Если нужен отдельный интерактивный продукт, создадим продукт-мир — игру, квиз, бота или мини-приложение со своей идеей, механиками и персонажами.'
       }
     };
     return options[key] || options.traffic;
@@ -1651,7 +1616,7 @@
       </div>
 
       <article class="potap-panel result-help-note">
-        <p class="brand-label">Если понадобится помощь</p>
+        <p class="brand-label">Можем помочь</p>
         <h2>${help.title}</h2>
         <p>${help.text}</p>
       </article>
@@ -2747,27 +2712,6 @@
     };
   }
 
-  function roundedRectPath(context, x, y, width, height, radius) {
-    const r = Math.min(radius, width / 2, height / 2);
-    context.beginPath();
-    context.moveTo(x + r, y);
-    context.lineTo(x + width - r, y);
-    context.quadraticCurveTo(x + width, y, x + width, y + r);
-    context.lineTo(x + width, y + height - r);
-    context.quadraticCurveTo(x + width, y + height, x + width - r, y + height);
-    context.lineTo(x + r, y + height);
-    context.quadraticCurveTo(x, y + height, x, y + height - r);
-    context.lineTo(x, y + r);
-    context.quadraticCurveTo(x, y, x + r, y);
-    context.closePath();
-  }
-
-  function fillRoundedRect(context, x, y, width, height, radius, fill) {
-    roundedRectPath(context, x, y, width, height, radius);
-    context.fillStyle = fill;
-    context.fill();
-  }
-
   function canvasTextLines(context, text, maxWidth, maxLines = Infinity) {
     const words = String(text || '').trim().split(/\s+/).filter(Boolean);
     const lines = [];
@@ -2874,74 +2818,48 @@
     context.textBaseline = 'top';
     context.fillStyle = '#008b8b';
     context.font = '800 29px "Segoe UI", Arial, sans-serif';
-    context.fillText(story.eyebrow, 82, 308);
+    context.fillText('АРИСТАРХ ИЗ МИРОФАКТУРЫ', 82, 310);
+
+    context.save();
+    context.globalAlpha = 0.22;
+    context.fillStyle = '#008b8b';
+    context.font = '800 230px Georgia, serif';
+    context.fillText('«', 62, 350);
+    context.restore();
 
     context.fillStyle = '#092623';
-    context.font = '800 70px "Segoe UI", Arial, sans-serif';
-    const title = drawCanvasText(context, story.statement, 78, 362, 910, 76, 3);
-
-    context.fillStyle = '#008b8b';
-    context.font = '800 29px "Segoe UI", Arial, sans-serif';
-    context.fillText(story.title.toUpperCase(), 82, title.bottom + 18);
-
-    context.font = '700 32px "Segoe UI", Arial, sans-serif';
-    const leadLines = canvasTextLines(context, story.lead, 820, 2);
-    const leadY = title.bottom + 66;
-    const leadHeight = Math.max(96, 38 + leadLines.length * 42);
-    fillRoundedRect(context, 76, leadY, 928, leadHeight, 34, 'rgba(255, 255, 249, 0.72)');
-    context.fillStyle = '#31534f';
-    leadLines.forEach((line, index) => context.fillText(line, 112, leadY + 26 + index * 42));
-
-    let blockY = leadY + leadHeight + 28;
-    story.highlights.forEach(([label, value]) => {
-      context.font = '800 25px "Segoe UI", Arial, sans-serif';
-      const labelHeight = 30;
-      context.font = '750 40px "Segoe UI", Arial, sans-serif';
-      const valueLines = canvasTextLines(context, value, 824, 4);
-      const blockHeight = 42 + labelHeight + valueLines.length * 49 + 30;
-      fillRoundedRect(context, 76, blockY, 928, blockHeight, 34, 'rgba(255, 255, 249, 0.74)');
-      context.fillStyle = '#008b8b';
-      context.font = '800 25px "Segoe UI", Arial, sans-serif';
-      context.fillText(label, 112, blockY + 28);
-      context.fillStyle = '#092623';
-      context.font = '750 40px "Segoe UI", Arial, sans-serif';
-      valueLines.forEach((line, index) => context.fillText(line, 112, blockY + 70 + index * 49));
-      blockY += blockHeight + 22;
-    });
+    context.font = '800 84px "Segoe UI", Arial, sans-serif';
+    drawCanvasText(context, story.quote, 82, 478, 900, 96, 7);
 
     const mascotSize = storyImageSize(aristarch);
-    const mascotWidth = 330;
+    const mascotWidth = 470;
     const mascotHeight = mascotWidth * mascotSize.height / mascotSize.width;
-    const mascotX = 715;
-    const mascotY = 1920 - mascotHeight - 32;
-    const mascotGlow = context.createRadialGradient(870, 1650, 10, 870, 1650, 300);
+    const mascotX = 610;
+    const mascotY = 1920 - mascotHeight + 8;
+    const mascotGlow = context.createRadialGradient(830, 1540, 10, 830, 1540, 410);
     mascotGlow.addColorStop(0, 'rgba(40, 212, 206, 0.25)');
     mascotGlow.addColorStop(1, 'rgba(40, 212, 206, 0)');
     context.fillStyle = mascotGlow;
-    context.fillRect(560, 1320, 640, 640);
+    context.fillRect(400, 1100, 850, 850);
     context.save();
-    context.globalAlpha = 0.82;
+    context.globalAlpha = 0.94;
     context.drawImage(aristarch, mascotX, mascotY, mascotWidth, mascotHeight);
     context.restore();
 
-    context.font = '650 34px "Segoe UI", Arial, sans-serif';
-    const quoteLines = canvasTextLines(context, story.quote, 610, 4);
-    const quoteY = Math.min(Math.max(blockY + 12, 1360), 1510);
-    const quoteHeight = 42 + 28 + quoteLines.length * 43 + 34;
-    fillRoundedRect(context, 76, quoteY, 690, quoteHeight, 34, 'rgba(255, 255, 249, 0.88)');
-    context.fillStyle = '#008b8b';
-    context.font = '800 25px "Segoe UI", Arial, sans-serif';
-    context.fillText('АРИСТАРХ СЧИТАЕТ', 112, quoteY + 28);
     context.fillStyle = '#31534f';
-    context.font = '650 34px "Segoe UI", Arial, sans-serif';
-    quoteLines.forEach((line, index) => context.fillText(line, 112, quoteY + 70 + index * 43));
-
-    context.fillStyle = '#073936';
-    context.font = '800 27px "Segoe UI", Arial, sans-serif';
-    context.fillText('Соберите свой результат в Мирофактуре', 82, 1814);
+    context.font = '700 29px "Segoe UI", Arial, sans-serif';
+    drawCanvasText(
+      context,
+      'Получите персональный совет для своего проекта в приложении Мирофактуры.',
+      82,
+      1670,
+      520,
+      39,
+      3
+    );
     context.fillStyle = '#52706b';
     context.font = '600 23px "Segoe UI", Arial, sans-serif';
-    context.fillText('neyroclay.github.io/mirofaktura-app', 82, 1853);
+    context.fillText('neyroclay.github.io/mirofaktura-app', 82, 1818);
 
     return { canvas, story };
   }
@@ -2974,11 +2892,11 @@
 
   async function shareStoryCard(key) {
     const result = await createStoryCardFile(key);
-    const shareText = `Мой фокус после материала Мирофактуры: ${result.story.statement}. Соберите свой результат: ${PUBLIC_APP_URL}`;
+    const shareText = `Аристарх из Мирофактуры: «${result.story.quote}» Получите совет для своего проекта: ${PUBLIC_APP_URL}`;
     if (result.file && navigator.share && (!navigator.canShare || navigator.canShare({ files: [result.file] }))) {
       try {
         await navigator.share({
-          title: 'Мой результат из Мирофактуры',
+          title: 'Цитата Аристарха из Мирофактуры',
           text: shareText,
           files: [result.file]
         });
