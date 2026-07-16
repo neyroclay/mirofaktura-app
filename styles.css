@@ -1344,9 +1344,19 @@ h3 {
   gap: 10px;
 }
 
+.story-action-hint {
+  max-width: 330px;
+  margin: 10px auto 0;
+  color: rgba(9, 38, 35, 0.64);
+  font-size: 11px;
+  line-height: 1.42;
+  font-weight: 650;
+  text-align: center;
+}
+
 .story-link-hint {
   max-width: 330px;
-  margin: 9px auto 0;
+  margin: 6px auto 0;
   color: rgba(9, 38, 35, 0.54);
   font-size: 11px;
   line-height: 1.4;

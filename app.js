@@ -55,6 +55,12 @@
   const STORY_DESTINATION_CTA_ACTION = APP_PLATFORM === 'telegram'
     ? 'Получить совет в боте Мирофактуры →'
     : 'Получить совет в канале Мирофактуры →';
+  const STORY_CARD_ASSET_VERSION = '20260716-story-actions-49';
+  const TELEGRAM_STORY_CARD_ASSETS = {
+    products: './assets/story-telegram-products.png',
+    sales: './assets/story-telegram-sales.png',
+    traffic: './assets/story-telegram-traffic.png',
+  };
   const SUBSCRIPTION_WEBHOOK_URL = window.MIROFAKTURA_SUBSCRIPTION_WEBHOOK_URL || '';
   const ACCESS_MODE = (() => {
     const params = new URLSearchParams(window.location.search);
@@ -1479,20 +1485,20 @@
 
     if (key === 'products') {
       return {
-        quote: 'Новый продукт — не всегда лучшее решение. Иногда всё необходимое у вас уже есть.',
+        quote: 'Бизнесу не всегда нужен новый продукт. Иногда всё необходимое у вас уже есть.',
         filename: 'mirofaktura-product-line.png'
       };
     }
 
     if (key === 'sales') {
       return {
-        quote: 'Один проверенный канал полезнее пяти «на всякий случай».',
+        quote: 'В продажах один проверенный канал полезнее пяти «на всякий случай».',
         filename: 'mirofaktura-sales-channels.png'
       };
     }
 
     return {
-      quote: 'Большой охват ещё не результат. До запуска решите, что будете считать успехом.',
+      quote: 'В маркетинге большой охват ещё не означает результат. До запуска решите, что будете считать успехом.',
       filename: 'mirofaktura-traffic-test.png'
     };
   }
@@ -1517,9 +1523,12 @@
           <img class="story-card-mascot" src="${assets.aristarchStory}" alt="" aria-hidden="true">
         </div>
         <div class="story-result-actions">
-          <button class="primary-btn" type="button" data-action="shareStoryCard" data-material="${key}">Поделиться цитатой</button>
-          <button class="soft-btn" type="button" data-action="saveStoryCard" data-material="${key}">Сохранить картинку</button>
+          <button class="primary-btn" type="button" data-action="shareStoryCard" data-material="${key}">${APP_PLATFORM === 'telegram' ? 'Добавить в сториз' : 'Поделиться картинкой'}</button>
+          <button class="soft-btn" type="button" data-action="saveStoryCard" data-material="${key}">Скачать картинку</button>
         </div>
+        <p class="story-action-hint">${APP_PLATFORM === 'telegram'
+          ? 'Первая кнопка откроет редактор сториз. Вторая скачает PNG в «Загрузки» или «Файлы».'
+          : 'Первая кнопка откроет меню отправки. Вторая скачает картинку.'}</p>
         <p class="story-link-hint">Для сториз: <button type="button" data-action="copyStoryLink">скопируйте ссылку</button> и добавьте её через стикер «Ссылка».</p>
       </section>
     `;
@@ -2870,6 +2879,65 @@
     window.setTimeout(() => URL.revokeObjectURL(url), 60000);
   }
 
+  function telegramStoryCardUrl(key) {
+    const asset = TELEGRAM_STORY_CARD_ASSETS[key];
+    if (!asset) return '';
+    const url = new URL(asset, window.location.href);
+    url.searchParams.set('v', STORY_CARD_ASSET_VERSION);
+    return url.href;
+  }
+
+  function shareStoryCardToTelegram(key) {
+    if (
+      APP_PLATFORM !== 'telegram'
+      || !telegramWebApp
+      || typeof telegramWebApp.shareToStory !== 'function'
+      || (typeof telegramWebApp.isVersionAtLeast === 'function' && !telegramWebApp.isVersionAtLeast('7.8'))
+    ) {
+      return false;
+    }
+
+    const mediaUrl = telegramStoryCardUrl(key);
+    if (!mediaUrl) return false;
+    const params = {
+      text: 'Совет Аристарха для бизнеса'
+    };
+    if (telegramWebApp.initDataUnsafe?.user?.is_premium) {
+      params.widget_link = {
+        url: TELEGRAM_BOT_URL,
+        name: 'Получить совет'
+      };
+    }
+
+    telegramWebApp.shareToStory(mediaUrl, params);
+    return true;
+  }
+
+  function downloadStoryCardInTelegram(key) {
+    const story = materialStoryData(key);
+    if (
+      !story
+      || APP_PLATFORM !== 'telegram'
+      || !telegramWebApp
+      || typeof telegramWebApp.downloadFile !== 'function'
+      || (typeof telegramWebApp.isVersionAtLeast === 'function' && !telegramWebApp.isVersionAtLeast('8.0'))
+    ) {
+      return false;
+    }
+
+    const url = telegramStoryCardUrl(key);
+    if (!url) return false;
+    telegramWebApp.downloadFile({
+      url,
+      file_name: story.filename
+    }, (accepted) => {
+      showToast(accepted
+        ? 'Картинка скачивается. Ищите её в «Загрузках» или «Файлах».'
+        : 'Сохранение отменено');
+    });
+    return true;
+  }
+
   async function shareStoryCard(key) {
     const result = await createStoryCardFile(key);
     const shareText = `Аристарх из Мирофактуры: «${result.story.quote}» Получите совет для своего проекта: ${STORY_DESTINATION_URL}`;
@@ -3177,13 +3245,21 @@
 
       try {
         if (action === 'saveStoryCard') {
+          if (downloadStoryCardInTelegram(key)) {
+            showToast('Подтвердите загрузку в окне Telegram');
+            return;
+          }
           const result = await createStoryCardFile(key);
           downloadStoryCard(result.blob, result.story.filename);
-          showToast('Карточка сохранена');
+          showToast('Загрузка началась');
         } else {
+          if (shareStoryCardToTelegram(key)) {
+            showToast('Открываем редактор сториз');
+            return;
+          }
           const status = await shareStoryCard(key);
           if (status === 'shared') showToast('Карточка отправлена');
-          if (status === 'saved') showToast('Карточка сохранена — её можно добавить в сториз');
+          if (status === 'saved') showToast('Загрузка началась');
         }
       } catch (_) {
         showToast('Не удалось подготовить карточку');
