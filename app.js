@@ -1,6 +1,6 @@
 (function () {
   const app = document.getElementById('app');
-  const MAX_CHANNEL_URL = 'https://max.ru/id590417093305_biz';
+  const MAX_CHANNEL_URL = 'https://max.ru/channel_mirofactura';
   const TELEGRAM_BOT_URL = 'https://t.me/mirofactura_bot';
   const ELIZAVETA_TELEGRAM_CHANNEL_URL = 'https://t.me/gameneurons';
   const ELENA_TELEGRAM_CHANNEL_URL = 'https://t.me/adviceperm';
@@ -15,7 +15,7 @@
   const URL_PARAMS = new URLSearchParams(window.location.search);
   const TELEGRAM_LAUNCH_PARAMS = new URLSearchParams(window.location.hash.replace(/^#/, ''));
   const NATIVE_TRENDS_MODE = URL_PARAMS.get('trends_native');
-  const NATIVE_TRENDS_ASSET_VERSION = '20260716-single-loader-29';
+  const NATIVE_TRENDS_ASSET_VERSION = '20260716-max-channel-30';
   const IS_TELEGRAM_LAUNCH = Boolean(
     telegramWebApp?.initData
     || telegramWebApp?.initDataUnsafe?.user?.id
@@ -2388,7 +2388,7 @@
       platform: PLATFORM.key,
       messenger: PLATFORM.messenger,
       source: 'mirofaktura-app',
-      v: '20260716-single-loader-29',
+      v: '20260716-max-channel-30',
     });
     const platformUserId = getPlatformUserId();
     const platformUser = getPlatformUser();

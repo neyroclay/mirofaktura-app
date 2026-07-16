@@ -323,7 +323,7 @@
         const trendMessenger = trendPlatform === 'telegram' ? 'TELEGRAM' : 'MAX';
         const trendEntryUrl = trendPlatform === 'telegram'
             ? 'https://t.me/mirofactura_bot'
-            : 'https://max.ru/id590417093305_biz';
+            : 'https://max.ru/channel_mirofactura';
         const elizavetaProfileUrl = trendPlatform === 'telegram'
             ? 'https://t.me/gameneurons'
             : 'https://max.ru/u/f9LHodD0cOJ7KLcSGQ2-nIru39qLMDByEa3oTWgNABebA15thaMVXVpHB-w';
