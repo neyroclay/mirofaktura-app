@@ -1511,7 +1511,6 @@
       <section class="story-result">
         <div class="story-result-copy">
           <h3>Сохраните цитату себе</h3>
-          <p>Её можно поставить на экран телефона или поделиться в сториз.</p>
         </div>
         <div class="story-card-preview story-card-preview-${key}" aria-label="Предпросмотр цитаты Аристарха">
           <img class="story-card-logo" src="${assets.logoStory}" alt="" aria-hidden="true">
