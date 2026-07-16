@@ -52,10 +52,9 @@
     },
   }[APP_PLATFORM];
   const STORY_DESTINATION_URL = PLATFORM.entryUrl;
-  const STORY_DESTINATION_LABEL = STORY_DESTINATION_URL.replace(/^https?:\/\//, '').replace(/\/$/, '');
   const STORY_DESTINATION_CTA_ACTION = APP_PLATFORM === 'telegram'
-    ? 'Переходите в бот Мирофактуры и получите совет для своего проекта →'
-    : 'Переходите в канал Мирофактуры и получите совет для своего проекта →';
+    ? 'Получить совет в боте Мирофактуры →'
+    : 'Получить совет в канале Мирофактуры →';
   const SUBSCRIPTION_WEBHOOK_URL = window.MIROFAKTURA_SUBSCRIPTION_WEBHOOK_URL || '';
   const ACCESS_MODE = (() => {
     const params = new URLSearchParams(window.location.search);
@@ -1505,7 +1504,6 @@
     return `
       <section class="story-result">
         <div class="story-result-copy">
-          <p class="brand-label">Карточка от Аристарха</p>
           <h3>Сохраните цитату себе</h3>
           <p>Её можно поставить на экран телефона или поделиться в сториз.</p>
         </div>
@@ -1513,11 +1511,9 @@
           <img class="story-card-logo" src="${assets.logoStory}" alt="" aria-hidden="true">
           <div class="story-card-cta">
             <strong>${STORY_DESTINATION_CTA_ACTION}</strong>
-            <small>${STORY_DESTINATION_LABEL}</small>
           </div>
-          <p class="story-card-speaker">АРИСТАРХ ИЗ МИРОФАКТУРЫ</p>
-          <span class="story-card-accent" aria-hidden="true"></span>
           <blockquote>${story.quote}</blockquote>
+          <p class="story-card-attribution">— Аристарх</p>
           <img class="story-card-mascot" src="${assets.aristarchStory}" alt="" aria-hidden="true">
         </div>
         <div class="story-result-actions">
@@ -2774,7 +2770,7 @@
     context.fillRect(0, 0, 1080, 1920);
 
     const yellowGlow = context.createRadialGradient(900, 120, 20, 900, 120, 480);
-    yellowGlow.addColorStop(0, 'rgba(255, 216, 74, 0.88)');
+    yellowGlow.addColorStop(0, 'rgba(255, 216, 74, 0.58)');
     yellowGlow.addColorStop(1, 'rgba(255, 216, 74, 0)');
     context.fillStyle = yellowGlow;
     context.fillRect(420, -360, 960, 960);
@@ -2807,28 +2803,22 @@
     context.textBaseline = 'top';
     context.textAlign = 'right';
     context.fillStyle = '#fffbea';
-    context.font = '800 25px "Segoe UI", Arial, sans-serif';
-    drawCanvasText(context, STORY_DESTINATION_CTA_ACTION, 998, 82, 330, 33, 4);
-    context.fillStyle = '#ffd84a';
-    context.font = '650 20px "Segoe UI", Arial, sans-serif';
-    context.fillText(STORY_DESTINATION_LABEL, 998, 214);
+    context.font = '800 30px "Segoe UI", Arial, sans-serif';
+    drawCanvasText(context, STORY_DESTINATION_CTA_ACTION, 998, 82, 330, 35, 3);
 
     context.textAlign = 'left';
-    context.fillStyle = '#79f4e8';
-    context.font = '800 29px "Segoe UI", Arial, sans-serif';
-    context.fillText('АРИСТАРХ ИЗ МИРОФАКТУРЫ', 82, 266);
-
-    context.fillStyle = '#ffd84a';
-    context.fillRect(82, 316, 205, 9);
-
     context.fillStyle = '#fffbea';
     const quoteFontSize = key === 'products' ? 70 : key === 'traffic' ? 74 : 78;
     const quoteLineHeight = key === 'products' ? 82 : key === 'traffic' ? 86 : 90;
     context.font = `800 ${quoteFontSize}px "Segoe UI", Arial, sans-serif`;
-    drawCanvasText(context, story.quote, 82, 360, 900, quoteLineHeight, 7);
+    const quoteLayout = drawCanvasText(context, story.quote, 82, 278, 900, quoteLineHeight, 7);
+
+    context.fillStyle = '#79f4e8';
+    context.font = '800 27px "Segoe UI", Arial, sans-serif';
+    context.fillText('— АРИСТАРХ', 82, quoteLayout.bottom + 18);
 
     const mascotSize = storyImageSize(aristarch);
-    const mascotWidth = 760;
+    const mascotWidth = 790;
     const mascotHeight = mascotWidth * mascotSize.height / mascotSize.width;
     const mascotX = (1080 - mascotWidth) / 2;
     const mascotY = 1920 - mascotHeight - 18;

@@ -1239,7 +1239,7 @@ h3 {
   border-radius: 28px;
   color: #fffbea;
   background:
-    radial-gradient(circle at 88% 4%, rgba(255, 216, 74, 0.72), transparent 29%),
+    radial-gradient(circle at 88% 4%, rgba(255, 216, 74, 0.42), transparent 27%),
     radial-gradient(circle at 4% 84%, rgba(64, 236, 221, 0.34), transparent 34%),
     linear-gradient(150deg, #052e2c 0%, #07534e 56%, #00827b 100%);
   box-shadow:
@@ -1269,7 +1269,7 @@ h3 {
   top: -8px;
   left: 15px;
   z-index: 2;
-  width: 122px;
+  width: 126px;
   height: auto;
   filter: drop-shadow(0 7px 12px rgba(0, 18, 17, 0.24));
 }
@@ -1279,54 +1279,39 @@ h3 {
   top: 15px;
   right: 15px;
   z-index: 3;
-  width: 122px;
+  width: 112px;
   display: grid;
-  gap: 2px;
   text-align: right;
 }
 
 .story-card-cta strong {
   color: #fffbea;
-  font-size: 7.2px;
-  line-height: 1.24;
+  font-size: 8.2px;
+  line-height: 1.28;
   font-weight: 850;
-}
-
-.story-card-cta small {
-  color: #ffd84a;
-  font-size: 5.5px;
-  line-height: 1.2;
-  font-weight: 750;
-}
-
-.story-card-speaker {
-  margin: 56px 0 0;
-  color: #7af3e8;
-  font-size: 7.5px;
-  line-height: 1.2;
-  font-weight: 900;
-  letter-spacing: 0.11em;
-}
-
-.story-card-accent {
-  position: relative;
-  z-index: 2;
-  width: 48px;
-  height: 3px;
-  margin-top: 7px;
-  border-radius: 999px;
-  background: #ffd84a;
 }
 
 .story-card-preview blockquote {
   position: relative;
   z-index: 2;
-  margin: 10px 0 0;
+  margin: 58px 0 0;
   color: #fffbea;
   font-size: 19px;
   line-height: 1.01;
   font-weight: 850;
   letter-spacing: -0.035em;
+}
+
+.story-card-attribution {
+  position: relative;
+  z-index: 2;
+  margin: 7px 0 0;
+  color: #7af3e8;
+  font-size: 8px;
+  line-height: 1.2;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .story-card-preview-products blockquote {
@@ -1344,7 +1329,7 @@ h3 {
   bottom: 7px;
   left: 50%;
   z-index: 1;
-  width: 190px;
+  width: 198px;
   max-height: none;
   object-fit: contain;
   opacity: 0.98;
