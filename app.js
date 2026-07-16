@@ -1900,7 +1900,7 @@
       <section class="lead-cta">
         <h2>Нужно разобрать ваши продукты?</h2>
         <p>Поможем увидеть, что уже можно связать в линейку и какое предложение добавить следующим.</p>
-        <button class="primary-btn" type="button" data-action="openContacts">Написать нам</button>
+        <button class="primary-btn" type="button" data-action="openEmail" data-service="Продуктовая линейка">Написать нам</button>
       </section>
     `, 'material-screen product-lines-screen');
   }
@@ -2079,7 +2079,7 @@
       <section class="lead-cta">
         <h2>Нужна помощь с выбором канала?</h2>
         <p>Разберём продукт, аудиторию и доступный ресурс, а затем выберем один канал для первого теста.</p>
-        <button class="primary-btn" type="button" data-action="openContacts">Написать нам</button>
+        <button class="primary-btn" type="button" data-action="openEmail" data-service="Выбор канала продвижения">Написать нам</button>
       </section>
     `, 'material-screen product-lines-screen traffic-atlas-screen');
   }
@@ -2255,7 +2255,7 @@
       <section class="lead-cta">
         <h2>Нужна помощь с выбором канала?</h2>
         <p>Разберём текущие продажи, найдём слабое место и выберем один канал для проверки.</p>
-        <button class="primary-btn" type="button" data-action="openContacts">Написать нам</button>
+        <button class="primary-btn" type="button" data-action="openEmail" data-service="Выбор канала продаж">Написать нам</button>
       </section>
     `, 'material-screen product-lines-screen sales-channels-screen');
   }
