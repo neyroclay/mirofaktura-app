@@ -5,6 +5,7 @@
   const ELIZAVETA_TELEGRAM_CHANNEL_URL = 'https://t.me/gameneurons';
   const ELENA_TELEGRAM_CHANNEL_URL = 'https://t.me/adviceperm';
   const CONTACT_EMAIL = 'info@mirofactura.ru';
+  const PUBLIC_APP_URL = 'https://neyroclay.github.io/mirofaktura-app/';
   const PLATFORM_ALIASES = {
     max: 'max',
     tg: 'telegram',
@@ -68,12 +69,14 @@
   }
   const assets = {
     logo: './assets/logo-black-yellow.webp',
+    logoStory: './assets/logo-black-yellow.png',
     stepanStart: './assets/stepan-start.webp',
     stepanProduct: './assets/stepan-product-question.webp',
     stepanChannels: './assets/stepan-clients-channels.webp',
     stepanRegularity: './assets/stepan-sales-regularity.webp',
     stepanFinal: './assets/stepan-final-map.webp',
     aristarch: './assets/aristarch-recommendations.webp',
+    aristarchStory: './assets/aristarch-recommendations.png',
     potap: './assets/potap-digital-system.webp',
     authors: './assets/authors-photo-labeled.jpg'
   };
@@ -1467,6 +1470,96 @@
     };
   }
 
+  function outcomeValue(outcome, label) {
+    return outcome.lines.find(([itemLabel]) => itemLabel === label)?.[1] || '';
+  }
+
+  function materialStoryData(key) {
+    const outcome = materialOutcomeData(key);
+    if (!outcome.complete) return null;
+
+    if (key === 'products') {
+      return {
+        eyebrow: 'МОЙ ФОКУС НА СЕЙЧАС',
+        statement: 'Собрать путь от первого знакомства до следующей покупки',
+        title: 'Продуктовая линейка',
+        lead: outcomeValue(outcome, 'Текущая ситуация'),
+        highlights: [
+          ['ПОДХОДЯЩАЯ МОДЕЛЬ', outcomeValue(outcome, 'Подходящая модель')],
+          ['ЦЕПОЧКА', outcomeValue(outcome, 'Цепочка')]
+        ],
+        quote: 'Не спешите придумывать ещё один продукт. Сначала найдите недостающую ступень.',
+        filename: 'mirofaktura-product-line.png'
+      };
+    }
+
+    if (key === 'sales') {
+      return {
+        eyebrow: 'МОЙ ФОКУС НА СЕЙЧАС',
+        statement: 'Проверить один канал, а не распыляться на всё сразу',
+        title: 'Каналы для следующей проверки',
+        lead: [outcomeValue(outcome, 'Клиенты'), outcomeValue(outcome, 'Главная задача')].filter(Boolean).join(' · '),
+        highlights: [
+          ['КАНАЛЫ-КАНДИДАТЫ', outcomeValue(outcome, 'Каналы-кандидаты')],
+          ['УСЛОВИЯ', outcomeValue(outcome, 'Условия')]
+        ],
+        quote: 'Один честный тест полезнее пяти каналов «на всякий случай».',
+        filename: 'mirofaktura-sales-channels.png'
+      };
+    }
+
+    return {
+      eyebrow: 'МОЙ ФОКУС НА СЕЙЧАС',
+      statement: 'Запустить один понятный тест, а не идти во все каналы сразу',
+      title: 'Куда идти за новой аудиторией',
+      lead: [outcomeValue(outcome, 'Предложение'), outcomeValue(outcome, 'Клиенты')].filter(Boolean).join(' · '),
+      highlights: [
+        ['КАНАЛЫ-КАНДИДАТЫ', outcomeValue(outcome, 'Каналы-кандидаты')],
+        ['ОХВАТ И БЮДЖЕТ', outcomeValue(outcome, 'Охват и бюджет')]
+      ],
+      quote: 'Хороший тест заранее отвечает на вопрос: что мы будем считать успехом?',
+      filename: 'mirofaktura-traffic-test.png'
+    };
+  }
+
+  function renderStoryCardPreview(key) {
+    const story = materialStoryData(key);
+    if (!story) return '';
+
+    return `
+      <section class="story-result">
+        <div class="story-result-copy">
+          <p class="brand-label">Карточка для сториз</p>
+          <h3>Ваш результат — в одной красивой карточке</h3>
+          <p>Сохраните её себе или покажите, на чём решили сосредоточиться.</p>
+        </div>
+        <div class="story-card-preview" aria-label="Предпросмотр карточки с вашим результатом">
+          <img class="story-card-logo" src="${assets.logoStory}" alt="" aria-hidden="true">
+          <p class="story-card-eyebrow">${story.eyebrow}</p>
+          <h4>${story.statement}</h4>
+          <p class="story-card-topic">${story.title}</p>
+          <p class="story-card-lead">${story.lead}</p>
+          <div class="story-card-highlights">
+            ${story.highlights.map(([label, value]) => `
+              <p><strong>${label}</strong><span>${value}</span></p>
+            `).join('')}
+          </div>
+          <div class="story-card-quote">
+            <strong>АРИСТАРХ СЧИТАЕТ</strong>
+            <span>${story.quote}</span>
+          </div>
+          <img class="story-card-mascot" src="${assets.aristarchStory}" alt="" aria-hidden="true">
+          <small>Соберите свой результат в Мирофактуре</small>
+        </div>
+        <div class="story-result-actions">
+          <button class="primary-btn" type="button" data-action="shareStoryCard" data-material="${key}">Поделиться результатом</button>
+          <button class="soft-btn" type="button" data-action="saveStoryCard" data-material="${key}">Сохранить картинку</button>
+        </div>
+        <p class="story-link-hint">Для сториз: <button type="button" data-action="copyStoryLink">скопируйте ссылку</button> и добавьте её через стикер «Ссылка».</p>
+      </section>
+    `;
+  }
+
   function materialResultText(key) {
     const material = materials[key];
     const outcome = materialOutcomeData(key);
@@ -1507,8 +1600,9 @@
           <p class="brand-label">Следующий шаг</p>
           <p>${materialNextStep(key)}</p>
         </div>
-        <button class="soft-btn" type="button" data-action="copyMaterialResult" data-material="${key}">Скопировать результат</button>
-        <small>Результат можно вставить в заметки или отправить коллеге.</small>
+        ${renderStoryCardPreview(key)}
+        <button class="soft-btn material-copy-btn" type="button" data-action="copyMaterialResult" data-material="${key}">Скопировать текст результата</button>
+        <small>Текст можно вставить в заметки или отправить коллеге.</small>
       </section>
     `;
   }
@@ -2619,6 +2713,285 @@
     }
   }
 
+  async function loadStoryImage(src) {
+    if (typeof window.createImageBitmap === 'function' && window.location.protocol !== 'file:') {
+      try {
+        const response = await fetch(src);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return await window.createImageBitmap(await response.blob());
+      } catch (_) {
+        // Image.decode below keeps local previews and older WebViews working.
+      }
+    }
+
+    return new Promise((resolve, reject) => {
+      const image = new Image();
+      image.decoding = 'async';
+      image.onload = async () => {
+        try {
+          await image.decode();
+        } catch (_) {
+          // onload already confirms that the image can be drawn.
+        }
+        resolve(image);
+      };
+      image.onerror = () => reject(new Error(`Не удалось загрузить изображение: ${src}`));
+      image.src = src;
+    });
+  }
+
+  function storyImageSize(image) {
+    return {
+      width: image.naturalWidth || image.width,
+      height: image.naturalHeight || image.height
+    };
+  }
+
+  function roundedRectPath(context, x, y, width, height, radius) {
+    const r = Math.min(radius, width / 2, height / 2);
+    context.beginPath();
+    context.moveTo(x + r, y);
+    context.lineTo(x + width - r, y);
+    context.quadraticCurveTo(x + width, y, x + width, y + r);
+    context.lineTo(x + width, y + height - r);
+    context.quadraticCurveTo(x + width, y + height, x + width - r, y + height);
+    context.lineTo(x + r, y + height);
+    context.quadraticCurveTo(x, y + height, x, y + height - r);
+    context.lineTo(x, y + r);
+    context.quadraticCurveTo(x, y, x + r, y);
+    context.closePath();
+  }
+
+  function fillRoundedRect(context, x, y, width, height, radius, fill) {
+    roundedRectPath(context, x, y, width, height, radius);
+    context.fillStyle = fill;
+    context.fill();
+  }
+
+  function canvasTextLines(context, text, maxWidth, maxLines = Infinity) {
+    const words = String(text || '').trim().split(/\s+/).filter(Boolean);
+    const lines = [];
+    let line = '';
+
+    words.forEach((word) => {
+      const next = line ? `${line} ${word}` : word;
+      if (!line || context.measureText(next).width <= maxWidth) {
+        line = next;
+      } else {
+        lines.push(line);
+        line = word;
+      }
+    });
+    if (line) lines.push(line);
+
+    if (lines.length <= maxLines) return lines;
+    const clipped = lines.slice(0, maxLines);
+    let last = clipped[maxLines - 1];
+    while (last && context.measureText(`${last}…`).width > maxWidth) {
+      last = last.slice(0, -1);
+    }
+    clipped[maxLines - 1] = `${last.trim()}…`;
+    return clipped;
+  }
+
+  function drawCanvasText(context, text, x, y, maxWidth, lineHeight, maxLines = Infinity) {
+    const lines = canvasTextLines(context, text, maxWidth, maxLines);
+    lines.forEach((line, index) => context.fillText(line, x, y + index * lineHeight));
+    return {
+      lines,
+      height: lines.length * lineHeight,
+      bottom: y + lines.length * lineHeight
+    };
+  }
+
+  function drawContainedImage(context, image, x, y, width, height) {
+    const size = storyImageSize(image);
+    const scale = Math.min(width / size.width, height / size.height);
+    const drawWidth = size.width * scale;
+    const drawHeight = size.height * scale;
+    context.drawImage(
+      image,
+      x + (width - drawWidth) / 2,
+      y + (height - drawHeight) / 2,
+      drawWidth,
+      drawHeight
+    );
+  }
+
+  async function createStoryCardCanvas(key) {
+    const story = materialStoryData(key);
+    if (!story) throw new Error('Сначала завершите подбор');
+
+    const [logo, aristarch] = await Promise.all([
+      loadStoryImage(assets.logoStory),
+      loadStoryImage(assets.aristarchStory)
+    ]);
+    const canvas = document.createElement('canvas');
+    canvas.width = 1080;
+    canvas.height = 1920;
+    const context = canvas.getContext('2d');
+    if (!context) throw new Error('Не удалось подготовить карточку');
+
+    const background = context.createLinearGradient(0, 0, 1080, 1920);
+    background.addColorStop(0, '#dcfff8');
+    background.addColorStop(0.56, '#f7f9e9');
+    background.addColorStop(1, '#fff0cd');
+    context.fillStyle = background;
+    context.fillRect(0, 0, 1080, 1920);
+
+    context.save();
+    context.globalAlpha = 0.18;
+    context.strokeStyle = '#ffffff';
+    context.lineWidth = 2;
+    for (let x = 0; x <= 1080; x += 76) {
+      context.beginPath();
+      context.moveTo(x, 0);
+      context.lineTo(x, 1920);
+      context.stroke();
+    }
+    for (let y = 0; y <= 1920; y += 76) {
+      context.beginPath();
+      context.moveTo(0, y);
+      context.lineTo(1080, y);
+      context.stroke();
+    }
+    context.restore();
+
+    const yellowGlow = context.createRadialGradient(880, 160, 20, 880, 160, 360);
+    yellowGlow.addColorStop(0, 'rgba(255, 216, 74, 0.58)');
+    yellowGlow.addColorStop(1, 'rgba(255, 216, 74, 0)');
+    context.fillStyle = yellowGlow;
+    context.fillRect(520, -180, 720, 720);
+
+    const tealGlow = context.createRadialGradient(110, 1570, 20, 110, 1570, 500);
+    tealGlow.addColorStop(0, 'rgba(40, 212, 206, 0.36)');
+    tealGlow.addColorStop(1, 'rgba(40, 212, 206, 0)');
+    context.fillStyle = tealGlow;
+    context.fillRect(-390, 1070, 1000, 1000);
+
+    drawContainedImage(context, logo, 70, 42, 390, 238);
+
+    context.textBaseline = 'top';
+    context.fillStyle = '#008b8b';
+    context.font = '800 29px "Segoe UI", Arial, sans-serif';
+    context.fillText(story.eyebrow, 82, 308);
+
+    context.fillStyle = '#092623';
+    context.font = '800 70px "Segoe UI", Arial, sans-serif';
+    const title = drawCanvasText(context, story.statement, 78, 362, 910, 76, 3);
+
+    context.fillStyle = '#008b8b';
+    context.font = '800 29px "Segoe UI", Arial, sans-serif';
+    context.fillText(story.title.toUpperCase(), 82, title.bottom + 18);
+
+    context.font = '700 32px "Segoe UI", Arial, sans-serif';
+    const leadLines = canvasTextLines(context, story.lead, 820, 2);
+    const leadY = title.bottom + 66;
+    const leadHeight = Math.max(96, 38 + leadLines.length * 42);
+    fillRoundedRect(context, 76, leadY, 928, leadHeight, 34, 'rgba(255, 255, 249, 0.72)');
+    context.fillStyle = '#31534f';
+    leadLines.forEach((line, index) => context.fillText(line, 112, leadY + 26 + index * 42));
+
+    let blockY = leadY + leadHeight + 28;
+    story.highlights.forEach(([label, value]) => {
+      context.font = '800 25px "Segoe UI", Arial, sans-serif';
+      const labelHeight = 30;
+      context.font = '750 40px "Segoe UI", Arial, sans-serif';
+      const valueLines = canvasTextLines(context, value, 824, 4);
+      const blockHeight = 42 + labelHeight + valueLines.length * 49 + 30;
+      fillRoundedRect(context, 76, blockY, 928, blockHeight, 34, 'rgba(255, 255, 249, 0.74)');
+      context.fillStyle = '#008b8b';
+      context.font = '800 25px "Segoe UI", Arial, sans-serif';
+      context.fillText(label, 112, blockY + 28);
+      context.fillStyle = '#092623';
+      context.font = '750 40px "Segoe UI", Arial, sans-serif';
+      valueLines.forEach((line, index) => context.fillText(line, 112, blockY + 70 + index * 49));
+      blockY += blockHeight + 22;
+    });
+
+    const mascotSize = storyImageSize(aristarch);
+    const mascotWidth = 330;
+    const mascotHeight = mascotWidth * mascotSize.height / mascotSize.width;
+    const mascotX = 715;
+    const mascotY = 1920 - mascotHeight - 32;
+    const mascotGlow = context.createRadialGradient(870, 1650, 10, 870, 1650, 300);
+    mascotGlow.addColorStop(0, 'rgba(40, 212, 206, 0.25)');
+    mascotGlow.addColorStop(1, 'rgba(40, 212, 206, 0)');
+    context.fillStyle = mascotGlow;
+    context.fillRect(560, 1320, 640, 640);
+    context.save();
+    context.globalAlpha = 0.82;
+    context.drawImage(aristarch, mascotX, mascotY, mascotWidth, mascotHeight);
+    context.restore();
+
+    context.font = '650 34px "Segoe UI", Arial, sans-serif';
+    const quoteLines = canvasTextLines(context, story.quote, 610, 4);
+    const quoteY = Math.min(Math.max(blockY + 12, 1360), 1510);
+    const quoteHeight = 42 + 28 + quoteLines.length * 43 + 34;
+    fillRoundedRect(context, 76, quoteY, 690, quoteHeight, 34, 'rgba(255, 255, 249, 0.88)');
+    context.fillStyle = '#008b8b';
+    context.font = '800 25px "Segoe UI", Arial, sans-serif';
+    context.fillText('АРИСТАРХ СЧИТАЕТ', 112, quoteY + 28);
+    context.fillStyle = '#31534f';
+    context.font = '650 34px "Segoe UI", Arial, sans-serif';
+    quoteLines.forEach((line, index) => context.fillText(line, 112, quoteY + 70 + index * 43));
+
+    context.fillStyle = '#073936';
+    context.font = '800 27px "Segoe UI", Arial, sans-serif';
+    context.fillText('Соберите свой результат в Мирофактуре', 82, 1814);
+    context.fillStyle = '#52706b';
+    context.font = '600 23px "Segoe UI", Arial, sans-serif';
+    context.fillText('neyroclay.github.io/mirofaktura-app', 82, 1853);
+
+    return { canvas, story };
+  }
+
+  async function createStoryCardFile(key) {
+    const { canvas, story } = await createStoryCardCanvas(key);
+    const blob = await new Promise((resolve, reject) => {
+      canvas.toBlob((result) => {
+        if (result) resolve(result);
+        else reject(new Error('Не удалось сохранить изображение'));
+      }, 'image/png');
+    });
+    const file = typeof File === 'function'
+      ? new File([blob], story.filename, { type: 'image/png' })
+      : null;
+    return { blob, file, story };
+  }
+
+  function downloadStoryCard(blob, filename) {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    link.rel = 'noopener';
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 60000);
+  }
+
+  async function shareStoryCard(key) {
+    const result = await createStoryCardFile(key);
+    const shareText = `Мой фокус после материала Мирофактуры: ${result.story.statement}. Соберите свой результат: ${PUBLIC_APP_URL}`;
+    if (result.file && navigator.share && (!navigator.canShare || navigator.canShare({ files: [result.file] }))) {
+      try {
+        await navigator.share({
+          title: 'Мой результат из Мирофактуры',
+          text: shareText,
+          files: [result.file]
+        });
+        return 'shared';
+      } catch (error) {
+        if (error?.name === 'AbortError') return 'cancelled';
+      }
+    }
+
+    downloadStoryCard(result.blob, result.story.filename);
+    return 'saved';
+  }
+
   function openTelegramShare(shareUrl) {
     telegramWebApp.openTelegramLink(shareUrl);
     window.setTimeout(() => telegramWebApp.close(), 120);
@@ -2888,6 +3261,40 @@
       const key = target.getAttribute('data-material');
       const copied = await copyPlainText(materialResultText(key));
       showToast(copied ? 'Результат скопирован' : 'Не удалось скопировать результат');
+      return;
+    }
+
+    if (action === 'copyStoryLink') {
+      const copied = await copyPlainText(PUBLIC_APP_URL);
+      showToast(copied ? 'Ссылка скопирована' : 'Не удалось скопировать ссылку');
+      return;
+    }
+
+    if (action === 'saveStoryCard' || action === 'shareStoryCard') {
+      const key = target.getAttribute('data-material');
+      if (!key || target.disabled) return;
+      const initialText = target.textContent;
+      target.disabled = true;
+      target.textContent = 'Готовим карточку…';
+
+      try {
+        if (action === 'saveStoryCard') {
+          const result = await createStoryCardFile(key);
+          downloadStoryCard(result.blob, result.story.filename);
+          showToast('Карточка сохранена');
+        } else {
+          const status = await shareStoryCard(key);
+          if (status === 'shared') showToast('Карточка отправлена');
+          if (status === 'saved') showToast('Карточка сохранена — её можно добавить в сториз');
+        }
+      } catch (_) {
+        showToast('Не удалось подготовить карточку');
+      } finally {
+        if (target.isConnected) {
+          target.disabled = false;
+          target.textContent = initialText;
+        }
+      }
       return;
     }
 
