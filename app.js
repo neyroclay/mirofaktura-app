@@ -1510,9 +1510,10 @@
     return `
       <section class="story-result">
         <div class="story-result-copy">
-          <h3>Сохраните цитату себе</h3>
+          <p class="brand-label">На что обратить внимание сейчас</p>
+          <h3>Сохраните совет Аристарха</h3>
         </div>
-        <div class="story-card-preview story-card-preview-${key}" aria-label="Предпросмотр цитаты Аристарха">
+        <div class="story-card-preview story-card-preview-${key}" aria-label="Карточка с советом Аристарха">
           <img class="story-card-logo" src="${assets.logoStory}" alt="" aria-hidden="true">
           <div class="story-card-cta">
             <strong>${STORY_DESTINATION_CTA_ACTION}</strong>
@@ -1522,7 +1523,7 @@
           <img class="story-card-mascot" src="${assets.aristarchStory}" alt="" aria-hidden="true">
         </div>
         <div class="story-result-actions">
-          <button class="primary-btn" type="button" data-action="shareStoryCard" data-material="${key}">${APP_PLATFORM === 'telegram' ? 'Добавить в сториз' : 'Поделиться картинкой'}</button>
+          <button class="primary-btn" type="button" data-action="shareStoryCard" data-material="${key}">${APP_PLATFORM === 'telegram' ? 'Добавить в сториз' : 'Поделиться советом'}</button>
           <button class="soft-btn" type="button" data-action="saveStoryCard" data-material="${key}">Скачать картинку</button>
         </div>
         <p class="story-action-hint">${APP_PLATFORM === 'telegram'
@@ -2943,7 +2944,7 @@
     if (result.file && navigator.share && (!navigator.canShare || navigator.canShare({ files: [result.file] }))) {
       try {
         await navigator.share({
-          title: 'Цитата Аристарха из Мирофактуры',
+          title: 'Совет Аристарха из Мирофактуры',
           text: shareText,
           files: [result.file]
         });
