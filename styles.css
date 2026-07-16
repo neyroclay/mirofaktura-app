@@ -1099,24 +1099,24 @@ h3 {
   margin-top: 14px;
 }
 
-.result-next-step {
+.result-actions-primary + .potap-panel {
   margin-top: 16px;
+}
+
+.material-next-step {
+  margin-top: 4px;
   padding: 16px 18px;
   border-left: 3px solid rgba(8, 145, 145, 0.44);
   color: #073936;
   background: rgba(255, 255, 249, 0.46);
 }
 
-.result-next-step p:not(.brand-label) {
+.material-next-step p:not(.brand-label) {
   margin-top: 8px;
   color: rgba(9, 38, 35, 0.7);
   font-size: var(--type-body);
   line-height: 1.42;
-  font-weight: 600;
-}
-
-.result-next-step + .potap-panel {
-  margin-top: 16px;
+  font-weight: 500;
 }
 
 .potap-panel + .result-actions {

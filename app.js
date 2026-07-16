@@ -1298,13 +1298,22 @@
     return 'traffic';
   }
 
-  function resultNextStep(key) {
+  function materialNextStep(key) {
     const steps = {
-      traffic: 'В атласе выберите один канал и запишите, что хотите проверить: стоимость обращения, отклик на формат, количество заявок или качество аудитории.',
-      sales: 'В карте отметьте канал, который уже приводит продажи, и выберите один новый канал для теста.',
-      products: 'В конструкторе запишите три пункта: первый продукт, основное предложение и продукт, который можно предложить после первой покупки.'
+      traffic: 'Выберите один канал из рекомендаций и запишите, что будете проверять: стоимость обращения, количество заявок, качество аудитории или отклик на формат.',
+      sales: 'Отметьте канал, который уже приносит продажи, и выберите один новый канал для следующего теста.',
+      products: 'Вернитесь к разделу «Соберите свою цепочку» и оставьте в ней три главных этапа: продукт для первого знакомства, основное предложение и продукт после первой покупки.'
     };
     return steps[key] || steps.traffic;
+  }
+
+  function renderMaterialNextStep(key) {
+    return `
+      <section class="material-next-step">
+        <p class="brand-label">Следующий шаг</p>
+        <p>${materialNextStep(key)}</p>
+      </section>
+    `;
   }
 
   function relatedHelp(key) {
@@ -1349,11 +1358,6 @@
       <div class="result-actions result-actions-primary">
         <button class="primary-btn" type="button" data-action="openMaterial" data-material="${key}">Открыть подарок</button>
       </div>
-
-      <article class="result-next-step">
-        <p class="brand-label">Следующий шаг после подарка</p>
-        <p>${resultNextStep(key)}</p>
-      </article>
 
       <article class="potap-panel result-help-note">
         <p class="brand-label">Если понадобится помощь</p>
@@ -1629,6 +1633,8 @@
         </div>
       </section>
 
+      ${renderMaterialNextStep('products')}
+
       <section class="lead-cta">
         <h2>Нужно разобрать ваши продукты?</h2>
         <p>Поможем увидеть, что уже можно связать в линейку и какое предложение добавить следующим.</p>
@@ -1791,6 +1797,8 @@
           `).join('')}
         </div>
       </section>
+
+      ${renderMaterialNextStep('traffic')}
 
       <section class="lead-cta">
         <h2>Нужна помощь с выбором канала?</h2>
@@ -1956,6 +1964,8 @@
           `).join('')}
         </div>
       </section>
+
+      ${renderMaterialNextStep('sales')}
 
       <section class="lead-cta">
         <h2>Нужна помощь с выбором канала?</h2>
