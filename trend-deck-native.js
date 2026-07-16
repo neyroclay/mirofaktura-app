@@ -271,6 +271,15 @@
         const container = document.getElementById(CONTAINER_ID);
         if (!container) return null;
         const nativeAppShell = nativeMode ? container.closest('.app-shell') : null;
+        let nativeReadySignaled = false;
+        function signalNativeReady(view) {
+            if (!nativeMode || nativeReadySignaled) return;
+            nativeReadySignaled = true;
+            container.dispatchEvent(new CustomEvent('mirofactura:trend-ready', {
+                bubbles: true,
+                detail: { view }
+            }));
+        }
 
         const cleanupStack = [];
         let destroyed = false;
@@ -567,7 +576,7 @@
         addCleanup(() => style.remove());
 
       // --- ДОБАВЛЯЕМ ПРЕЛОАДЕР ---
-       const shouldShowPreloader = !nativeMode || !window.__mirofakturaTrendDeckReady;
+       const shouldShowPreloader = !nativeMode;
        if (shouldShowPreloader) {
        const preloaderDiv = document.createElement('div');
        preloaderDiv.id = 'mrf-preloader';
@@ -594,8 +603,11 @@
 
        let preloaderHidden = false;
        const previousHidePreloader = window.hidePreloader;
-       window.hidePreloader = function() {
-           if (nativeMode) window.__mirofakturaTrendDeckReady = true;
+       window.hidePreloader = function(view = 'deck') {
+           if (nativeMode) {
+               window.__mirofakturaTrendDeckReady = true;
+               signalNativeReady(view);
+           }
            if (preloaderHidden) return;
            preloaderHidden = true;
            if (textInterval) clearInterval(textInterval);
@@ -1598,7 +1610,7 @@
                     }
                 } 
                 else if (viewId==='authors') { 
-                    document.getElementById('authors-view').classList.add('visible'); canvasDiv.style.opacity='0'; document.getElementById('game-ui').style.opacity='0'; document.getElementById('btn-tab-authors').classList.add('active'); hand.style.display='none'; 
+                    document.getElementById('authors-view').classList.add('visible'); canvasDiv.style.opacity='0'; document.getElementById('game-ui').style.opacity='0'; document.getElementById('btn-tab-authors').classList.add('active'); hand.style.display='none';
                     
                     const st = document.getElementById('authors-view').scrollTop;
                     if (topHeader) {
@@ -1619,6 +1631,7 @@
                 nativeAppShell?.classList.add('native-onboarding-active');
                 onboardView.classList.add('visible'); onboardView.style.opacity = '1';
                 canvasDiv.style.opacity = '0'; document.getElementById('game-ui').style.opacity = '0';
+                window.hidePreloader('onboarding');
             } else {
                 toggleView('daily');
             }

@@ -268,6 +268,16 @@
         const nativeMode = options.mode === 'native';
         const container = document.getElementById(CONTAINER_ID);
         if (!container) return null;
+        const embeddedMode = window.parent !== window;
+        let embeddedReadySignaled = false;
+        function signalEmbeddedReady(view) {
+            if (!embeddedMode || embeddedReadySignaled) return;
+            embeddedReadySignaled = true;
+            window.parent.postMessage({
+                type: 'mirofactura:trends-ready',
+                view
+            }, '*');
+        }
 
         const cleanupStack = [];
         let destroyed = false;
@@ -557,7 +567,7 @@
         addCleanup(() => style.remove());
 
       // --- ДОБАВЛЯЕМ ПРЕЛОАДЕР ---
-       const shouldShowPreloader = !nativeMode || !window.__mirofakturaTrendDeckReady;
+       const shouldShowPreloader = !nativeMode && !embeddedMode;
        if (shouldShowPreloader) {
        const preloaderDiv = document.createElement('div');
        preloaderDiv.id = 'mrf-preloader';
@@ -584,8 +594,9 @@
 
        let preloaderHidden = false;
        const previousHidePreloader = window.hidePreloader;
-       window.hidePreloader = function() {
+       window.hidePreloader = function(view = 'deck') {
            if (nativeMode) window.__mirofakturaTrendDeckReady = true;
+           signalEmbeddedReady(view);
            if (preloaderHidden) return;
            preloaderHidden = true;
            if (textInterval) clearInterval(textInterval);
@@ -1574,6 +1585,7 @@
                 shouldStartTelegramFollowup = trendPlatform === 'telegram' && hasRemoteIdentity;
                 onboardView.classList.add('visible'); onboardView.style.opacity = '1';
                 canvasDiv.style.opacity = '0'; document.getElementById('game-ui').style.opacity = '0';
+                window.hidePreloader('onboarding');
             } else {
                 toggleView('daily');
             }

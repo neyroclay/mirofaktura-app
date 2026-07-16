@@ -14,7 +14,7 @@
   const URL_PARAMS = new URLSearchParams(window.location.search);
   const TELEGRAM_LAUNCH_PARAMS = new URLSearchParams(window.location.hash.replace(/^#/, ''));
   const NATIVE_TRENDS_MODE = URL_PARAMS.get('trends_native');
-  const NATIVE_TRENDS_ASSET_VERSION = '20260713-authors-copy-28';
+  const NATIVE_TRENDS_ASSET_VERSION = '20260716-single-loader-29';
   const IS_TELEGRAM_LAUNCH = Boolean(
     telegramWebApp?.initData
     || telegramWebApp?.initDataUnsafe?.user?.id
@@ -32,8 +32,7 @@
     ).toLowerCase();
     return PLATFORM_ALIASES[raw] || 'max';
   })();
-  const USE_NATIVE_TRENDS = NATIVE_TRENDS_MODE === '1'
-    || (NATIVE_TRENDS_MODE !== '0' && APP_PLATFORM === 'telegram');
+  const USE_NATIVE_TRENDS = NATIVE_TRENDS_MODE !== '0';
   const PLATFORM = {
     max: {
       key: 'max',
@@ -167,21 +166,67 @@
       tag: 'Новая аудитория',
       title: 'Атлас трафика 2026',
       text: 'Карта каналов привлечения: что можно быстро проверить, а что потребует больше времени, денег или подготовки.',
+      service: 'Реклама и маркетинговое сопровождение',
       tone: ''
     },
     sales: {
       tag: 'Каналы продаж',
       title: 'Карта каналов продаж',
       text: 'Список из 16 каналов продаж и навигатор, который поможет выбрать один канал для следующего теста.',
+      service: 'Стратегия, продажи и продукт-мир',
       tone: 'warm'
     },
     products: {
       tag: 'Повторные покупки',
       title: 'Линейки продуктов',
       text: 'Четыре модели продуктовых линеек и конструктор цепочки: от первого знакомства до следующей покупки.',
+      service: 'Продуктовая система и экосистема',
       tone: 'deep'
     }
   };
+
+  const marketingTasks = [
+    {
+      id: 'strategy',
+      label: 'Стратегия',
+      title: 'Стратегия и позиционирование',
+      text: 'Разбираем продукт и аудиторию. Формулируем, что именно вы предлагаете, кому и почему это стоит выбрать.',
+      example: 'Несколько похожих услуг превращаем в понятные предложения под разные задачи клиентов.',
+      benefit: 'Контент, реклама и продажи говорят об одном и том же. Клиенту проще принять решение.'
+    },
+    {
+      id: 'content',
+      label: 'Упаковка и контент',
+      title: 'Упаковка, контент и фирменный стиль',
+      text: 'Готовим тексты, визуальный стиль, страницы, презентации, посты и рекламные материалы. При необходимости создаём персонажа и автоматизируем подготовку контента.',
+      example: 'Для запуска собираем главную мысль, страницу и серию постов в одном стиле.',
+      benefit: 'Продукт легче узнать и понять в любом канале.'
+    },
+    {
+      id: 'traffic',
+      label: 'Реклама',
+      title: 'Реклама и игровые воронки',
+      text: 'Готовим и запускаем рекламу. Если обычной страницы мало, ведём человека в игру, квиз или подборщик.',
+      example: 'Реклама курса ведёт в короткую игру, после которой человек получает подходящую программу.',
+      benefit: 'Реклама не заканчивается кликом: человек получает пользу, лучше понимает предложение и только потом оставляет заявку.'
+    },
+    {
+      id: 'automation',
+      label: 'Игры и технологии',
+      title: 'Продукты-миры и цифровые системы',
+      text: 'Создаём игры, квизы, боты, мини-приложения и персонажей. Подключаем их к заявкам, контенту и продажам, а повторяющиеся действия автоматизируем.',
+      example: 'Квиз подбирает услугу, сохраняет ответы и передаёт их менеджеру.',
+      benefit: 'Клиенту проще выбрать подходящую услугу, а команда меньше повторяет одни и те же вопросы вручную.'
+    },
+    {
+      id: 'support',
+      label: 'Сопровождение',
+      title: 'Маркетинговое сопровождение',
+      text: 'Планируем контент и запуски, ведём рекламу, проверяем результаты и улучшаем работающие инструменты.',
+      example: 'На месяц выбираем одну главную задачу, готовим материалы, запускаем рекламу и проверяем новую гипотезу.',
+      benefit: 'Одна команда ведёт контент, рекламу и цифровые инструменты. Не нужно каждый раз искать нового подрядчика и заново объяснять задачу.'
+    }
+  ];
 
   const productLinesMaterial = {
     diagnostic: [
@@ -893,6 +938,7 @@
     page: 'home',
     step: 0,
     answers: {},
+    contactTask: 'strategy',
     material: 'products',
     pendingMaterial: '',
     pendingGateTarget: 'material',
@@ -1003,7 +1049,7 @@
           ${icons.trends}<span>Тренды</span>
         </button>
         <button class="nav-item ${state.page === 'contacts' ? 'active' : ''}" type="button" data-page="contacts" ${state.page === 'contacts' ? 'aria-current="page"' : ''}>
-          ${icons.contacts}<span>Контакты</span>
+          ${icons.contacts}<span>Услуги</span>
         </button>
       </nav>
     `;
@@ -1161,21 +1207,21 @@
         </div>
 
         <div class="home-copy">
-          <p class="brand-label">Мирофактура</p>
-          <h1>С чего начать</h1>
-          <p class="lead">Ответьте на четыре вопроса. В конце вас ждёт подарок от Мирофактуры — интерактивный инструмент про продукт, продажи или привлечение аудитории.</p>
-          <button class="primary-btn" type="button" data-action="startQuiz">Сделать первый ход</button>
+          <p class="brand-label">Подарок от Мирофактуры</p>
+          <h1 class="home-title">С чего начать</h1>
+          <p class="lead">Ответьте на четыре вопроса и получите интерактивный материал про продукт, продажи или привлечение аудитории.</p>
+          <button class="primary-btn" type="button" data-action="startQuiz">Получить подарок</button>
         </div>
 
         <div class="home-links">
+          <button class="home-link" type="button" data-action="openContacts">
+            <span><strong>Что мы делаем</strong><span>Пять направлений работы с примерами и понятной пользой.</span></span>
+          </button>
           <button class="home-link" type="button" data-action="openLibrary">
-            <span><strong>Кладовая Мирофактуры</strong><span>Интерактивные материалы о продуктах, продажах и привлечении аудитории.</span></span>
+            <span><strong>Кладовая Мирофактуры</strong><span>Небольшие интерактивные инструменты для первого разбора задачи.</span></span>
           </button>
           <button class="home-link" type="button" data-action="openExternalLink" data-url="${MAX_CHANNEL_URL}">
-            <span><strong>Канал Мирофактуры в MAX</strong><span>Материалы о маркетинге, продуктах и цифровых мирах.</span></span>
-          </button>
-          <button class="home-link" type="button" data-action="openContacts">
-            <span><strong>Авторы</strong><span>Елизавета Викулова и Елена Попова: интерактивные продукты, системный маркетинг и воронки впечатлений.</span></span>
+            <span><strong>Канал в MAX</strong><span>Материалы о маркетинге, продуктах и цифровых мирах.</span></span>
           </button>
         </div>
 
@@ -1254,16 +1300,35 @@
 
   function resultNextStep(key) {
     const steps = {
-      traffic: 'Выберите один канал и запишите, что хотите проверить: цену обращения, отклик на формат, количество заявок или качество аудитории.',
-      sales: 'Отметьте канал, который уже работает, и выберите ещё один для теста. Не запускайте несколько новых каналов одновременно.',
-      products: 'Запишите три пункта: первый продукт, основное предложение и то, что можно предложить после него.'
+      traffic: 'В атласе выберите один канал и запишите, что хотите проверить: стоимость обращения, отклик на формат, количество заявок или качество аудитории.',
+      sales: 'В карте отметьте канал, который уже приводит продажи, и выберите один новый канал для теста.',
+      products: 'В конструкторе запишите три пункта: первый продукт, основное предложение и продукт, который можно предложить после первой покупки.'
     };
     return steps[key] || steps.traffic;
+  }
+
+  function relatedHelp(key) {
+    const options = {
+      traffic: {
+        title: 'Реклама и игровые воронки',
+        text: 'Можем помочь выбрать канал, подготовить рекламу и придумать формат, который приведёт человека не только к просмотру, но и к действию.'
+      },
+      sales: {
+        title: 'Упаковка и путь к покупке',
+        text: 'Можем упростить выбор продукта, подготовить страницы и сообщения или собрать квиз, игру и другой формат для продажи.'
+      },
+      products: {
+        title: 'Продуктовая система и продукты-миры',
+        text: 'Можем связать продукты, продумать повторные покупки или создать отдельную игру, квиз, бот и мини-приложение вокруг этой задачи.'
+      }
+    };
+    return options[key] || options.traffic;
   }
 
   function renderResult() {
     const key = resultKey();
     const material = materials[key];
+    const help = relatedHelp(key);
     return screen(`
       <button class="back-link" type="button" data-action="startQuiz">← Пройти заново</button>
       <div class="result-mascot">
@@ -1271,9 +1336,9 @@
       </div>
 
       <article class="result-card">
-        <p class="brand-label">Ваш результат</p>
+        <p class="brand-label">Ваш подарок</p>
         <h1>Вот с чего лучше начать</h1>
-        <p class="lead">По вашим ответам Аристарх предлагает подарок под выбранную задачу.</p>
+        <p class="lead">По вашим ответам Аристарх подобрал материал под выбранную задачу.</p>
 
         <div class="result-panel">
           <h2>${material.title}</h2>
@@ -1285,16 +1350,19 @@
         <button class="primary-btn" type="button" data-action="openMaterial" data-material="${key}">Открыть подарок</button>
       </div>
 
-      <div class="potap-figure">
-        <img src="${assets.potap}" alt="Потап собирает цифровую систему" loading="lazy" decoding="async">
-      </div>
-      <article class="potap-panel">
-        <p class="brand-label">Потап</p>
-        <h2>Что сделать после</h2>
+      <article class="result-next-step">
+        <p class="brand-label">Следующий шаг после подарка</p>
         <p>${resultNextStep(key)}</p>
       </article>
 
+      <article class="potap-panel result-help-note">
+        <p class="brand-label">Если понадобится помощь</p>
+        <h2>${help.title}</h2>
+        <p>${help.text}</p>
+      </article>
+
       <div class="result-actions">
+        <button class="soft-btn" type="button" data-action="openContacts">Посмотреть, что мы делаем</button>
         <button class="soft-btn" type="button" data-page="home">На главную</button>
       </div>
     `, 'result-screen');
@@ -1373,7 +1441,7 @@
       <div class="library-title">
         <p class="brand-label">Материалы Мирофактуры</p>
         <h1>Кладовая</h1>
-        <p class="lead">Кладовая — часть мастерской цифровых миров. Здесь собраны полезные материалы Мирофактуры: они помогают разобраться в текущей задаче, сравнить возможные решения и выбрать подходящий вариант для бизнеса.</p>
+        <p class="lead">Здесь собраны три интерактивных материала: про привлечение аудитории, каналы продаж и линейку продуктов. Они помогут быстрее разобраться в задаче перед разговором о проекте.</p>
         <div class="library-actions">
           <button class="primary-btn" type="button" data-action="startQuiz">Подобрать материал</button>
         </div>
@@ -1383,7 +1451,7 @@
         <img src="${assets.aristarch}" alt="Аристарх, Аксолотль-Профессор Мирофактуры" loading="lazy" decoding="async">
         <div class="caption">
           <b>Аристарх</b>
-          <span>Аксолотль-Профессор, архитектор и аналитик Мирофактуры. Видит систему целиком и помогает найти слабое место.</span>
+          <span>Аксолотль-Профессор, маскот-аналитик Мирофактуры. Сравнивает ответы и помогает выбрать подходящий материал.</span>
         </div>
       </div>
 
@@ -1393,9 +1461,17 @@
             <small>${item.tag}</small>
             <h2>${item.title}</h2>
             <p>${item.text}</p>
+            <span class="material-service">Подходит для: ${item.service}</span>
             <span class="primary-btn material-card-action" aria-hidden="true">Открыть</span>
           </article>
         `).join('')}
+      </section>
+
+      <section class="library-project-cta">
+        <p class="brand-label">Нужна помощь с вашей задачей?</p>
+        <h2>Посмотрите, что мы делаем</h2>
+        <p>Для каждой услуги есть короткое объяснение, пример и польза для бизнеса.</p>
+        <button class="soft-btn" type="button" data-action="openContacts">Перейти к услугам</button>
       </section>
     `, 'library-screen');
   }
@@ -1912,13 +1988,56 @@
         </section>
       `
       : '';
+    const selectedTask = marketingTasks.find((task) => task.id === state.contactTask) || marketingTasks[0];
 
     return screen(`
       <section class="contacts-hero">
-        <p class="brand-label">Мирофактура</p>
-        <h1>Создаём мир бренда и выстраиваем маркетинг как систему</h1>
-        <p class="lead">Связываем позиционирование, продукты, фирменный стиль, контент, привлечение, продажи и автоматизацию. Человек сразу понимает, чем вы полезны, включается во взаимодействие и видит, что делать дальше.</p>
-        <p class="lead">Мы называем такие системы цифровыми мирами: в них есть характер бренда, продуманные сценарии вовлечения и современные технологии — от сайтов и мини-приложений до автоматизации и ИИ-агентов.</p>
+        <p class="brand-label">Услуги Мирофактуры</p>
+        <h1>От первого интереса к покупке</h1>
+        <p class="lead">Для каждого продукта выстраиваем свой маршрут: находим главную идею, упаковываем её в контент и рекламу. Если обычного объяснения мало, добавляем игру, квиз, персонажа или мини-приложение.</p>
+        <div class="contacts-hero-actions">
+          <button class="primary-btn" type="button" data-action="focusContactMap">Выбрать задачу</button>
+          <button class="soft-btn" type="button" data-action="openEmail">Написать нам</button>
+        </div>
+      </section>
+
+      <section class="task-map-panel" id="marketing-task-map" aria-labelledby="task-map-title">
+        <p class="brand-label">С чем помочь</p>
+        <h2 class="contacts-section-title" id="task-map-title">Выберите задачу</h2>
+        <p class="contacts-section-lead">Покажем, что можно сделать и какую пользу это даст.</p>
+        <div class="task-map" aria-label="Услуги Мирофактуры">
+          ${marketingTasks.map((task) => `
+            <button class="task-node ${task.id === selectedTask.id ? 'selected' : ''}" type="button" data-action="selectContactTask" data-task="${task.id}" aria-pressed="${task.id === selectedTask.id}">
+              ${task.label}
+            </button>
+          `).join('')}
+        </div>
+        <article class="task-detail" aria-live="polite">
+          <h3>${selectedTask.title}</h3>
+          <dl>
+            <div><dt>Что сделаем</dt><dd>${selectedTask.text}</dd></div>
+            <div><dt>Например</dt><dd>${selectedTask.example}</dd></div>
+            <div><dt>Что изменится</dt><dd>${selectedTask.benefit}</dd></div>
+          </dl>
+        </article>
+      </section>
+
+      <section class="world-examples-panel" aria-labelledby="world-examples-title">
+        <p class="brand-label">Впечатление и маршрут клиента</p>
+        <h2 class="contacts-section-title" id="world-examples-title">Как это работает</h2>
+        <p class="contacts-section-lead">Каждый шаг помогает перейти к следующему.</p>
+        <div class="client-route-card">
+          <div class="client-route" aria-label="Контент и реклама, игра или квиз, свой результат, подходящее предложение, покупка">
+            <span>Контент и реклама</span>
+            <span>Игра или квиз</span>
+            <span>Свой результат</span>
+            <span>Подходящее предложение</span>
+            <span>Покупка</span>
+          </div>
+          <p>Человек не просто читает: отвечает на вопросы, сравнивает варианты и получает свой результат. Внимание не обрывается после рекламы, результат помогает подобрать предложение, а менеджер сразу видит ответы. Клиенту проще выбрать подходящий продукт, а бизнес не теряет собранные ответы и экономит время.</p>
+          <p class="client-route-method"><strong>Технологии под задачу.</strong> Выбираем технологии и механики с учётом исследований внимания, восприятия и принятия решений. Они должны помогать человеку понять предложение, сравнить варианты и решить, подходит ли ему продукт.</p>
+          <p class="client-route-definitions"><strong>Продукт-мир</strong> — отдельная игра, квиз, бот или мини-приложение со своей идеей и механикой. <strong>Экосистема</strong> — несколько связанных этапов, которые передают данные дальше.</p>
+        </div>
       </section>
 
       <section class="authors-panel" aria-label="Авторы">
@@ -1946,51 +2065,10 @@
         </div>
       </section>
 
-      <section class="services-panel" aria-label="Услуги Мирофактуры">
-        <h2 class="contacts-section-title">Что мы делаем</h2>
-        <div class="service-list">
-          <article class="service-card">
-            <span class="service-number">01</span>
-            <div>
-              <h2>Стратегия и позиционирование</h2>
-              <p>Разбираемся в продукте, аудитории и рынке. Формулируем позиционирование, собираем продуктовую систему и определяем, что важно изменить в первую очередь.</p>
-            </div>
-          </article>
-          <article class="service-card">
-            <span class="service-number">02</span>
-            <div>
-              <h2>Упаковка и фирменный стиль</h2>
-              <p>Переводим стратегию в понятные тексты и визуальную систему. Прорабатываем название, ключевые сообщения, стиль и материалы, с которыми бренд выходит к аудитории.</p>
-            </div>
-          </article>
-          <article class="service-card">
-            <span class="service-number">03</span>
-            <div>
-              <h2>Привлечение и игровые воронки</h2>
-              <p>Подбираем каналы продвижения, планируем трафик и проектируем путь к покупке. Используем квизы, игры и полезные инструменты там, где они помогают вовлечь аудиторию и получить заявки.</p>
-            </div>
-          </article>
-          <article class="service-card">
-            <span class="service-number">04</span>
-            <div>
-              <h2>Автоматизация и ИИ</h2>
-              <p>Создаём сайты, боты и мини-приложения, связываем сервисы и убираем ручные операции. Внедряем ИИ-агентов для задач маркетинга, продаж и работы с клиентами.</p>
-            </div>
-          </article>
-          <article class="service-card">
-            <span class="service-number">05</span>
-            <div>
-              <h2>Маркетинговое сопровождение</h2>
-              <p>Помогаем внедрить стратегию, проверять гипотезы и следить за результатами. Подключаемся как внешняя команда или усиливаем специалистов, которые уже работают внутри бизнеса.</p>
-            </div>
-          </article>
-        </div>
-      </section>
-
       <section class="contacts-cta">
-        <p class="brand-label">Обсудить проект</p>
+        <p class="brand-label">С чего начать</p>
         <h2>Расскажите о задаче</h2>
-        <p>Можно прийти с идеей, продуктом или уже работающим проектом. Сначала разберём задачу, затем предложим структуру и подходящий формат.</p>
+        <p>Напишите, что вы продаёте и что сейчас не работает: мало заявок, сложный продукт, нерегулярный контент или слишком много ручной работы. Мы предложим, с чего начать.</p>
         <button class="primary-btn" type="button" data-action="openEmail">Написать нам</button>
       </section>
 
@@ -2007,7 +2085,7 @@
       platform: PLATFORM.key,
       messenger: PLATFORM.messenger,
       source: 'mirofaktura-app',
-      v: '20260713-authors-copy-28',
+      v: '20260716-single-loader-29',
     });
     const platformUserId = getPlatformUserId();
     const platformUser = getPlatformUser();
@@ -2036,7 +2114,12 @@
             <button class="trends-native-tab" type="button" data-trends-tab="collection" role="tab" aria-selected="false">Коллекция</button>
             <button class="trends-native-tab" type="button" data-trends-tab="authors" role="tab" aria-selected="false">Авторы</button>
           </div>
-          <div id="c37" class="trends-native-host" aria-label="Колода трендов 2026"></div>
+          <div id="c37" class="trends-native-host" aria-label="Колода трендов 2026">
+            <div class="trends-native-loader" role="status" aria-label="Загрузка колоды трендов">
+              <span class="trends-native-loader__mark" aria-hidden="true"></span>
+              <span class="trends-native-loader__text">Открываем колоду…</span>
+            </div>
+          </div>
         </div>
       `, 'trends-screen trends-native-screen');
     }
@@ -2069,6 +2152,10 @@
   function prepareTrendsFrame() {
     const nativeHost = app.querySelector('.trends-native-host');
     if (nativeHost) {
+      nativeHost.addEventListener('mirofactura:trend-ready', () => {
+        nativeHost.classList.add('is-ready');
+        window.setTimeout(() => nativeHost.querySelector('.trends-native-loader')?.remove(), 300);
+      }, { once: true });
       prepareNativeTrends(nativeHost);
       return;
     }
@@ -2077,8 +2164,20 @@
     const wrap = frame?.closest('.trends-frame-wrap');
     if (!frame || !wrap) return;
 
-    frame.addEventListener('load', () => {
+    let fallbackTimer = 0;
+    const revealFrame = () => {
+      window.clearTimeout(fallbackTimer);
+      window.removeEventListener('message', handleFrameReady);
       window.requestAnimationFrame(() => wrap.classList.add('is-loaded'));
+    };
+    const handleFrameReady = (event) => {
+      if (event.source !== frame.contentWindow || event.data?.type !== 'mirofactura:trends-ready') return;
+      revealFrame();
+    };
+
+    window.addEventListener('message', handleFrameReady);
+    frame.addEventListener('load', () => {
+      fallbackTimer = window.setTimeout(revealFrame, 12000);
     }, { once: true });
   }
 
@@ -2390,9 +2489,25 @@
       return;
     }
 
+    if (action === 'focusContactMap') {
+      document.getElementById('marketing-task-map')?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+      return;
+    }
+
+    if (action === 'selectContactTask') {
+      state.contactTask = target.getAttribute('data-task') || 'strategy';
+      render({ scroll: false });
+      window.setTimeout(() => {
+        app.querySelector(`[data-task="${state.contactTask}"]`)?.focus({ preventScroll: true });
+      }, 0);
+      return;
+    }
+
     if (action === 'openEmail') {
-      const subject = encodeURIComponent('Заявка с приложения Мирофактуры');
-      window.location.href = `mailto:${CONTACT_EMAIL}?subject=${subject}`;
+      const service = target.getAttribute('data-service') || '';
+      const subject = encodeURIComponent(service ? `Задача для Мирофактуры: ${service}` : 'Задача для Мирофактуры');
+      const body = encodeURIComponent(`Здравствуйте!\n\nЧто у нас есть сейчас:\n\nЧто хотим изменить:\n\nСсылки и материалы, если есть:\n${service ? `\nРезультат квиза: ${service}` : ''}`);
+      window.location.href = `mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`;
       return;
     }
 
@@ -2559,7 +2674,7 @@
         return;
       }
 
-      const text = 'Загляните в Мирофактуру — мастерскую цифровых миров. Здесь можно найти идеи и интерактивные инструменты для маркетинга, продуктов и продаж, а ещё вытянуть карту из авторской колоды «Тренды 2026».';
+      const text = 'Мирофактура решает задачи маркетинга — от позиционирования, постов и рекламы до игр, мини-приложений, автоматизации и связанных цифровых систем.';
       const shareUrl = PLATFORM.entryUrl;
       if (APP_PLATFORM === 'telegram' && telegramWebApp) {
         const telegramShareUrl = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(text)}`;

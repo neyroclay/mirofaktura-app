@@ -392,6 +392,16 @@ summary:focus-visible {
   gap: 18px;
 }
 
+.home-title {
+  font-size: clamp(38px, 10vw, 52px);
+  line-height: 1.01;
+}
+
+.contacts-hero-actions {
+  display: grid;
+  gap: 10px;
+}
+
 .brand-label {
   margin: 0;
   color: #008b8b;
@@ -1089,6 +1099,26 @@ h3 {
   margin-top: 14px;
 }
 
+.result-next-step {
+  margin-top: 16px;
+  padding: 16px 18px;
+  border-left: 3px solid rgba(8, 145, 145, 0.44);
+  color: #073936;
+  background: rgba(255, 255, 249, 0.46);
+}
+
+.result-next-step p:not(.brand-label) {
+  margin-top: 8px;
+  color: rgba(9, 38, 35, 0.7);
+  font-size: var(--type-body);
+  line-height: 1.42;
+  font-weight: 600;
+}
+
+.result-next-step + .potap-panel {
+  margin-top: 16px;
+}
+
 .potap-panel + .result-actions {
   margin-top: 16px;
 }
@@ -1158,7 +1188,8 @@ h3 {
 }
 
 .contacts-hero,
-.services-panel,
+.task-map-panel,
+.world-examples-panel,
 .authors-panel,
 .contacts-note {
   display: grid;
@@ -1178,9 +1209,9 @@ h3 {
 }
 
 .contacts-hero h1 {
-  max-width: 14ch;
+  max-width: 17ch;
   margin-bottom: 4px;
-  font-size: var(--type-long-title);
+  font-size: clamp(36px, 9.2vw, var(--type-long-title));
   line-height: 1.06;
   font-weight: 800;
 }
@@ -1196,6 +1227,126 @@ h3 {
   font-size: var(--type-section-title);
   line-height: 1.08;
   font-weight: 800;
+}
+
+.contacts-section-lead {
+  max-width: 31rem;
+  margin: -4px auto 2px;
+  color: rgba(15, 47, 44, 0.68);
+  text-align: center;
+  font-size: var(--type-body);
+  line-height: 1.44;
+  font-weight: 600;
+}
+
+.task-map-panel,
+.world-examples-panel {
+  padding: 22px 0 0;
+}
+
+.task-map-panel > .brand-label,
+.world-examples-panel > .brand-label {
+  text-align: center;
+}
+
+.task-map {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  padding: 5px 0;
+}
+
+.task-node {
+  position: relative;
+  z-index: 1;
+  min-height: 56px;
+  padding: 12px 13px;
+  border-radius: 20px;
+  color: #075754;
+  border: 1px solid rgba(8, 145, 145, 0.2);
+  background: rgba(255, 255, 249, 0.68);
+  font: inherit;
+  font-size: 14px;
+  line-height: 1.2;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.task-node:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+}
+
+.task-node:hover,
+.task-node:focus-visible {
+  border-color: rgba(8, 145, 145, 0.5);
+  background: rgba(232, 255, 250, 0.92);
+  outline: none;
+}
+
+.task-node.selected {
+  color: #f8fffc;
+  border-color: rgba(255, 255, 255, 0.4);
+  background:
+    radial-gradient(circle at 14% 20%, rgba(255, 216, 74, 0.54), transparent 30%),
+    linear-gradient(135deg, #07504c, #078f8e 60%, #20c9c2);
+  box-shadow: 0 10px 20px rgba(8, 85, 82, 0.13);
+}
+
+.task-detail {
+  display: grid;
+  gap: 10px;
+  padding: 22px;
+  border-radius: 30px;
+  color: #073936;
+  border: 1px solid rgba(255, 255, 255, 0.76);
+  background:
+    radial-gradient(circle at 88% 14%, rgba(31, 210, 201, 0.26), transparent 34%),
+    radial-gradient(circle at 10% 82%, rgba(255, 216, 74, 0.18), transparent 32%),
+    linear-gradient(135deg, rgba(239, 255, 251, 0.84), rgba(255, 252, 232, 0.62));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.86), 0 16px 30px rgba(18, 55, 51, 0.08);
+}
+
+.task-detail h3 {
+  font-size: 25px;
+  line-height: 1.08;
+  font-weight: 800;
+}
+
+.task-detail > p:not(.brand-label) {
+  color: rgba(15, 47, 44, 0.7);
+  font-size: var(--type-body);
+  line-height: 1.44;
+  font-weight: 600;
+}
+
+.task-detail dl {
+  display: grid;
+  gap: 10px;
+  margin: 4px 0 0;
+}
+
+.task-detail dl div {
+  padding-top: 10px;
+  border-top: 1px solid rgba(8, 38, 35, 0.1);
+}
+
+.task-detail dt {
+  color: #008b8b;
+  font-size: 11px;
+  line-height: 1.1;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.task-detail dd {
+  margin: 5px 0 0;
+  color: rgba(15, 47, 44, 0.72);
+  font-size: 14px;
+  line-height: 1.4;
+  font-weight: 700;
 }
 
 .services-panel {
@@ -1267,7 +1418,7 @@ h3 {
 }
 
 .contacts-cta h2 {
-  max-width: 10ch;
+  max-width: 13ch;
   color: inherit;
   font-size: var(--type-long-title);
   line-height: 1.02;
@@ -1411,8 +1562,124 @@ h3 {
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.82);
 }
 
+.contacts-note h2 {
+  color: #073936;
+  font-size: 25px;
+  line-height: 1.1;
+  font-weight: 800;
+}
+
 .contacts-note p:not(.brand-label) {
   color: rgba(15, 47, 44, 0.66);
+  font-size: var(--type-body);
+  line-height: 1.42;
+  font-weight: 600;
+}
+
+.client-route-card {
+  display: grid;
+  gap: 14px;
+  padding: 20px;
+  border-radius: 26px;
+  color: #073936;
+  border: 1px solid rgba(255, 255, 255, 0.76);
+  background:
+    radial-gradient(circle at 86% 18%, rgba(31, 210, 201, 0.2), transparent 34%),
+    linear-gradient(135deg, rgba(255, 255, 249, 0.8), rgba(229, 255, 249, 0.6));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.82);
+}
+
+.client-route {
+  display: grid;
+  gap: 7px;
+}
+
+.client-route span {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 48px;
+  padding: 10px 36px 10px 14px;
+  border-radius: 18px;
+  color: #075754;
+  text-align: center;
+  background: rgba(255, 255, 249, 0.72);
+  border: 1px solid rgba(8, 145, 145, 0.16);
+  font-size: 14px;
+  line-height: 1.2;
+  font-weight: 800;
+}
+
+.client-route span:not(:last-child)::after {
+  content: "↓";
+  position: absolute;
+  right: 13px;
+  color: #08a29f;
+  font-size: 18px;
+  line-height: 1;
+  font-weight: 800;
+}
+
+.client-route-card p {
+  color: rgba(15, 47, 44, 0.68);
+  font-size: 15px;
+  line-height: 1.42;
+  font-weight: 600;
+}
+
+.client-route-card .client-route-method {
+  padding: 12px 14px;
+  border-radius: 16px;
+  color: rgba(15, 47, 44, 0.72);
+  background: rgba(255, 249, 218, 0.66);
+}
+
+.client-route-method strong {
+  color: #075754;
+}
+
+.client-route-card .client-route-definitions {
+  padding-top: 12px;
+  border-top: 1px solid rgba(8, 38, 35, 0.1);
+  font-size: 14px;
+}
+
+.client-route-definitions strong {
+  color: #007f82;
+}
+
+.material-service {
+  display: block;
+  padding: 10px 12px;
+  border-radius: 16px;
+  color: #075754;
+  background: rgba(232, 255, 250, 0.66);
+  font-size: 13px;
+  line-height: 1.35;
+  font-weight: 800;
+}
+
+.library-project-cta {
+  display: grid;
+  gap: 12px;
+  margin-top: 28px;
+  padding: 22px;
+  border-radius: 30px;
+  color: #073936;
+  border: 1px solid rgba(255, 255, 255, 0.76);
+  background:
+    radial-gradient(circle at 88% 18%, rgba(31, 210, 201, 0.24), transparent 34%),
+    linear-gradient(135deg, rgba(255, 255, 249, 0.78), rgba(228, 255, 249, 0.58));
+}
+
+.library-project-cta h2 {
+  font-size: 25px;
+  line-height: 1.08;
+  font-weight: 800;
+}
+
+.library-project-cta p:not(.brand-label) {
+  color: rgba(15, 47, 44, 0.68);
   font-size: var(--type-body);
   line-height: 1.42;
   font-weight: 600;
@@ -2347,6 +2614,51 @@ h3 {
   gap: 0;
 }
 
+.trends-native-host {
+  position: relative;
+  min-height: min(720px, calc(100vh - 228px));
+}
+
+.trends-native-loader {
+  position: absolute;
+  inset: 0;
+  z-index: 5000;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 24px;
+  min-height: 320px;
+  padding: 28px;
+  background:
+    radial-gradient(circle at 20% 16%, rgba(255, 216, 74, 0.18), transparent 34%),
+    radial-gradient(circle at 82% 18%, rgba(40, 212, 206, 0.3), transparent 38%),
+    linear-gradient(165deg, #ecfaf5, #fffaf0 66%, #f6ecd6);
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 260ms ease, visibility 260ms ease;
+}
+
+.trends-native-loader__mark {
+  width: 42px;
+  height: 42px;
+  border: 3px solid rgba(2, 139, 143, 0.18);
+  border-top-color: #079b9e;
+  border-radius: 50%;
+  animation: loader-spin 800ms linear infinite;
+}
+
+.trends-native-loader__text {
+  color: #426865;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.trends-native-host.is-ready .trends-native-loader {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
 .trends-frame-wrap {
   position: relative;
   width: 100%;
@@ -2782,6 +3094,16 @@ h3 {
   .result-card,
   .library-card {
     padding: 22px;
+  }
+
+  .service-card {
+    grid-template-columns: 44px 1fr;
+    padding: 16px;
+  }
+
+  .service-number {
+    width: 42px;
+    height: 42px;
   }
 
   .day-card {
