@@ -5,7 +5,6 @@
   const ELIZAVETA_TELEGRAM_CHANNEL_URL = 'https://t.me/gameneurons';
   const ELENA_TELEGRAM_CHANNEL_URL = 'https://t.me/adviceperm';
   const CONTACT_EMAIL = 'info@mirofactura.ru';
-  const PUBLIC_APP_URL = 'https://neyroclay.github.io/mirofaktura-app/';
   const PLATFORM_ALIASES = {
     max: 'max',
     tg: 'telegram',
@@ -25,9 +24,9 @@
   const APP_PLATFORM = (() => {
     const params = URL_PARAMS;
     const raw = String(
-      window.MIROFAKTURA_PLATFORM
-      || params.get('platform')
+      params.get('platform')
       || params.get('messenger')
+      || window.MIROFAKTURA_PLATFORM
       || (IS_TELEGRAM_LAUNCH ? 'telegram' : '')
       || ''
     ).toLowerCase();
@@ -52,6 +51,11 @@
       channelText: 'Бот Мирофактуры с приложением, новыми материалами и напоминаниями.',
     },
   }[APP_PLATFORM];
+  const STORY_DESTINATION_URL = PLATFORM.entryUrl;
+  const STORY_DESTINATION_LABEL = STORY_DESTINATION_URL.replace(/^https?:\/\//, '').replace(/\/$/, '');
+  const STORY_DESTINATION_TEXT = APP_PLATFORM === 'telegram'
+    ? 'Получите совет для своего проекта в боте Мирофактуры.'
+    : 'Получите совет для своего проекта в канале Мирофактуры.';
   const SUBSCRIPTION_WEBHOOK_URL = window.MIROFAKTURA_SUBSCRIPTION_WEBHOOK_URL || '';
   const ACCESS_MODE = (() => {
     const params = new URLSearchParams(window.location.search);
@@ -1511,8 +1515,8 @@
           <blockquote>${story.quote}</blockquote>
           <img class="story-card-mascot" src="${assets.aristarchStory}" alt="" aria-hidden="true">
           <div class="story-card-footer">
-            <span>Получите персональный совет для своего проекта в приложении Мирофактуры.</span>
-            <small>neyroclay.github.io/mirofaktura-app</small>
+            <span>${STORY_DESTINATION_TEXT}</span>
+            <small>${STORY_DESTINATION_LABEL}</small>
           </div>
         </div>
         <div class="story-result-actions">
@@ -2823,15 +2827,15 @@
     context.fillRect(82, 360, 205, 9);
 
     context.fillStyle = '#092623';
-    const quoteFontSize = key === 'products' ? 80 : key === 'traffic' ? 84 : 92;
-    const quoteLineHeight = key === 'products' ? 92 : key === 'traffic' ? 96 : 104;
+    const quoteFontSize = key === 'products' ? 70 : key === 'traffic' ? 74 : 78;
+    const quoteLineHeight = key === 'products' ? 82 : key === 'traffic' ? 86 : 90;
     context.font = `800 ${quoteFontSize}px "Segoe UI", Arial, sans-serif`;
     drawCanvasText(context, story.quote, 82, 412, 900, quoteLineHeight, 7);
 
     const mascotSize = storyImageSize(aristarch);
-    const mascotWidth = 610;
+    const mascotWidth = 680;
     const mascotHeight = mascotWidth * mascotSize.height / mascotSize.width;
-    const mascotX = 500;
+    const mascotX = 400;
     const mascotY = 1920 - mascotHeight + 16;
     const mascotGlow = context.createRadialGradient(800, 1500, 10, 800, 1500, 470);
     mascotGlow.addColorStop(0, 'rgba(40, 212, 206, 0.32)');
@@ -2847,16 +2851,16 @@
     context.font = '700 29px "Segoe UI", Arial, sans-serif';
     drawCanvasText(
       context,
-      'Получите персональный совет для своего проекта в приложении Мирофактуры.',
+      STORY_DESTINATION_TEXT,
       82,
       1670,
-      410,
+      340,
       39,
       4
     );
     context.fillStyle = '#52706b';
     context.font = '600 23px "Segoe UI", Arial, sans-serif';
-    context.fillText('neyroclay.github.io/mirofaktura-app', 82, 1818);
+    context.fillText(STORY_DESTINATION_LABEL, 82, 1818);
 
     return { canvas, story };
   }
@@ -2889,7 +2893,7 @@
 
   async function shareStoryCard(key) {
     const result = await createStoryCardFile(key);
-    const shareText = `Аристарх из Мирофактуры: «${result.story.quote}» Получите совет для своего проекта: ${PUBLIC_APP_URL}`;
+    const shareText = `Аристарх из Мирофактуры: «${result.story.quote}» Получите совет для своего проекта: ${STORY_DESTINATION_URL}`;
     if (result.file && navigator.share && (!navigator.canShare || navigator.canShare({ files: [result.file] }))) {
       try {
         await navigator.share({
@@ -3180,7 +3184,7 @@
     }
 
     if (action === 'copyStoryLink') {
-      const copied = await copyPlainText(PUBLIC_APP_URL);
+      const copied = await copyPlainText(STORY_DESTINATION_URL);
       showToast(copied ? 'Ссылка скопирована' : 'Не удалось скопировать ссылку');
       return;
     }
