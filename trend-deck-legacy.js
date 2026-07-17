@@ -311,10 +311,22 @@
         });
 
         const maxApp = window.WebApp || null;
+        const telegramApp = window.Telegram?.WebApp || null;
         if (maxApp && typeof maxApp.ready === 'function') maxApp.ready();
 
         const trendParams = new URLSearchParams(window.location.search);
-        const platformParam = String(trendParams.get('platform') || trendParams.get('messenger') || '').toLowerCase();
+        const telegramLaunchDetected = Boolean(
+            telegramApp?.initData
+            || telegramApp?.initDataUnsafe?.user?.id
+            || String(window.MIROFAKTURA_PLATFORM || '').toLowerCase() === 'telegram'
+        );
+        const platformParam = String(
+            trendParams.get('platform')
+            || trendParams.get('messenger')
+            || window.MIROFAKTURA_PLATFORM
+            || (telegramLaunchDetected ? 'telegram' : '')
+            || ''
+        ).toLowerCase();
         const trendPlatform = (platformParam === 'tg' || platformParam === 'telegram') ? 'telegram' : 'max';
         const trendMessenger = trendPlatform === 'telegram' ? 'TELEGRAM' : 'MAX';
         const trendEntryUrl = trendPlatform === 'telegram'
@@ -330,7 +342,8 @@
             ? 'https://t.me/PopovaE'
             : 'https://max.ru/u/f9LHodD0cOL6WZFmWoaBowA5ZAdNLubiIRJlhbrL5vxjlmvr16DBtsGJcLY';
         const fullDeckPurchaseUrl = 'https://payform.ru/f0b2Chh/';
-        const userObj = maxApp?.initDataUnsafe?.user || maxApp?.user || {};
+        const platformApp = trendPlatform === 'telegram' ? telegramApp : maxApp;
+        const userObj = platformApp?.initDataUnsafe?.user || platformApp?.user || {};
         const isLocalPreview = window.location.protocol === 'file:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
         const freshPreview = isLocalPreview && trendParams.get('fresh') === '1';
         const userIdFromQuery = (() => {
@@ -637,7 +650,13 @@
                 if (window.parent !== window) {
                     window.parent.postMessage({ type: 'mirofaktura:open-link', url }, '*');
                 } else {
-                    window.location.href = url;
+                    if (url.includes('t.me') && typeof telegramApp?.openTelegramLink === 'function') {
+                        telegramApp.openTelegramLink(url);
+                    } else if (typeof telegramApp?.openLink === 'function') {
+                        telegramApp.openLink(url);
+                    } else {
+                        window.open(url, '_blank', 'noopener');
+                    }
                 }
                 return;
             }
@@ -849,8 +868,6 @@
                 <div id="active-ui"><div class="progress-wrapper"><div class="progress-fill" id="p-bar"></div></div></div>
                 
                 <div id="done-ui" style="display:none;flex-direction:column;align-items:center; width:100%; max-width:280px; margin: 0 auto;">
-                    <div class="waiting-card-status">КАРТА ОТКРЫТА</div>
-                    
                     <button id="btn-next-bonus" type="button" class="ask-ai-main-btn" style="display:none; margin-bottom:15px; font-size:14px; padding:14px; width:100%;">🎁 Открыть бонусную карту</button>
 
                     <div class="timer-box" id="daily-timer" style="display:none; width:100%; box-sizing:border-box;">
@@ -943,6 +960,27 @@
             return Number.isFinite(number) && number >= 0 ? Math.floor(number) : fallback;
         }
 
+        function mergeCollectedCards(...values) {
+            const merged = values.flatMap((value) => normalizeCollectedCards(value, []));
+            return [...new Set(merged)];
+        }
+
+        function pickLaterDate(first, second) {
+            const firstTime = Date.parse(first || '');
+            const secondTime = Date.parse(second || '');
+            if (!Number.isFinite(firstTime)) return second || first || null;
+            if (!Number.isFinite(secondTime)) return first || second || null;
+            return secondTime > firstTime ? second : first;
+        }
+
+        function pickEarlierLaunch(first, second) {
+            const firstTime = Number(first);
+            const secondTime = Number(second);
+            if (!Number.isFinite(firstTime) || firstTime <= 0) return second || first || null;
+            if (!Number.isFinite(secondTime) || secondTime <= 0) return first || second || null;
+            return String(Math.min(firstTime, secondTime));
+        }
+
         function restoreLocalState() {
             try {
                 const local = localStorage.getItem(STORAGE_KEY);
@@ -960,6 +998,43 @@
             } catch (error) {
                 console.warn('Local trend progress is unavailable', error);
             }
+        }
+
+        function restoreLegacyAnonymousState() {
+            if (!hasRemoteIdentity) return false;
+
+            let mergedLegacyState = false;
+            const legacyKeys = new Set();
+            for (const legacyPlatform of ['telegram', 'max']) {
+                const legacyAnonymousId = localStorage.getItem(`mirofactura_anonymous_id_${legacyPlatform}`);
+                if (!legacyAnonymousId || legacyAnonymousId === userId) continue;
+                legacyKeys.add(`oracle_10_trends_release_v23_${legacyPlatform}_${legacyAnonymousId}`);
+            }
+
+            for (const legacyKey of legacyKeys) {
+                try {
+                    const local = localStorage.getItem(legacyKey);
+                    if (!local) continue;
+                    const parsed = JSON.parse(local);
+                    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) continue;
+
+                    const legacyCollected = normalizeCollectedCards(parsed.collected, []);
+                    if (!legacyCollected.length && !parsed.lastDate) continue;
+
+                    appData.collected = mergeCollectedCards(appData.collected, legacyCollected);
+                    appData.lastDate = pickLaterDate(appData.lastDate, parsed.lastDate);
+                    appData.firstLaunchTime = pickEarlierLaunch(appData.firstLaunchTime, parsed.firstLaunchTime);
+                    appData.onboardingSeen = appData.onboardingSeen || parsed.onboardingSeen === true;
+                    appData.timerSeen = appData.timerSeen || parsed.timerSeen === true;
+                    appData.bonusCards = Math.max(appData.bonusCards, normalizeCounter(parsed.bonusCards, 0));
+                    appData.invitedFriends = Math.max(appData.invitedFriends, normalizeCounter(parsed.invitedFriends, 0));
+                    mergedLegacyState = true;
+                } catch (error) {
+                    console.warn('Legacy trend progress is unavailable', error);
+                }
+            }
+
+            return mergedLegacyState;
         }
 
         async function startTelegramFollowupOnce() {
@@ -1008,6 +1083,12 @@
                 return;
             }
             restoreLocalState();
+            const mergedLegacyState = restoreLegacyAnonymousState();
+            const localCollected = [...appData.collected];
+            const localLastDate = appData.lastDate;
+            const localFirstLaunchTime = appData.firstLaunchTime;
+            const localOnboardingSeen = appData.onboardingSeen === true;
+            let shouldPersistMergedState = mergedLegacyState;
             try {
                 const data = await postMulty(LOAD_URL, {
                     item: 'trend_deck_load_v2',
@@ -1020,17 +1101,25 @@
                 if (data.exists === true) {
                     const remoteFirstLaunchTime = Number(data.first_launch_time);
                     if (Number.isFinite(remoteFirstLaunchTime) && remoteFirstLaunchTime > 0) {
-                        appData.firstLaunchTime = String(data.first_launch_time);
+                        appData.firstLaunchTime = pickEarlierLaunch(localFirstLaunchTime, data.first_launch_time);
                     }
-                    if (typeof data.last_date === 'string') appData.lastDate = data.last_date;
-                    appData.collected = normalizeCollectedCards(data.collected, appData.collected);
+                    if (typeof data.last_date === 'string') {
+                        const mergedLastDate = pickLaterDate(localLastDate, data.last_date);
+                        shouldPersistMergedState = shouldPersistMergedState || mergedLastDate !== data.last_date;
+                        appData.lastDate = mergedLastDate;
+                    }
+                    const remoteCollected = normalizeCollectedCards(data.collected, []);
+                    shouldPersistMergedState = shouldPersistMergedState
+                        || localCollected.some((cardId) => !remoteCollected.includes(cardId));
+                    appData.collected = mergeCollectedCards(remoteCollected, localCollected);
                     appData.bonusCards = normalizeCounter(data.bonus_cards, appData.bonusCards);
                     appData.invitedFriends = normalizeCounter(data.invited_friends, appData.invitedFriends);
                     if (Object.prototype.hasOwnProperty.call(data, 'onboarding_seen')) {
-                        appData.onboardingSeen = data.onboarding_seen === true
+                        const remoteOnboardingSeen = data.onboarding_seen === true
                             || data.onboarding_seen === 1
                             || data.onboarding_seen === '1'
                             || data.onboarding_seen === 'true';
+                        appData.onboardingSeen = localOnboardingSeen || remoteOnboardingSeen;
                     } else {
                         // Existing records predate the explicit onboarding flag.
                         appData.onboardingSeen = true;
@@ -1039,6 +1128,7 @@
                 }
             } catch (error) { console.warn('Remote trend progress is unavailable', error); }
             finishLoad(callback);
+            if (shouldPersistMergedState) saveState();
         }
 
         function finishLoad(callback) {
@@ -1112,9 +1202,13 @@
             const inviteTitle = document.getElementById('invite-title');
             const inviteDesc = document.getElementById('invite-desc');
             const gameUi = document.getElementById('game-ui');
+            const collectionHint = document.querySelector('.collection-hint');
 
             if (appData.bonusCards > 0) {
-                gameUi?.classList.remove('waiting-for-next-card');
+                gameUi?.classList.remove('waiting-for-next-card', 'just-finished');
+                canvasDiv.style.opacity = '1';
+                canvasDiv.style.visibility = 'visible';
+                if (collectionHint) collectionHint.style.display = 'none';
                 btnBonus.style.display = 'block';
                 btnBonus.innerHTML = `🎁 Открыть бонусную карту (${appData.bonusCards})`;
                 timerBox.style.display = 'none';
@@ -1124,17 +1218,25 @@
                 
                 if (justFinished) {
                     gameUi?.classList.remove('waiting-for-next-card');
+                    gameUi?.classList.add('just-finished');
+                    canvasDiv.style.opacity = '1';
+                    canvasDiv.style.visibility = 'visible';
+                    if (collectionHint) collectionHint.style.display = 'block';
                     timerBox.style.display = 'none';
                     inviteBanner.style.display = 'none';
                 } else {
+                    gameUi?.classList.remove('just-finished');
                     gameUi?.classList.add('waiting-for-next-card');
+                    canvasDiv.style.opacity = '0';
+                    canvasDiv.style.visibility = 'hidden';
+                    if (collectionHint) collectionHint.style.display = 'none';
                     timerBox.style.display = 'block';
                     inviteBanner.style.display = 'block';
 
                     if (appData.invitedFriends < 3) {
                         inviteTitle.textContent = "Расширьте картину будущего";
                         const left = 3 - appData.invitedFriends;
-                        inviteDesc.innerHTML = `Поделитесь приложением с коллегой, и за каждое приглашение мы откроем для вас дополнительный артефакт.<br><br><div style="background:rgba(249,236,159,0.32); border: 1px dashed #8AB7AA; border-radius:12px; padding:12px; display:inline-block;"><span style="color:#087f7a; font-weight:900; font-size:14px; text-transform:uppercase;">Бонусных карт: ${left}</span></div>`;
+                        inviteDesc.innerHTML = `Поделитесь приложением с коллегой, и за каждое приглашение мы откроем для вас дополнительную карту.<br><br><div style="background:rgba(249,236,159,0.32); border: 1px dashed #8AB7AA; border-radius:12px; padding:12px; display:inline-block;"><span style="color:#087f7a; font-weight:900; font-size:14px; text-transform:uppercase;">Бонусных карт: ${left}</span></div>`;
                     } else {
                         inviteTitle.textContent = "Поделитесь с коллегами";
                         inviteDesc.innerHTML = "Отправьте друзьям ссылку на это приложение, чтобы они тоже узнали тренды 2026 года.";
@@ -1368,7 +1470,11 @@
                 if (isScratching) { scratchSound.pause(); isScratching=false; } clearTimeout(scratchTimeout); winSound.play().catch(()=>{});
                 if (window.confetti) confetti({ particleCount:100, spread:70, origin:{y:0.6}, colors:['#8AB7AA','#FFC845','#FFFFFF'] });
                 
-                updateHint('КАРТА ОТКРЫТА');
+                const mainHint = document.getElementById('main-hint');
+                if (mainHint) {
+                    mainHint.style.opacity = '0';
+                    mainHint.style.visibility = 'hidden';
+                }
                 document.getElementById('active-ui').style.display='none'; 
                 document.getElementById('done-ui').style.display='flex'; 
                 
@@ -1447,14 +1553,23 @@
                 const text = `Мне выпал стратегический тренд 2026: ${currentCardData.title}\n\nЗагляни в будущее и собери свою коллекцию инсайтов 👇`;
                 const fullText = text + '\n' + shareUrl;
 
-                if (trendPlatform === 'telegram' && window.parent !== window) {
-                    window.parent.postMessage({
-                        type: 'mirofaktura:share',
-                        title: 'Тренды 2026',
-                        text,
-                        url: shareUrl
-                    }, '*');
-                    return;
+                if (trendPlatform === 'telegram') {
+                    if (window.parent !== window) {
+                        window.parent.postMessage({
+                            type: 'mirofaktura:share',
+                            title: 'Тренды 2026',
+                            text,
+                            url: shareUrl
+                        }, '*');
+                        return;
+                    }
+
+                    const telegramShareUrl = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(text)}`;
+                    const telegramApp = window.Telegram?.WebApp;
+                    if (typeof telegramApp?.openTelegramLink === 'function') {
+                        telegramApp.openTelegramLink(telegramShareUrl);
+                        return;
+                    }
                 }
 
                 const fallbackCopy = () => {

@@ -14,7 +14,7 @@
   const URL_PARAMS = new URLSearchParams(window.location.search);
   const TELEGRAM_LAUNCH_PARAMS = new URLSearchParams(window.location.hash.replace(/^#/, ''));
   const NATIVE_TRENDS_MODE = URL_PARAMS.get('trends_native');
-  const NATIVE_TRENDS_ASSET_VERSION = '20260716-max-channel-30';
+  const NATIVE_TRENDS_ASSET_VERSION = '20260716-timer-clean-31';
   const IS_TELEGRAM_LAUNCH = Boolean(
     telegramWebApp?.initData
     || telegramWebApp?.initDataUnsafe?.user?.id
@@ -2362,7 +2362,7 @@
       platform: PLATFORM.key,
       messenger: PLATFORM.messenger,
       source: 'mirofaktura-app',
-      v: '20260716-max-channel-30',
+      v: '20260716-timer-clean-31',
     });
     const platformUserId = getPlatformUserId();
     const platformUser = getPlatformUser();
@@ -2959,8 +2959,9 @@
   }
 
   function openTelegramShare(shareUrl) {
-    telegramWebApp.openTelegramLink(shareUrl);
-    window.setTimeout(() => telegramWebApp.close(), 120);
+    if (typeof telegramWebApp?.openTelegramLink === 'function') {
+      telegramWebApp.openTelegramLink(shareUrl);
+    }
   }
 
   function openExternalUrl(rawUrl) {
