@@ -793,7 +793,7 @@
                     "type": "app",
                     "color": "default",
                     "spec": {
-                      "url": "https://neyroclay.github.io/mirofaktura-app/telegram/?startapp=hometelegram/?startapp=trends"
+                      "url": "https://neyroclay.github.io/mirofaktura-app/?platform=telegram"
                     },
                     "payload": ""
                   }
@@ -1063,7 +1063,7 @@
                     "type": "app",
                     "color": "default",
                     "spec": {
-                      "url": "https://neyroclay.github.io/mirofaktura-app/telegram/?startapp=home"
+                      "url": "https://neyroclay.github.io/mirofaktura-app/"
                     },
                     "payload": ""
                   }
@@ -1075,7 +1075,7 @@
               "permanent_keyboard": false,
               "keyboard_as_json": false,
               "json_keyboard": "[[{\"label\": \"String\",\"type\": \"text\"}]]",
-              "code": "https://neyroclay.github.io/mirofaktura-app/telegram/?startapp=homeassets/authors-photo.webp",
+              "code": "https://neyroclay.github.io/mirofaktura-app/assets/authors-photo.webp",
               "caption": "Привет, {user:first_name}!\n\nВы в «Карманной Вселенной» — боте Мирофактуры. Мы — Елизавета Викулова и Елена Попова, авторы проекта.\n\nПомогаем собрать маркетинг в единую систему: от позиционирования и продукта до привлечения, продаж, автоматизации и ИИ-инструментов. Добавляем геймификацию и интерактив, чтобы людям было интереснее знакомиться с брендом и проще выбирать.\n\nВ приложении можно проверить, где сейчас теряются клиенты, получить подарок под свою задачу, открыть интерактивные инструменты и вытянуть карту из колоды «Тренды 2026».\n\nНажмите кнопку ниже. Можно начать с короткого квиза или сразу заглянуть в Кладовую."
             }
           }

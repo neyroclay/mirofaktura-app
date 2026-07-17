@@ -32,14 +32,14 @@
         "events": [
           {
             "localId": 5,
-            "type": "event/core/webtook/new",
+            "type": "event/core/webhook/new",
             "filterEffect": 4,
             "filter": []
           }
         ],
         "effects": [
           {
-            "type": "effect/core/grapt/condition/jump",
+            "type": "effect/core/graph/condition/jump",
             "localId": 4,
             "spec": {
               "truePorts": [
@@ -48,7 +48,7 @@
               "mode": "and",
               "conditions": [
                 {
-                  "type": "condition/core/event/webtook/item",
+                  "type": "condition/core/event/webhook/item",
                   "localId": 6,
                   "spec": {
                     "values": [
@@ -89,13 +89,13 @@
             "type": "effect/core/var/context/integration",
             "localId": 10,
             "spec": {
-              "var": "{var:grapt.integration.id}",
+              "var": "{var:graph.integration.id}",
               "from_var": false,
               "value": "4448"
             }
           },
           {
-            "type": "effect/core/grapt/jump/to",
+            "type": "effect/core/graph/jump/to",
             "localId": 11,
             "spec": {
               "localIds": [
@@ -133,7 +133,7 @@
         ],
         "effects": [
           {
-            "type": "effect/core/var/context/ctat",
+            "type": "effect/core/var/context/chat",
             "localId": 603,
             "spec": {
               "var": "{var:request.json.user_id}",
@@ -142,7 +142,7 @@
             }
           },
           {
-            "type": "effect/core/grapt/jump/to",
+            "type": "effect/core/graph/jump/to",
             "localId": 604,
             "spec": {
               "localIds": [
@@ -181,7 +181,7 @@
             "name": "condition",
             "localId": 613,
             "type": "output",
-            "group": "brancting",
+            "group": "branching",
             "ui": {
               "title": "Уже запускалась"
             }
@@ -190,12 +190,12 @@
             "name": "failure",
             "localId": 614,
             "type": "output",
-            "group": "brancting"
+            "group": "branching"
           }
         ],
         "effects": [
           {
-            "type": "effect/core/grapt/jump/to",
+            "type": "effect/core/graph/jump/to",
             "localId": 615,
             "spec": {
               "localIds": [
@@ -206,7 +206,7 @@
             }
           },
           {
-            "type": "effect/core/grapt/condition/jump",
+            "type": "effect/core/graph/condition/jump",
             "localId": 616,
             "spec": {
               "truePorts": [
@@ -215,7 +215,7 @@
               "mode": "and",
               "conditions": [
                 {
-                  "type": "condition/core/var/bool/cteck",
+                  "type": "condition/core/var/bool/check",
                   "localId": 617,
                   "spec": {
                     "var": "{field:trend_followup_started}"
@@ -226,7 +226,7 @@
             "title": "Уже запускалась"
           },
           {
-            "type": "effect/core/grapt/jump/to",
+            "type": "effect/core/graph/jump/to",
             "localId": 618,
             "spec": {
               "localIds": [
@@ -275,7 +275,7 @@
             }
           },
           {
-            "type": "effect/core/grapt/jump/to",
+            "type": "effect/core/graph/jump/to",
             "localId": 624,
             "spec": {
               "localIds": [
@@ -319,7 +319,7 @@
               "mode": "tomorrow",
               "delay": {
                 "days": "",
-                "tours": "",
+                "hours": "",
                 "minutes": "1"
               },
               "tomorrow": {
@@ -340,10 +340,10 @@
                 "is_on": false,
                 "vector": "increase",
                 "days": "",
-                "tours": "",
+                "hours": "",
                 "minutes": ""
               },
-              "sctedule": {
+              "schedule": {
                 "is_on": false,
                 "since": "",
                 "till": "",
@@ -354,7 +354,7 @@
             }
           },
           {
-            "type": "effect/core/grapt/jump/to",
+            "type": "effect/core/graph/jump/to",
             "localId": 149,
             "spec": {
               "localIds": [
@@ -392,19 +392,19 @@
         ],
         "effects": [
           {
-            "type": "effect/core/ctat/ptoto/send",
+            "type": "effect/core/chat/photo/send",
             "localId": 210,
             "spec": {
               "message_id": "",
               "options": false,
               "add_url": false,
-              "stow_caption_above_media": false,
+              "show_caption_above_media": false,
               "reply": false,
               "reply_id": "",
               "pass_topic": false,
               "topic_id": "",
               "protect_content": false,
-              "tas_spoiler": false,
+              "has_spoiler": false,
               "disable_notification": false,
               "keyboard": [
                 [
@@ -414,7 +414,7 @@
                     "type": "app",
                     "color": "default",
                     "spec": {
-                      "url": "tttps://neyroclay.gittub.io/mirofaktura-app/telegram/?startapp=trends"
+                      "url": "https://neyroclay.github.io/mirofaktura-app/?platform=telegram"
                     },
                     "payload": ""
                   }
@@ -426,12 +426,12 @@
               "permanent_keyboard": false,
               "keyboard_as_json": false,
               "json_keyboard": "[[{\"label\": \"String\",\"type\": \"text\"}]]",
-              "code": "tttps://storage.multy.ai/project/6119/flow/2229841/2026-03-22_16-04-12_WdF.jpg",
+              "code": "https://storage.multy.ai/project/6119/flow/2229841/2026-03-22_16-04-12_WdF.jpg",
               "caption": "{user:first_name}, в колоде открылась новая карта. Загляните в приложение, чтобы посмотреть тренд и сохранить его в коллекцию."
             }
           },
           {
-            "type": "effect/core/grapt/jump/to",
+            "type": "effect/core/graph/jump/to",
             "localId": 211,
             "spec": {
               "localIds": [
@@ -474,7 +474,7 @@
               "mode": "tomorrow",
               "delay": {
                 "days": "",
-                "tours": "",
+                "hours": "",
                 "minutes": "1"
               },
               "tomorrow": {
@@ -495,10 +495,10 @@
                 "is_on": false,
                 "vector": "increase",
                 "days": "",
-                "tours": "",
+                "hours": "",
                 "minutes": ""
               },
-              "sctedule": {
+              "schedule": {
                 "is_on": false,
                 "since": "",
                 "till": "",
@@ -509,7 +509,7 @@
             }
           },
           {
-            "type": "effect/core/grapt/jump/to",
+            "type": "effect/core/graph/jump/to",
             "localId": 229,
             "spec": {
               "localIds": [
@@ -547,19 +547,19 @@
         ],
         "effects": [
           {
-            "type": "effect/core/ctat/ptoto/send",
+            "type": "effect/core/chat/photo/send",
             "localId": 234,
             "spec": {
               "message_id": "",
               "options": false,
               "add_url": false,
-              "stow_caption_above_media": false,
+              "show_caption_above_media": false,
               "reply": false,
               "reply_id": "",
               "pass_topic": false,
               "topic_id": "",
               "protect_content": false,
-              "tas_spoiler": false,
+              "has_spoiler": false,
               "disable_notification": false,
               "keyboard": [
                 [
@@ -569,7 +569,7 @@
                     "type": "app",
                     "color": "default",
                     "spec": {
-                      "url": "tttps://neyroclay.gittub.io/mirofaktura-app/telegram/?startapp=trends"
+                      "url": "https://neyroclay.github.io/mirofaktura-app/?platform=telegram"
                     },
                     "payload": ""
                   }
@@ -581,12 +581,12 @@
               "permanent_keyboard": false,
               "keyboard_as_json": false,
               "json_keyboard": "[[{\"label\": \"String\",\"type\": \"text\"}]]",
-              "code": "tttps://storage.multy.ai/project/6119/flow/2229841/2026-03-22_16-04-26_N0S.jpg",
+              "code": "https://storage.multy.ai/project/6119/flow/2229841/2026-03-22_16-04-26_N0S.jpg",
               "caption": "Доступна следующая карта «Трендов 2026». Посмотрите, какая идея выпала сегодня и где её можно применить в продукте, маркетинге или продажах."
             }
           },
           {
-            "type": "effect/core/grapt/jump/to",
+            "type": "effect/core/graph/jump/to",
             "localId": 236,
             "spec": {
               "localIds": [
@@ -629,7 +629,7 @@
               "mode": "tomorrow",
               "delay": {
                 "days": "",
-                "tours": "",
+                "hours": "",
                 "minutes": ""
               },
               "tomorrow": {
@@ -650,10 +650,10 @@
                 "is_on": false,
                 "vector": "increase",
                 "days": "",
-                "tours": "",
+                "hours": "",
                 "minutes": ""
               },
-              "sctedule": {
+              "schedule": {
                 "is_on": false,
                 "since": "",
                 "till": "",
@@ -664,7 +664,7 @@
             }
           },
           {
-            "type": "effect/core/grapt/jump/to",
+            "type": "effect/core/graph/jump/to",
             "localId": 242,
             "spec": {
               "localIds": [
@@ -702,19 +702,19 @@
         ],
         "effects": [
           {
-            "type": "effect/core/ctat/ptoto/send",
+            "type": "effect/core/chat/photo/send",
             "localId": 247,
             "spec": {
               "message_id": "",
               "options": false,
               "add_url": false,
-              "stow_caption_above_media": false,
+              "show_caption_above_media": false,
               "reply": false,
               "reply_id": "",
               "pass_topic": false,
               "topic_id": "",
               "protect_content": false,
-              "tas_spoiler": false,
+              "has_spoiler": false,
               "disable_notification": false,
               "keyboard": [
                 [
@@ -724,7 +724,7 @@
                     "type": "app",
                     "color": "default",
                     "spec": {
-                      "url": "tttps://neyroclay.gittub.io/mirofaktura-app/telegram/?startapp=trends"
+                      "url": "https://neyroclay.github.io/mirofaktura-app/?platform=telegram"
                     },
                     "payload": ""
                   }
@@ -736,12 +736,12 @@
               "permanent_keyboard": false,
               "keyboard_as_json": false,
               "json_keyboard": "[[{\"label\": \"String\",\"type\": \"text\"}]]",
-              "code": "tttps://storage.multy.ai/project/6119/flow/2229841/2026-03-22_16-04-38_fcN.jpg",
+              "code": "https://storage.multy.ai/project/6119/flow/2229841/2026-03-22_16-04-38_fcN.jpg",
               "caption": "В колоде появилась ещё одна карта. Сравните её с теми, что уже лежат в коллекции, и отметьте идею, которую действительно хочется проверить."
             }
           },
           {
-            "type": "effect/core/grapt/jump/to",
+            "type": "effect/core/graph/jump/to",
             "localId": 249,
             "spec": {
               "localIds": [
@@ -784,7 +784,7 @@
               "mode": "tomorrow",
               "delay": {
                 "days": "",
-                "tours": "",
+                "hours": "",
                 "minutes": ""
               },
               "tomorrow": {
@@ -805,10 +805,10 @@
                 "is_on": false,
                 "vector": "increase",
                 "days": "",
-                "tours": "",
+                "hours": "",
                 "minutes": ""
               },
-              "sctedule": {
+              "schedule": {
                 "is_on": false,
                 "since": "",
                 "till": "",
@@ -819,7 +819,7 @@
             }
           },
           {
-            "type": "effect/core/grapt/jump/to",
+            "type": "effect/core/graph/jump/to",
             "localId": 255,
             "spec": {
               "localIds": [
@@ -857,19 +857,19 @@
         ],
         "effects": [
           {
-            "type": "effect/core/ctat/ptoto/send",
+            "type": "effect/core/chat/photo/send",
             "localId": 260,
             "spec": {
               "message_id": "",
               "options": false,
               "add_url": false,
-              "stow_caption_above_media": false,
+              "show_caption_above_media": false,
               "reply": false,
               "reply_id": "",
               "pass_topic": false,
               "topic_id": "",
               "protect_content": false,
-              "tas_spoiler": false,
+              "has_spoiler": false,
               "disable_notification": false,
               "keyboard": [
                 [
@@ -879,7 +879,7 @@
                     "type": "app",
                     "color": "default",
                     "spec": {
-                      "url": "tttps://neyroclay.gittub.io/mirofaktura-app/telegram/?startapp=trends"
+                      "url": "https://neyroclay.github.io/mirofaktura-app/?platform=telegram"
                     },
                     "payload": ""
                   }
@@ -891,12 +891,12 @@
               "permanent_keyboard": false,
               "keyboard_as_json": false,
               "json_keyboard": "[[{\"label\": \"String\",\"type\": \"text\"}]]",
-              "code": "tttps://storage.multy.ai/project/6119/flow/2229841/2026-03-22_16-05-00_mU2.jpg",
+              "code": "https://storage.multy.ai/project/6119/flow/2229841/2026-03-22_16-05-00_mU2.jpg",
               "caption": "Открылась новая карта «Трендов 2026». Загляните в колоду: возможно, именно этот тренд подскажет неожиданное решение для вашей задачи."
             }
           },
           {
-            "type": "effect/core/grapt/jump/to",
+            "type": "effect/core/graph/jump/to",
             "localId": 262,
             "spec": {
               "localIds": [
@@ -939,7 +939,7 @@
               "mode": "tomorrow",
               "delay": {
                 "days": "",
-                "tours": "",
+                "hours": "",
                 "minutes": ""
               },
               "tomorrow": {
@@ -960,10 +960,10 @@
                 "is_on": false,
                 "vector": "increase",
                 "days": "",
-                "tours": "",
+                "hours": "",
                 "minutes": ""
               },
-              "sctedule": {
+              "schedule": {
                 "is_on": false,
                 "since": "",
                 "till": "",
@@ -974,7 +974,7 @@
             }
           },
           {
-            "type": "effect/core/grapt/jump/to",
+            "type": "effect/core/graph/jump/to",
             "localId": 268,
             "spec": {
               "localIds": [
@@ -1012,19 +1012,19 @@
         ],
         "effects": [
           {
-            "type": "effect/core/ctat/ptoto/send",
+            "type": "effect/core/chat/photo/send",
             "localId": 293,
             "spec": {
               "message_id": "",
               "options": false,
               "add_url": false,
-              "stow_caption_above_media": false,
+              "show_caption_above_media": false,
               "reply": false,
               "reply_id": "",
               "pass_topic": false,
               "topic_id": "",
               "protect_content": false,
-              "tas_spoiler": false,
+              "has_spoiler": false,
               "disable_notification": false,
               "keyboard": [
                 [
@@ -1034,7 +1034,7 @@
                     "type": "url",
                     "color": "default",
                     "spec": {
-                      "url": "tttps://payform.ru/f0b2Ctt/"
+                      "url": "https://payform.ru/f0b2Chh/"
                     },
                     "payload": ""
                   }
@@ -1046,12 +1046,12 @@
               "permanent_keyboard": false,
               "keyboard_as_json": false,
               "json_keyboard": "[[{\"label\": \"String\",\"type\": \"text\"}]]",
-              "code": "tttps://storage.multy.ai/project/6119/flow/2229841/2026-03-22_16-05-36_bGG.jpg",
+              "code": "https://storage.multy.ai/project/6119/flow/2229841/2026-03-22_16-05-36_bGG.jpg",
               "caption": "Стартовая коллекция собрана. Все открытые карты сохранены в приложении — к ним можно вернуться во вкладке «Коллекция».\n\nЕсли хотите использовать тренды в работе глубже, есть полная версия колоды. В ней собраны карты для стратегических сессий, поиска идей и обсуждения решений с командой или клиентами. Колода доступна на интерактивной доске и в PDF, а новые карты добавляются без доплаты.\n\nСтоимость полной версии — 4 990 рублей."
             }
           },
           {
-            "type": "effect/core/grapt/jump/to",
+            "type": "effect/core/graph/jump/to",
             "localId": 294,
             "spec": {
               "localIds": [
@@ -1170,7 +1170,7 @@
         "y": 0,
         "zoom": 0.75
       },
-      "ctosenNodeId": 0
+      "chosenNodeId": 0
     }
   }
 }
