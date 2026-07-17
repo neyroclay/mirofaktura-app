@@ -1676,8 +1676,24 @@
                     const unlocked=appData.collected.includes(card.id);
                     if (unlocked) {
                         const el=document.createElement('div'); el.className='lib-card-container';
-                        el.innerHTML=`<div class="lib-card-inner"><div class="lib-card-face" style="background-image:url('${card.imgFront}')"></div><div class="lib-card-face lib-card-back" style="background-image:url('${card.imgBack||TEXT_BACK_IMG}')"><button class="lib-read-btn" type="button" onclick="event.stopPropagation();window.app_openReadModal(${card.id})">Открыть текст</button></div></div>`;
-                        el.onclick=function(e){ if(!e.target.classList.contains('lib-read-btn')) this.classList.toggle('flipped'); }; grid.appendChild(el);
+                        el.innerHTML=`<div class="lib-card-inner"><div class="lib-card-face" style="background-image:url('${card.imgFront}')"></div><div class="lib-card-face lib-card-back" style="background-image:url('${card.imgBack||TEXT_BACK_IMG}')"><button class="lib-read-btn" type="button" data-card-id="${card.id}">Открыть текст</button></div></div>`;
+                        const readBtn = el.querySelector('.lib-read-btn');
+                        const stopCardTap = (e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            if (typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
+                        };
+                        readBtn.addEventListener('pointerdown', stopCardTap, { passive:false });
+                        readBtn.addEventListener('touchstart', stopCardTap, { passive:false });
+                        readBtn.addEventListener('click', (e) => {
+                            stopCardTap(e);
+                            window.app_openReadModal(card.id);
+                        });
+                        el.addEventListener('click', function(e){
+                            if (e.target.closest('.lib-read-btn')) return;
+                            this.classList.toggle('flipped');
+                        });
+                        grid.appendChild(el);
                     } else {
                         const el=document.createElement('div'); el.className='lib-card-locked';
                         el.innerHTML=`<div style="position:absolute;inset:0;background-image:url('${card.imgFront}');background-size:cover;background-position:center;filter:grayscale(60%) brightness(35%);"></div><div style="z-index:2;background:rgba(255,255,255,0.15);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,0.3);box-shadow:0 8px 20px rgba(0,0,0,0.2);"><span class="material-icons-round" style="font-size:24px;color:rgba(255,255,255,0.9);">lock</span></div>`;
