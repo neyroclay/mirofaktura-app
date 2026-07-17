@@ -172,8 +172,41 @@
     ]);
   }
 
+  function warmAppImages() {
+    warmImages([
+      assets.logo,
+      assets.logoStory,
+      assets.stepanStart,
+      ...quiz.map((item) => item.image),
+      assets.aristarch,
+      assets.potap,
+      assets.authors,
+      './assets/home-trend-creator.jpg',
+      './assets/home-trend-ai-fatigue.jpg',
+      './assets/home-trend-end-normal.jpg',
+    ]);
+  }
+
   function prepareImageReveals() {
+    const instantImages = [
+      '.mascot',
+      '.quiz-mascot img',
+      '.result-mascot img',
+      '.library-mascot img',
+      '.story-card-logo',
+      '.story-card-mascot',
+      '.potap-figure img',
+      '.aristarch img',
+      '.authors-photo img',
+      '.day-card-cover img',
+    ].join(',');
+
     app.querySelectorAll('img').forEach((image) => {
+      if (image.matches(instantImages)) {
+        image.classList.add('is-loaded');
+        return;
+      }
+
       if (image.complete && image.naturalWidth > 0) {
         image.classList.add('image-reveal', 'is-loaded');
       } else {
@@ -3408,4 +3441,5 @@
   initializeNavigation();
   render();
   dismissStartupLoader();
+  window.setTimeout(warmAppImages, 40);
 })();
