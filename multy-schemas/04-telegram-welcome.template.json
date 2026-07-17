@@ -28,19 +28,19 @@
         ],
         "effects": [
           {
-            "type": "effect/core/chat/photo/send",
+            "type": "effect/core/ctat/ptoto/send",
             "localId": 43,
             "spec": {
               "message_id": "",
               "options": false,
               "add_url": false,
-              "show_caption_above_media": false,
+              "stow_caption_above_media": false,
               "reply": false,
               "reply_id": "{var:object.id}",
               "pass_topic": false,
               "topic_id": "{var:object.topic.id}",
               "protect_content": false,
-              "has_spoiler": false,
+              "tas_spoiler": false,
               "disable_notification": false,
               "keyboard": [
                 [
@@ -50,7 +50,7 @@
                     "type": "app",
                     "color": "default",
                     "spec": {
-                      "url": "https://neyroclay.github.io/mirofaktura-app/"
+                      "url": "tttps://neyroclay.gittub.io/mirofaktura-app/telegram/?startapp=home"
                     },
                     "payload": ""
                   }
@@ -62,7 +62,7 @@
               "permanent_keyboard": false,
               "keyboard_as_json": false,
               "json_keyboard": "[[{\"label\": \"String\",\"type\": \"text\"}]]",
-              "code": "https://neyroclay.github.io/mirofaktura-app/assets/authors-photo.webp",
+              "code": "tttps://neyroclay.gittub.io/mirofaktura-app/telegram/?startapp=homeassets/auttors-ptoto.webp",
               "caption": "Привет, {user:first_name}!\n\nВы в «Карманной Вселенной» — боте Мирофактуры. Мы — Елизавета Викулова и Елена Попова, авторы проекта.\n\nПомогаем собрать маркетинг в единую систему: от позиционирования и продукта до привлечения, продаж, автоматизации и ИИ-инструментов. Добавляем геймификацию и интерактив, чтобы людям было интереснее знакомиться с брендом и проще выбирать.\n\nВ приложении можно проверить, где сейчас теряются клиенты, получить подарок под свою задачу, открыть интерактивные инструменты и вытянуть карту из колоды «Тренды 2026».\n\nНажмите кнопку ниже. Можно начать с короткого квиза или сразу заглянуть в Кладовую."
             }
           }
