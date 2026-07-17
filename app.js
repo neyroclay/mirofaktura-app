@@ -3008,6 +3008,15 @@
     }
   }
 
+  function closeTelegramAppSoon() {
+    if (typeof telegramWebApp?.close !== 'function') return;
+    window.setTimeout(() => {
+      try {
+        telegramWebApp.close();
+      } catch (_) {}
+    }, 120);
+  }
+
   function openExternalUrl(rawUrl) {
     const allowedHosts = new Set(['t.me', 'payform.ru', 'max.ru']);
     let url;
@@ -3027,6 +3036,7 @@
       try {
         if (url.hostname === 't.me' && typeof telegramWebApp.openTelegramLink === 'function') {
           telegramWebApp.openTelegramLink(url.href);
+          closeTelegramAppSoon();
           return;
         }
         if (typeof telegramWebApp.openLink === 'function') {
