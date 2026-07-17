@@ -21,15 +21,20 @@
     || TELEGRAM_LAUNCH_PARAMS.get('tgWebAppData')
     || TELEGRAM_LAUNCH_PARAMS.get('tgWebAppPlatform')
   );
+  const IS_MAX_LAUNCH = Boolean(
+    window.WebApp?.initData
+    || window.WebApp?.initDataUnsafe?.user?.id
+    || window.WebApp?.user?.id
+    || window.WebApp?.start_param
+  );
   const APP_PLATFORM = (() => {
     const params = URL_PARAMS;
-    const raw = String(
-      params.get('platform')
-      || params.get('messenger')
-      || window.MIROFAKTURA_PLATFORM
-      || (IS_TELEGRAM_LAUNCH ? 'telegram' : '')
-      || ''
-    ).toLowerCase();
+    const explicit = String(params.get('platform') || params.get('messenger') || '').toLowerCase();
+    if (PLATFORM_ALIASES[explicit]) return PLATFORM_ALIASES[explicit];
+    if (IS_MAX_LAUNCH) return 'max';
+    if (IS_TELEGRAM_LAUNCH) return 'telegram';
+
+    const raw = String(window.MIROFAKTURA_PLATFORM || '').toLowerCase();
     return PLATFORM_ALIASES[raw] || 'max';
   })();
   const USE_NATIVE_TRENDS = NATIVE_TRENDS_MODE !== '0';
@@ -68,6 +73,44 @@
     return ['gated', 'closed', 'protected'].includes(mode) ? 'gated' : 'open';
   })();
   const IS_OPEN_ACCESS = ACCESS_MODE === 'open';
+  const getLaunchPage = () => {
+    const maxStartParam = window.WebApp?.start_param
+      || window.WebApp?.initDataUnsafe?.start_param
+      || '';
+    const telegramStartParam = telegramWebApp?.initDataUnsafe?.start_param || '';
+    const raw = String(
+      URL_PARAMS.get('screen')
+      || URL_PARAMS.get('page')
+      || URL_PARAMS.get('startapp')
+      || URL_PARAMS.get('start_param')
+      || URL_PARAMS.get('start')
+      || TELEGRAM_LAUNCH_PARAMS.get('tgWebAppStartParam')
+      || maxStartParam
+      || telegramStartParam
+      || ''
+    ).toLowerCase().trim();
+
+    const normalized = raw.replace(/^\/+/, '').split(/[?&#]/)[0];
+    const pageAliases = {
+      home: 'home',
+      main: 'home',
+      quiz: 'quiz',
+      diagnostic: 'quiz',
+      diagnostics: 'quiz',
+      library: 'library',
+      storage: 'library',
+      pantry: 'library',
+      trends: 'trends',
+      trend: 'trends',
+      deck: 'trends',
+      card: 'trends',
+      contacts: 'contacts',
+      services: 'contacts',
+      'page-11106': 'trends',
+    };
+
+    return pageAliases[normalized] || 'home';
+  };
 
   if (APP_PLATFORM === 'telegram' && telegramWebApp) {
     telegramWebApp.ready();
@@ -1068,7 +1111,7 @@
   };
 
   const state = {
-    page: 'home',
+    page: getLaunchPage(),
     step: 0,
     answers: {},
     contactTask: 'strategy',
