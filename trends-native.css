@@ -1,15 +1,36 @@
 /* Loaded only for the native trends screen. Keep every rule scoped to that screen. */
 
 .trends-native-screen {
+  height: 100vh;
+  height: 100dvh;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
   padding-bottom: calc(116px + env(safe-area-inset-bottom));
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+.screen.trends-native-screen.has-bottom-nav {
+  padding-bottom: 0;
 }
 
 .app-shell.trends-native-shell {
-  overflow: clip;
+  height: 100vh;
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.trends-native-screen > .topbar {
+  flex: 0 0 auto;
 }
 
 .trends-native-screen .trends-native-page {
+  flex: 1 1 auto;
+  min-height: 0;
   display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
   gap: 10px;
 }
 
@@ -52,23 +73,13 @@
 
 .trends-native-screen .trends-native-host {
   position: relative;
-  min-height: min(720px, calc(100vh - 228px));
-  height: min(720px, calc(100vh - 228px));
+  min-height: 0;
+  height: auto;
   overflow: hidden;
   border: 0;
   border-radius: 0;
   background: transparent;
   -webkit-tap-highlight-color: transparent;
-}
-
-/* Tall Android tablets expose much more vertical room than phones, while the
-   native deck used to stop at 720px. Let only portrait tablet layouts use that
-   free space; phone and landscape compositions keep their existing geometry. */
-@media (min-width: 560px) and (min-height: 900px) and (orientation: portrait) {
-  .trends-native-screen .trends-native-host:not(.native-onboarding-active) {
-    min-height: min(960px, calc(100svh - 300px)) !important;
-    height: min(960px, calc(100svh - 300px)) !important;
-  }
 }
 
 /* On the first visit, let the onboarding card participate in the app page
@@ -350,6 +361,7 @@ html.native-legal-open body {
   line-height: 1.6;
   white-space: pre-wrap;
   overscroll-behavior: contain;
+  touch-action: pan-y;
   -webkit-overflow-scrolling: touch;
 }
 
@@ -370,9 +382,19 @@ html.native-legal-open body {
   }
 }
 
-.app-shell.trends-native-shell.native-onboarding-active .trends-native-screen {
+.app-shell.trends-native-shell.native-onboarding-active {
+  height: auto;
   min-height: 100svh;
+  overflow: visible;
+}
+
+.app-shell.trends-native-shell.native-onboarding-active .trends-native-screen {
+  height: auto;
+  min-height: 100svh;
+  display: block;
   padding-bottom: calc(116px + env(safe-area-inset-bottom));
+  overflow: visible;
+  overscroll-behavior: auto;
 }
 
 .app-shell.trends-native-shell.native-onboarding-active .trends-native-tabs {
@@ -380,6 +402,7 @@ html.native-legal-open body {
 }
 
 .app-shell.trends-native-shell.native-onboarding-active .trends-native-page {
+  display: block;
   margin-top: clamp(22px, 4vh, 36px);
 }
 

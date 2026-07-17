@@ -408,9 +408,9 @@
         addCleanup(() => window.removeEventListener('resize', setAppHeight));
         const isIPad = /iPad/i.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Macintosh/i.test(navigator.userAgent));
         if (isIPad) container.classList.add('platform-ipad');
-        container.style.minHeight = '600px'; container.style.overflow = 'hidden';
+        container.style.minHeight = nativeMode ? '0' : '600px'; container.style.overflow = 'hidden';
         container.style.backgroundColor = nativeMode ? 'transparent' : '#F4F7F8'; container.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-        container.style.touchAction = 'none';
+        container.style.touchAction = nativeMode ? 'pan-y' : 'none';
 
         const fontLink = document.createElement('link'); fontLink.rel = 'stylesheet'; fontLink.href = 'https://fonts.googleapis.com/icon?family=Material+Icons+Round&display=block';
         document.head.appendChild(fontLink); fontLink.onload = () => { document.fonts.ready.then(() => container.classList.add('icons-loaded')); };
@@ -440,7 +440,7 @@
             #${CONTAINER_ID}.trend-native-embedded::before { background:#CFEFE4 !important; opacity:0.12 !important; }
             #${CONTAINER_ID}.trend-native-embedded::after { opacity:0.12 !important; }
             #${CONTAINER_ID}.trend-native-embedded #game-ui { padding-bottom:28px; }
-            #${CONTAINER_ID}.trend-native-embedded .fullscreen-view { padding:24px 20px 32px; }
+            #${CONTAINER_ID}.trend-native-embedded .fullscreen-view { padding:24px 20px calc(124px + env(safe-area-inset-bottom)); overscroll-behavior:contain; touch-action:pan-y; }
             #${CONTAINER_ID}.trend-native-embedded #gameover-view { padding-top:32px !important; padding-bottom:calc(164px + env(safe-area-inset-bottom)) !important; overflow-y:auto !important; overscroll-behavior:contain; touch-action:pan-y; }
             #${CONTAINER_ID}.trend-native-embedded #gameover-view > div { margin:0 auto !important; }
             #${CONTAINER_ID}.trend-native-embedded #game-ui.waiting-for-next-card #done-ui::before { height:clamp(72px, 11vh, 116px); }
