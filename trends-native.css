@@ -82,6 +82,24 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+/* When the completed-collection card fits, keep it visually centered in the
+   free space between the top tabs and the app navigation. On shorter screens
+   the spacers collapse to zero, so the card stays top-aligned and scrollable. */
+.trends-native-screen #c37.trend-native-embedded #gameover-view {
+  padding-top: 32px !important;
+  padding-bottom: calc(120px + max(12px, env(safe-area-inset-bottom))) !important;
+}
+
+.trends-native-screen #c37.trend-native-embedded #gameover-view::before,
+.trends-native-screen #c37.trend-native-embedded #gameover-view::after {
+  content: "";
+  display: block;
+  flex: 1 0 0;
+  width: 1px;
+  min-height: 0;
+  pointer-events: none;
+}
+
 /* On the first visit, let the onboarding card participate in the app page
    instead of creating a second scrollable viewport inside the deck. */
 .trends-native-screen .trends-native-host.native-onboarding-active {
