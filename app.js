@@ -55,7 +55,7 @@
   const STORY_DESTINATION_CTA_ACTION = APP_PLATFORM === 'telegram'
     ? 'Получить совет в боте Мирофактуры →'
     : 'Получить совет в канале Мирофактуры →';
-  const STORY_CARD_ASSET_VERSION = '20260716-story-actions-49';
+  const STORY_CARD_ASSET_VERSION = '20260717-performance-01';
   const TELEGRAM_STORY_CARD_ASSETS = {
     products: './assets/story-telegram-products.png',
     sales: './assets/story-telegram-sales.png',
@@ -143,22 +143,33 @@
   ];
 
   const warmedImageCache = [];
+  const warmedImageSources = new Set();
 
-  function warmAppImages() {
-    const sources = [
-      ...quiz.map((item) => item.image),
-      assets.aristarch,
-      assets.potap,
-      assets.authors,
-    ];
-
+  function warmImages(sources) {
     sources.forEach((source) => {
+      if (!source || warmedImageSources.has(source)) return;
+      warmedImageSources.add(source);
       const image = new Image();
       image.decoding = 'async';
       image.src = source;
       warmedImageCache.push(image);
       image.decode?.().catch(() => {});
     });
+  }
+
+  function warmQuizImages() {
+    warmImages([
+      ...quiz.map((item) => item.image),
+      assets.aristarch,
+      assets.logoStory,
+    ]);
+  }
+
+  function warmContactsImages() {
+    warmImages([
+      assets.potap,
+      assets.authors,
+    ]);
   }
 
   function prepareImageReveals() {
@@ -1322,9 +1333,9 @@
             <span class="day-card-action">Открыть колоду</span>
           </span>
           <span class="day-card-cards" aria-hidden="true">
-            <span class="day-card-cover"><img src="./assets/home-trend-creator.jpg" alt="" loading="lazy" decoding="async"></span>
-            <span class="day-card-cover"><img src="./assets/home-trend-ai-fatigue.jpg" alt="" loading="lazy" decoding="async"></span>
-            <span class="day-card-cover"><img src="./assets/home-trend-end-normal.jpg" alt="" loading="lazy" decoding="async"></span>
+            <span class="day-card-cover"><img src="./assets/home-trend-creator.jpg" alt="" loading="eager" decoding="async"></span>
+            <span class="day-card-cover"><img src="./assets/home-trend-ai-fatigue.jpg" alt="" loading="eager" decoding="async"></span>
+            <span class="day-card-cover"><img src="./assets/home-trend-end-normal.jpg" alt="" loading="eager" decoding="async"></span>
           </span>
         </button>
       </div>
@@ -1520,7 +1531,7 @@
           </div>
           <blockquote>${story.quote}</blockquote>
           <p class="story-card-attribution">— Аристарх</p>
-          <img class="story-card-mascot" src="${assets.aristarchStory}" alt="" aria-hidden="true">
+          <img class="story-card-mascot" src="${assets.aristarch}" alt="" aria-hidden="true">
         </div>
         <div class="story-result-actions">
           <button class="primary-btn" type="button" data-action="shareStoryCard" data-material="${key}">${APP_PLATFORM === 'telegram' ? 'Добавить в сториз' : 'Поделиться советом'}</button>
@@ -3024,6 +3035,7 @@
     }
 
     if (action === 'startQuiz') {
+      warmQuizImages();
       state.step = 0;
       state.answers = {};
       navigateTo('quiz');
@@ -3080,6 +3092,7 @@
     }
 
     if (action === 'openContacts') {
+      warmContactsImages();
       navigateTo('contacts');
       return;
     }
@@ -3395,5 +3408,4 @@
   initializeNavigation();
   render();
   dismissStartupLoader();
-  window.setTimeout(warmAppImages, 40);
 })();
