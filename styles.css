@@ -1029,6 +1029,151 @@ h3 {
   gap: 18px;
 }
 
+.council-intro {
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.council-intro::after {
+  content: "";
+  position: absolute;
+  right: -54px;
+  bottom: -74px;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 216, 74, 0.24), rgba(255, 216, 74, 0));
+  pointer-events: none;
+}
+
+.council-cards {
+  display: grid;
+  gap: 14px;
+}
+
+.council-card {
+  position: relative;
+  overflow: hidden;
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.82);
+  border-radius: 28px;
+  background: rgba(255, 255, 249, 0.76);
+  box-shadow: 0 14px 30px rgba(17, 58, 54, 0.08);
+  backdrop-filter: blur(18px);
+  animation: councilCardReveal 0.52s ease both;
+}
+
+.council-card:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.council-card:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+.council-card-stepan {
+  background:
+    radial-gradient(circle at 92% 10%, rgba(255, 216, 74, 0.18), transparent 32%),
+    rgba(255, 255, 249, 0.78);
+}
+
+.council-card-aristarkh {
+  background:
+    radial-gradient(circle at 92% 10%, rgba(45, 192, 182, 0.16), transparent 34%),
+    rgba(239, 255, 252, 0.76);
+}
+
+.council-card-potap {
+  background:
+    radial-gradient(circle at 92% 10%, rgba(110, 86, 214, 0.14), transparent 34%),
+    rgba(250, 247, 255, 0.76);
+}
+
+.council-persona {
+  display: grid;
+  grid-template-columns: 94px minmax(0, 1fr);
+  align-items: center;
+  gap: 14px;
+}
+
+.council-persona img {
+  width: 94px;
+  height: 94px;
+  object-fit: contain;
+  filter: drop-shadow(0 12px 18px rgba(4, 94, 91, 0.14));
+}
+
+.council-stage {
+  color: #087f79;
+  font-size: 12px;
+  line-height: 1.2;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.council-persona h2 {
+  margin-top: 5px;
+  font-size: 26px;
+  line-height: 1;
+  font-weight: 900;
+}
+
+.council-role {
+  margin-top: 5px;
+  color: rgba(9, 38, 35, 0.64);
+  font-size: 14px;
+  line-height: 1.25;
+  font-weight: 700;
+}
+
+.council-introduction {
+  margin-top: 14px;
+  color: rgba(9, 38, 35, 0.62);
+  font-size: 14px;
+  line-height: 1.42;
+  font-weight: 650;
+}
+
+.council-advice {
+  margin-top: 10px;
+  padding-top: 13px;
+  border-top: 1px solid rgba(9, 82, 77, 0.1);
+  color: #092623;
+  font-size: var(--type-body);
+  line-height: 1.48;
+  font-weight: 700;
+}
+
+.council-material {
+  margin-top: 16px;
+}
+
+.council-material h2 {
+  font-size: 26px;
+  line-height: 1.12;
+  font-weight: 850;
+}
+
+.council-material > p:not(.brand-label) {
+  color: rgba(9, 38, 35, 0.68);
+  font-size: var(--type-body);
+  line-height: 1.45;
+  font-weight: 600;
+}
+
+@keyframes councilCardReveal {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .result-panel {
   padding: 18px;
   border-radius: 24px;
