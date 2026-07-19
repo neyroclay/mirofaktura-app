@@ -1680,7 +1680,7 @@
         <img src="${assets.potap}" alt="Потап, Манул-Творец Мирофактуры" loading="lazy" decoding="async">
         <p class="result-mascot-intro">
           <strong>Потап</strong>
-          <span>Манул-Творец, креатор и визионер Мирофактуры.</span>
+          <span>Манул-Творец — ещё один наш маскот, креатор и визионер Мирофактуры.</span>
         </p>
       </div>
 
@@ -1697,7 +1697,7 @@
       </article>
 
       <div class="result-actions">
-        <button class="soft-btn" type="button" data-action="openContacts">Посмотреть, что мы делаем</button>
+        <button class="primary-btn" type="button" data-action="openContacts">Посмотреть, что мы делаем</button>
         <button class="soft-btn" type="button" data-page="home">На главную</button>
       </div>
     `, 'result-screen');
