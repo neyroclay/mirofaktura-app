@@ -166,7 +166,9 @@
   function warmQuizImages() {
     warmImages([
       ...quiz.map((item) => item.image),
+      assets.stepanStart,
       assets.aristarch,
+      assets.potap,
       assets.logoStory,
     ]);
   }
@@ -1077,6 +1079,7 @@
     page: getLaunchPage(),
     step: 0,
     answers: {},
+    resultScene: 0,
     contactTask: 'strategy',
     material: 'products',
     pendingMaterial: '',
@@ -1431,7 +1434,7 @@
       : 'Начните с короткого навигатора: он сузит выбор и покажет несколько подходящих вариантов.';
   }
 
-  function quizCouncilData() {
+  function quizMascotAdviceData() {
     const product = state.answers[0] || 'one';
     const channel = state.answers[1] || 'random';
     const key = resultKey();
@@ -1665,102 +1668,96 @@
     `;
   }
 
-  function relatedHelp(key) {
-    const options = {
-      traffic: {
-        title: 'Вовлечение и игровые механики',
-        text: 'Создадим квиз, игру или мини-приложение — цифровой мир, в котором человек знакомится с продуктом через вопросы, выбор и действия. Так он лучше понимает, чем продукт полезен именно ему, запоминает его и замечает отличия от похожих предложений. После этого ему легче выбрать подходящий вариант и перейти к покупке.'
-      },
-      sales: {
-        title: 'Упаковка и путь к покупке',
-        text: 'Поможем ясно объяснить ценность продукта и показать разницу между вариантами. Человеку будет легче понять, какой вариант подходит именно ему, выбрать предложение и перейти к покупке. Для этого разберём, что важно объяснить о продукте, перепишем тексты и при необходимости создадим квиз, игру или мини-приложение.'
-      },
-      products: {
-        title: 'Продуктовая система и продукты-миры',
-        text: 'Поможем показать, чем отличаются ваши продукты, кому подходит каждый из них и что можно предложить клиенту после первой покупки. Если нужен отдельный интерактивный продукт, создадим продукт-мир — игру, квиз, бота или мини-приложение со своей идеей, механиками и персонажами.'
-      }
-    };
-    return options[key] || options.traffic;
-  }
-
   function renderResult() {
     const key = resultKey();
     const material = materials[key];
-    const help = relatedHelp(key);
-    const council = quizCouncilData();
+    const advice = quizMascotAdviceData();
+    const scenes = [
+      {
+        id: 'aristarkh',
+        kicker: 'Аристарх подводит итог',
+        name: 'Аристарх',
+        role: 'Аксолотль-Профессор · архитектор и аналитик',
+        image: assets.aristarch,
+        alt: 'Аристарх, Аксолотль-Профессор Мирофактуры',
+        speech: advice.aristarkh,
+        handoff: 'Это мой вывод. Но у моих коллег тоже есть что добавить. Степан посмотрел, насколько ясно клиенту ваше предложение.',
+        button: 'Послушать Степана'
+      },
+      {
+        id: 'stepan',
+        kicker: 'Степан проверяет предложение',
+        name: 'Степан',
+        role: 'Цветок-Критик · критик и советник',
+        image: assets.stepanStart,
+        alt: 'Степан, Цветок-Критик Мирофактуры',
+        speech: advice.stepan,
+        handoff: 'Я показал, что именно стоит объяснить клиенту. Потап, покажи, как этот совет может выглядеть в деле.',
+        button: 'Послушать Потапа'
+      },
+      {
+        id: 'potap',
+        kicker: 'Потап показывает сценарий',
+        name: 'Потап',
+        role: 'Манул-Творец · креатор и визионер',
+        image: assets.potap,
+        alt: 'Потап, Манул-Творец Мирофактуры',
+        speech: advice.potap
+      }
+    ];
+    const sceneIndex = Math.min(Math.max(state.resultScene, 0), scenes.length - 1);
+    const scene = scenes[sceneIndex];
+    const isFinalScene = sceneIndex === scenes.length - 1;
+
     return screen(`
-      <button class="back-link" type="button" data-action="startQuiz">← Пройти заново</button>
+      <button class="back-link" type="button" data-action="startQuiz">← Пройти квиз заново</button>
 
-      <article class="result-card council-intro">
-        <p class="brand-label">Результат квиза</p>
-        <h1>Консилиум Мирофактуры</h1>
-        <p class="lead">Мы собрали разбор из ваших четырёх ответов. Три маскота посмотрели на ситуацию с разных сторон: Степан проверил ясность предложения, Аристарх — связи между продуктом, клиентами и продажами, а Потап предложил конкретный сценарий, который можно проверить на практике.</p>
-      </article>
-
-      <section class="council-cards" aria-label="Персональный разбор маскотов Мирофактуры">
-        <article class="council-card council-card-stepan">
-          <div class="council-persona">
-            <img src="${assets.stepanFinal}" alt="Степан, Цветок-Критик Мирофактуры" decoding="async">
-            <div>
-              <p class="council-stage">Проверка ясности</p>
-              <h2>Степан</h2>
-              <p class="council-role">Цветок-Критик</p>
-            </div>
-          </div>
-          <p class="council-introduction">Замечает, где предложение трудно понять без объяснения автора.</p>
-          <p class="council-advice">${council.stepan}</p>
-        </article>
-
-        <article class="council-card council-card-aristarkh">
-          <div class="council-persona">
-            <img src="${assets.aristarch}" alt="Аристарх, Аксолотль-Профессор Мирофактуры" decoding="async">
-            <div>
-              <p class="council-stage">Системный вывод</p>
-              <h2>Аристарх</h2>
-              <p class="council-role">Аксолотль-Профессор</p>
-            </div>
-          </div>
-          <p class="council-introduction">Видит, как связаны продукт, привлечение клиентов и продажи.</p>
-          <p class="council-advice">${council.aristarkh}</p>
-        </article>
-
-        <article class="council-card council-card-potap">
-          <div class="council-persona">
-            <img src="${assets.potap}" alt="Потап, Манул-Творец Мирофактуры" decoding="async">
-            <div>
-              <p class="council-stage">Сценарий для проверки</p>
-              <h2>Потап</h2>
-              <p class="council-role">Манул-Творец</p>
-            </div>
-          </div>
-          <p class="council-introduction">Превращает вывод в сценарий, который можно представить и проверить.</p>
-          <p class="council-advice">${council.potap}</p>
-        </article>
-      </section>
-
-      <article class="result-card council-material">
-        <p class="brand-label">Материал по вашей задаче</p>
-        <h2>${material.title}</h2>
-        <p>${material.text}</p>
-        <div class="result-panel">
-          <p>${resultIntentCopy(key)}</p>
+      <section class="result-story result-story-${scene.id}" aria-live="polite" aria-label="Советы маскотов Мирофактуры">
+        <div class="result-story-progress" role="img" aria-label="Сцена ${sceneIndex + 1} из ${scenes.length}">
+          ${scenes.map((_, index) => `<span class="${index === sceneIndex ? 'active' : ''} ${index < sceneIndex ? 'complete' : ''}"></span>`).join('')}
         </div>
-      </article>
 
-      <div class="result-actions result-actions-primary">
-        <button class="primary-btn" type="button" data-action="openMaterial" data-material="${key}">Открыть материал</button>
-      </div>
+        <p class="result-story-kicker">${scene.kicker}</p>
 
-      <article class="potap-panel result-help-note">
-        <p class="brand-label">Можем помочь</p>
-        <h2>${help.title}</h2>
-        <p>${help.text}</p>
-      </article>
+        <div class="result-story-stage">
+          <span class="result-story-glow" aria-hidden="true"></span>
+          <img class="result-story-character" src="${scene.image}" alt="${scene.alt}" decoding="async">
+        </div>
 
-      <div class="result-actions">
-        <button class="soft-btn" type="button" data-action="openContacts">Посмотреть, что мы делаем</button>
-        <button class="soft-btn" type="button" data-page="home">На главную</button>
-      </div>
+        <div class="result-story-identity">
+          <h1>${scene.name}</h1>
+          <p>${scene.role}</p>
+        </div>
+
+        <article class="result-speech result-speech-main">
+          <p>${scene.speech}</p>
+        </article>
+
+        ${scene.handoff ? `
+          <article class="result-speech result-speech-handoff">
+            <p>${scene.handoff}</p>
+          </article>
+        ` : ''}
+
+        ${!isFinalScene ? `
+          <div class="result-story-actions">
+            <button class="primary-btn" type="button" data-action="nextResultScene">${scene.button}</button>
+          </div>
+        ` : `
+          <article class="result-story-material">
+            <p class="brand-label">Материал по вашей задаче</p>
+            <h2>${material.title}</h2>
+            <p>${material.text}</p>
+            <p class="result-story-material-note">${resultIntentCopy(key)}</p>
+            <button class="primary-btn" type="button" data-action="openMaterial" data-material="${key}">Открыть материал</button>
+          </article>
+
+          <div class="result-story-secondary-actions">
+            <button class="soft-btn" type="button" data-action="openContacts">Как Мирофактура может помочь</button>
+            <button class="result-story-replay" type="button" data-action="restartResultStory">Посмотреть советы ещё раз</button>
+          </div>
+        `}
+      </section>
     `, 'result-screen');
   }
 
@@ -3170,6 +3167,7 @@
       warmQuizImages();
       state.step = 0;
       state.answers = {};
+      state.resultScene = 0;
       navigateTo('quiz');
       return;
     }
@@ -3226,6 +3224,18 @@
     if (action === 'openContacts') {
       warmContactsImages();
       navigateTo('contacts');
+      return;
+    }
+
+    if (action === 'nextResultScene') {
+      state.resultScene = Math.min(2, state.resultScene + 1);
+      render();
+      return;
+    }
+
+    if (action === 'restartResultStory') {
+      state.resultScene = 0;
+      render();
       return;
     }
 
@@ -3424,6 +3434,7 @@
         state.step += 1;
         render();
       } else {
+        state.resultScene = 0;
         navigateTo('result');
       }
       return;

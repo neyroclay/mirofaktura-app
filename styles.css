@@ -1029,144 +1029,243 @@ h3 {
   gap: 18px;
 }
 
-.council-intro {
-  position: relative;
-  overflow: hidden;
-  margin-bottom: 16px;
-}
-
-.council-intro::after {
-  content: "";
-  position: absolute;
-  right: -54px;
-  bottom: -74px;
-  width: 180px;
-  height: 180px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 216, 74, 0.24), rgba(255, 216, 74, 0));
-  pointer-events: none;
-}
-
-.council-cards {
+.result-story {
   display: grid;
-  gap: 14px;
+  gap: 12px;
+  padding-bottom: 28px;
 }
 
-.council-card {
-  position: relative;
-  overflow: hidden;
-  padding: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.82);
-  border-radius: 28px;
-  background: rgba(255, 255, 249, 0.76);
-  box-shadow: 0 14px 30px rgba(17, 58, 54, 0.08);
-  backdrop-filter: blur(18px);
-  animation: councilCardReveal 0.52s ease both;
+.result-screen .topbar {
+  margin-bottom: 4px;
 }
 
-.council-card:nth-child(2) {
-  animation-delay: 0.1s;
+.result-screen > .back-link {
+  margin-bottom: 8px;
 }
 
-.council-card:nth-child(3) {
-  animation-delay: 0.2s;
-}
-
-.council-card-stepan {
-  background:
-    radial-gradient(circle at 92% 10%, rgba(255, 216, 74, 0.18), transparent 32%),
-    rgba(255, 255, 249, 0.78);
-}
-
-.council-card-aristarkh {
-  background:
-    radial-gradient(circle at 92% 10%, rgba(45, 192, 182, 0.16), transparent 34%),
-    rgba(239, 255, 252, 0.76);
-}
-
-.council-card-potap {
-  background:
-    radial-gradient(circle at 92% 10%, rgba(110, 86, 214, 0.14), transparent 34%),
-    rgba(250, 247, 255, 0.76);
-}
-
-.council-persona {
-  display: grid;
-  grid-template-columns: 94px minmax(0, 1fr);
+.result-story-progress {
+  display: flex;
+  justify-content: center;
   align-items: center;
-  gap: 14px;
+  gap: 7px;
+  min-height: 12px;
 }
 
-.council-persona img {
-  width: 94px;
-  height: 94px;
-  object-fit: contain;
-  filter: drop-shadow(0 12px 18px rgba(4, 94, 91, 0.14));
+.result-story-progress span {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(8, 99, 94, 0.18);
+  transition: width 0.28s ease, background-color 0.28s ease;
 }
 
-.council-stage {
+.result-story-progress span.complete {
+  background: rgba(8, 145, 137, 0.42);
+}
+
+.result-story-progress span.active {
+  width: 28px;
+  background: #087f79;
+}
+
+.result-story-kicker {
+  margin-top: 2px;
   color: #087f79;
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.2;
-  font-weight: 800;
-  letter-spacing: 0.08em;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+  text-align: center;
   text-transform: uppercase;
 }
 
-.council-persona h2 {
-  margin-top: 5px;
-  font-size: 26px;
-  line-height: 1;
+.result-story-stage {
+  position: relative;
+  display: grid;
+  place-items: end center;
+  min-height: clamp(300px, 45vh, 380px);
+  margin-top: -8px;
+  isolation: isolate;
+}
+
+.result-story-glow {
+  position: absolute;
+  z-index: -1;
+  left: 50%;
+  bottom: 16px;
+  width: min(390px, 94vw);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(52, 228, 211, 0.26), rgba(255, 216, 74, 0.08) 48%, transparent 70%);
+  filter: blur(2px);
+  transform: translateX(-50%);
+}
+
+.result-story-character {
+  width: min(360px, 92vw);
+  height: clamp(300px, 45vh, 380px);
+  object-fit: contain;
+  object-position: center bottom;
+  filter: drop-shadow(0 24px 32px rgba(4, 94, 91, 0.18));
+  animation: resultCharacterEnter 0.58s cubic-bezier(0.2, 0.82, 0.28, 1) both;
+}
+
+.result-story-stepan .result-story-character {
+  width: min(350px, 90vw);
+}
+
+.result-story-potap .result-story-glow {
+  background: radial-gradient(circle, rgba(111, 91, 214, 0.2), rgba(52, 228, 211, 0.1) 48%, transparent 70%);
+}
+
+.result-story-identity {
+  margin-top: -6px;
+  text-align: center;
+  animation: resultCopyEnter 0.46s 0.08s ease both;
+}
+
+.result-story-identity h1 {
+  font-size: clamp(38px, 10vw, 48px);
+  line-height: 0.98;
   font-weight: 900;
 }
 
-.council-role {
-  margin-top: 5px;
-  color: rgba(9, 38, 35, 0.64);
+.result-story-identity p {
+  margin-top: 7px;
+  color: rgba(9, 38, 35, 0.62);
   font-size: 14px;
-  line-height: 1.25;
+  line-height: 1.3;
+  font-weight: 750;
+}
+
+.result-speech {
+  position: relative;
+  padding: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.88);
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 12% 12%, rgba(255, 216, 74, 0.14), transparent 34%),
+    rgba(255, 255, 249, 0.84);
+  box-shadow: 0 16px 34px rgba(17, 58, 54, 0.09);
+  backdrop-filter: blur(18px);
+  animation: resultCopyEnter 0.5s 0.16s ease both;
+}
+
+.result-speech::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: -11px;
+  width: 22px;
+  height: 22px;
+  border-top: 1px solid rgba(255, 255, 255, 0.88);
+  border-left: 1px solid rgba(255, 255, 255, 0.88);
+  background: rgba(255, 255, 249, 0.94);
+  transform: translateX(-50%) rotate(45deg);
+}
+
+.result-speech p {
+  position: relative;
+  color: #092623;
+  font-size: var(--type-body);
+  line-height: 1.5;
   font-weight: 700;
 }
 
-.council-introduction {
-  margin-top: 14px;
-  color: rgba(9, 38, 35, 0.62);
-  font-size: 14px;
-  line-height: 1.42;
+.result-speech-handoff {
+  padding: 17px 20px;
+  background: rgba(225, 255, 249, 0.7);
+  animation-delay: 0.25s;
+}
+
+.result-speech-handoff::before {
+  display: none;
+}
+
+.result-speech-handoff p {
+  color: rgba(9, 38, 35, 0.7);
+  font-size: 15px;
   font-weight: 650;
 }
 
-.council-advice {
-  margin-top: 10px;
-  padding-top: 13px;
-  border-top: 1px solid rgba(9, 82, 77, 0.1);
-  color: #092623;
-  font-size: var(--type-body);
-  line-height: 1.48;
-  font-weight: 700;
+.result-story-actions {
+  display: grid;
+  animation: resultCopyEnter 0.5s 0.32s ease both;
 }
 
-.council-material {
-  margin-top: 16px;
+.result-story-material {
+  display: grid;
+  gap: 12px;
+  margin-top: 2px;
+  padding: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.86);
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 88% 8%, rgba(255, 216, 74, 0.2), transparent 32%),
+    rgba(242, 255, 252, 0.78);
+  box-shadow: 0 16px 34px rgba(17, 58, 54, 0.08);
+  animation: resultCopyEnter 0.5s 0.25s ease both;
 }
 
-.council-material h2 {
-  font-size: 26px;
-  line-height: 1.12;
+.result-story-material .brand-label {
+  margin-bottom: 0;
+}
+
+.result-story-material h2 {
+  font-size: 27px;
+  line-height: 1.08;
   font-weight: 850;
 }
 
-.council-material > p:not(.brand-label) {
+.result-story-material > p:not(.brand-label) {
   color: rgba(9, 38, 35, 0.68);
   font-size: var(--type-body);
   line-height: 1.45;
   font-weight: 600;
 }
 
-@keyframes councilCardReveal {
+.result-story-material .result-story-material-note {
+  padding-top: 12px;
+  border-top: 1px solid rgba(9, 82, 77, 0.1);
+  color: #0a4945;
+  font-weight: 700;
+}
+
+.result-story-material .primary-btn {
+  margin-top: 4px;
+}
+
+.result-story-secondary-actions {
+  display: grid;
+  gap: 9px;
+}
+
+.result-story-replay {
+  min-height: 42px;
+  border: 0;
+  color: rgba(9, 38, 35, 0.66);
+  background: transparent;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+@keyframes resultCharacterEnter {
   from {
     opacity: 0;
-    transform: translateY(14px);
+    transform: translateY(18px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes resultCopyEnter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
   }
   to {
     opacity: 1;
