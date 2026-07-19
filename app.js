@@ -14,7 +14,7 @@
   const URL_PARAMS = new URLSearchParams(window.location.search);
   const TELEGRAM_LAUNCH_PARAMS = new URLSearchParams(window.location.hash.replace(/^#/, ''));
   const NATIVE_TRENDS_MODE = URL_PARAMS.get('trends_native');
-  const NATIVE_TRENDS_ASSET_VERSION = '20260717-gameover-center-34';
+  const NATIVE_TRENDS_ASSET_VERSION = '20260719-authors-01';
   const IS_TELEGRAM_LAUNCH = Boolean(
     telegramWebApp?.initData
     || telegramWebApp?.initDataUnsafe?.user?.id
@@ -2410,19 +2410,19 @@
           <img src="${assets.authors}" alt="Лиза и Лена — авторы Мирофактуры" loading="lazy" decoding="async">
         </div>
         <div class="author-list">
-          <div class="author-card">
-            <span class="author-avatar">Л</span>
+          <div class="author-card author-card--experience">
             <span>
+              <span class="author-role">Архитектура опыта и цифровые продукты</span>
               <strong>Елизавета Викулова</strong>
-              <small>проектирует интерактивные форматы, мини-приложения и игровые механики. Соединяет идею, сценарий и технологии в работающие цифровые продукты</small>
+              <small>Проектирует продукты-миры и цифровые экосистемы для бизнеса, соединяя режиссуру, геймдизайн и психологию внимания. Создаёт концепции, сценарии и механики интерактивных продуктов.</small>
               ${elizavetaChannelButton}
             </span>
           </div>
-          <div class="author-card">
-            <span class="author-avatar">Е</span>
+          <div class="author-card author-card--marketing">
             <span>
+              <span class="author-role">Системный маркетинг и воронки впечатлений</span>
               <strong>Елена Попова</strong>
-              <small>выстраивает системный маркетинг и воронки впечатлений. Использует игровые механики, чтобы вовлекать аудиторию и поддерживать продажи</small>
+              <small>Проектирует маркетинг как систему: от первого знакомства с продуктом до покупки, повторного обращения и рекомендации. Продумывает воронки, контент и механики, которые помогают клиентам запомнить компанию, вернуться за следующей покупкой и порекомендовать её знакомым.</small>
               ${elenaChannelButton}
             </span>
           </div>
@@ -2449,7 +2449,7 @@
       platform: PLATFORM.key,
       messenger: PLATFORM.messenger,
       source: 'mirofaktura-app',
-      v: '20260717-gameover-center-34',
+      v: '20260719-authors-01',
     });
     const platformUserId = getPlatformUserId();
     const platformUser = getPlatformUser();

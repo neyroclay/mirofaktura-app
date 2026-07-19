@@ -810,14 +810,14 @@
                         <img src="${AUTHOR_1_IMG}" class="author-img" alt="Елизавета Викулова" loading="lazy" decoding="async">
                         <div class="author-info">
                             <div class="author-name">Елизавета Викулова</div>
-                            <div class="author-desc">Создаёт интерактивные форматы, мини-приложения и игровые механики.</div>
+                            <div class="author-desc">Проектирует продукты-миры и цифровые экосистемы для бизнеса на стыке режиссуры, геймдизайна и психологии внимания.</div>
                         </div>
                     </a>
                     <a href="${elenaProfileUrl}" class="author-card" onclick="window.app_openBotLink(event, '${elenaProfileUrl}')">
                         <img src="${AUTHOR_2_IMG}" class="author-img" alt="Елена Попова" loading="lazy" decoding="async">
                         <div class="author-info">
                             <div class="author-name">Елена Попова</div>
-                            <div class="author-desc">Выстраивает системный маркетинг и воронки впечатлений с игровыми механиками.</div>
+                            <div class="author-desc">Проектирует системный маркетинг и воронки впечатлений: от первого знакомства с продуктом до повторной покупки и рекомендации.</div>
                         </div>
                     </a>
 

@@ -1750,11 +1750,9 @@ h3 {
 }
 
 .author-card {
-  display: grid;
-  grid-template-columns: 48px 1fr;
-  align-items: center;
-  gap: 14px;
-  padding: 17px;
+  position: relative;
+  overflow: hidden;
+  padding: 20px;
   border-radius: 26px;
   color: #073936;
   border: 1px solid rgba(255, 255, 255, 0.78);
@@ -1764,18 +1762,31 @@ h3 {
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.82);
 }
 
-.author-avatar {
-  display: grid;
-  place-items: center;
-  width: 48px;
-  height: 48px;
-  border-radius: 18px;
+.author-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: #45d5cf;
+}
+
+.author-card--marketing::before {
+  background: #f2cf4a;
+}
+
+.author-role {
+  display: block;
+  margin-bottom: 8px;
   color: #008f92;
-  background: rgba(247, 255, 249, 0.76);
-  border: 1px solid rgba(255, 255, 255, 0.84);
-  font-size: 14px;
+  font-size: 11px;
+  line-height: 1.3;
   font-weight: 800;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.author-card--marketing .author-role {
+  color: #866d00;
 }
 
 .author-card strong {
