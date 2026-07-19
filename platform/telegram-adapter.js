@@ -4,8 +4,12 @@
 
   const BOT_URL = 'https://t.me/mirofactura_bot';
   const webApp = window.Telegram?.WebApp || null;
-  const PROGRESS_PREFETCH_MAX_AGE_MS = 60000;
-  let prefetchedProgress = null;
+  let progressCachePromise = null;
+  let progressRefreshPromise = null;
+  let progressSaveQueue = Promise.resolve();
+  let progressRevision = 0;
+  let lastSavedRevision = 0;
+  let visibilityRefreshBound = false;
 
   function hasTelegramLaunch() {
     return Boolean(webApp?.initData || webApp?.initDataUnsafe?.user?.id);
@@ -21,31 +25,71 @@
     return '';
   }
 
+  async function postProgress(url, payload, errorLabel) {
+    const controller = typeof AbortController === 'function' ? new AbortController() : null;
+    const timeoutId = controller ? window.setTimeout(() => controller.abort(), 6000) : null;
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        signal: controller?.signal
+      });
+      if (!response.ok) throw new Error(`${errorLabel}: HTTP ${response.status}`);
+      return response;
+    } finally {
+      if (timeoutId) window.clearTimeout(timeoutId);
+    }
+  }
+
   async function requestProgress() {
     const userId = adapter.getUserId();
     if (!userId) return { exists: false };
 
-    const controller = typeof AbortController === 'function' ? new AbortController() : null;
-    const timeoutId = controller ? window.setTimeout(() => controller.abort(), 6000) : null;
-    try {
-      const response = await fetch(adapter.progress.loadUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          item: adapter.progress.loadItem,
-          user_id: userId,
-          profile_key: `telegram:${userId}`,
-          platform: adapter.key,
-          messenger: adapter.messenger,
-          source: 'mirofaktura-app'
-        }),
-        signal: controller?.signal
-      });
-      if (!response.ok) throw new Error(`Telegram progress load failed: HTTP ${response.status}`);
-      return await response.json();
-    } finally {
-      if (timeoutId) window.clearTimeout(timeoutId);
-    }
+    const response = await postProgress(adapter.progress.loadUrl, {
+      item: adapter.progress.loadItem,
+      user_id: userId,
+      profile_key: `telegram:${userId}`,
+      platform: adapter.key,
+      messenger: adapter.messenger,
+      source: 'mirofaktura-app'
+    }, 'Telegram progress load failed');
+    return await response.json();
+  }
+
+  function rememberProgress(promise) {
+    progressCachePromise = promise;
+    promise.catch(() => {
+      if (progressCachePromise === promise) progressCachePromise = null;
+    });
+    return promise;
+  }
+
+  function progressSnapshot(appData = {}) {
+    return {
+      exists: true,
+      first_launch_time: String(appData.firstLaunchTime || ''),
+      last_date: appData.lastDate || '',
+      collected: Array.isArray(appData.collected) ? [...appData.collected] : [],
+      onboarding_seen: appData.onboardingSeen === true,
+      bonus_cards: Number(appData.bonusCards) || 0,
+      invited_friends: Number(appData.invitedFriends) || 0
+    };
+  }
+
+  function bindVisibilityRefresh() {
+    if (visibilityRefreshBound || typeof document === 'undefined') return;
+    visibilityRefreshBound = true;
+    let wasHidden = document.visibilityState === 'hidden';
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') {
+        wasHidden = true;
+        return;
+      }
+      if (!wasHidden) return;
+      wasHidden = false;
+      adapter.refreshProgress().catch(() => {});
+    });
   }
 
   const adapter = {
@@ -71,6 +115,7 @@
       if (!webApp || !hasTelegramLaunch()) return;
       webApp.ready();
       webApp.expand();
+      bindVisibilityRefresh();
       if (options.useNativeTrends && typeof webApp.disableVerticalSwipes === 'function') {
         webApp.disableVerticalSwipes();
       }
@@ -95,25 +140,66 @@
     },
     prefetchProgress() {
       if (!adapter.getUserId()) return Promise.resolve({ exists: false });
-      const now = Date.now();
-      if (prefetchedProgress && now - prefetchedProgress.startedAt <= PROGRESS_PREFETCH_MAX_AGE_MS) {
-        return prefetchedProgress.promise;
-      }
-
-      const promise = requestProgress();
-      prefetchedProgress = { startedAt: now, promise };
-      promise.catch(() => {
-        if (prefetchedProgress?.promise === promise) prefetchedProgress = null;
-      });
-      return promise;
+      if (progressCachePromise) return progressCachePromise;
+      return rememberProgress(requestProgress());
     },
     loadProgress() {
-      const cached = prefetchedProgress;
-      prefetchedProgress = null;
-      if (cached && Date.now() - cached.startedAt <= PROGRESS_PREFETCH_MAX_AGE_MS) {
-        return cached.promise;
+      return adapter.prefetchProgress();
+    },
+    async refreshProgress() {
+      if (!adapter.getUserId()) return { exists: false };
+      if (progressRefreshPromise) return progressRefreshPromise;
+
+      progressRefreshPromise = (async () => {
+        await progressSaveQueue;
+        const revisionAtRequest = progressRevision;
+        if (revisionAtRequest > lastSavedRevision && progressCachePromise) {
+          return progressCachePromise;
+        }
+        const data = await requestProgress();
+        if (progressRevision === revisionAtRequest) {
+          progressCachePromise = Promise.resolve(data);
+        }
+        return data;
+      })();
+
+      try {
+        return await progressRefreshPromise;
+      } finally {
+        progressRefreshPromise = null;
       }
-      return requestProgress();
+    },
+    saveProgress(appData) {
+      const userId = adapter.getUserId();
+      if (!userId) return Promise.resolve({ ok: false, reason: 'missing-user' });
+
+      const user = adapter.getUser();
+      const snapshot = progressSnapshot(appData);
+      const revision = ++progressRevision;
+      progressCachePromise = Promise.resolve(snapshot);
+
+      const request = progressSaveQueue.then(async () => {
+        await postProgress(adapter.progress.saveUrl, {
+          item: adapter.progress.saveItem,
+          user_id: userId,
+          profile_key: `telegram:${userId}`,
+          first_name: String(user.first_name || ''),
+          last_name: String(user.last_name || ''),
+          messenger: adapter.messenger,
+          platform: adapter.key,
+          source: 'mirofaktura-app',
+          first_launch_time: snapshot.first_launch_time,
+          last_date: snapshot.last_date,
+          collected_cards: JSON.stringify(snapshot.collected),
+          onboarding_seen: snapshot.onboarding_seen,
+          bonus_cards: String(snapshot.bonus_cards),
+          invited_friends: String(snapshot.invited_friends)
+        }, 'Telegram progress save failed');
+        lastSavedRevision = Math.max(lastSavedRevision, revision);
+        return { ok: true };
+      });
+      progressSaveQueue = request.catch(() => {});
+      return request;
     },
     openUrl(rawUrl) {
       const url = new URL(rawUrl);

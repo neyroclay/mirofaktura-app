@@ -4,6 +4,58 @@
     let mountSerial = 0;
     let pendingShareRequested = false;
     const DEFAULT_CONTAINER_ID = 'c37';
+    const DECK_LIBRARIES = [
+        { src: 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js', globalName: 'THREE' },
+        { src: 'https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js', globalName: 'TWEEN' },
+        { src: 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js', globalName: 'confetti' }
+    ];
+    let deckLibrariesPromise = null;
+
+    function loadDeckLibrary({ src, globalName }) {
+        if (window[globalName]) return Promise.resolve();
+
+        return new Promise((resolve) => {
+            let script = document.querySelector(`script[src="${src}"]`);
+            let settled = false;
+            const finish = () => {
+                if (settled) return;
+                settled = true;
+                window.clearTimeout(timeoutId);
+                resolve();
+            };
+            const timeoutId = window.setTimeout(finish, 8000);
+
+            if (script) {
+                if (script.dataset.mirofacturaLoadState === 'loaded' || script.dataset.mirofacturaLoadState === 'failed') {
+                    finish();
+                    return;
+                }
+                script.addEventListener('load', finish, { once: true });
+                script.addEventListener('error', finish, { once: true });
+                return;
+            }
+
+            script = document.createElement('script');
+            script.src = src;
+            script.dataset.mirofacturaLoadState = 'loading';
+            script.addEventListener('load', () => {
+                script.dataset.mirofacturaLoadState = 'loaded';
+                finish();
+            }, { once: true });
+            script.addEventListener('error', () => {
+                script.dataset.mirofacturaLoadState = 'failed';
+                finish();
+            }, { once: true });
+            document.head.appendChild(script);
+        });
+    }
+
+    function preloadDeckLibraries() {
+        if (!deckLibrariesPromise) {
+            deckLibrariesPromise = Promise.all(DECK_LIBRARIES.map(loadDeckLibrary));
+        }
+        return deckLibrariesPromise;
+    }
     // --- ТЕКСТЫ ДОКУМЕНТОВ ---
     const LEGAL_TEXT_PRIVACY = `Политика в отношении обработки персональных данных (политика конфиденциальности)
 
@@ -1250,11 +1302,7 @@
         }
 
 
-        const deckLibrariesReady = Promise.all([
-            loadScript('https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'),
-            loadScript('https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js'),
-            loadScript('https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js')
-        ]);
+        const deckLibrariesReady = preloadDeckLibraries();
 
         loadState(() => {
             selectCard();
@@ -1411,7 +1459,9 @@
                 isFinishingProcess = true;
 
                 if (LOAD_URL && hasRemoteIdentity) try {
-                    const data = typeof platformAdapter.loadProgress === 'function'
+                    const data = typeof platformAdapter.refreshProgress === 'function'
+                        ? await platformAdapter.refreshProgress()
+                        : typeof platformAdapter.loadProgress === 'function'
                         ? await platformAdapter.loadProgress()
                         : await postMulty(LOAD_URL, {
                             item: LOAD_ITEM,
@@ -1786,6 +1836,9 @@
         },
         isReady() {
             return typeof activeDeckInstance?.showTab === 'function';
+        },
+        preloadLibraries() {
+            return preloadDeckLibraries();
         },
         share() {
             if (activeDeckInstance?.share) {

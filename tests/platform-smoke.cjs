@@ -197,10 +197,14 @@ async function testTelegram(browser) {
   const diagnostics = collectDiagnostics(page, 'telegram');
   const maxBridgeRequests = [];
   const progressLoadRequests = [];
+  const progressSaveRequests = [];
   page.on('request', (request) => {
     if (request.url().includes('max-web-app.js')) maxBridgeRequests.push(request.url());
     if (request.url().includes('cb.multy.ai') && request.postData()?.includes('trend_deck_load_v2')) {
       progressLoadRequests.push(request.url());
+    }
+    if (request.url().includes('cb.multy.ai') && request.postData()?.includes('trend_deck_save_v2')) {
+      progressSaveRequests.push(request.url());
     }
   });
   await page.route('https://cb.multy.ai/**', (route) => route.fulfill({
@@ -213,9 +217,26 @@ async function testTelegram(browser) {
   await page.waitForSelector('.hero');
   assert(await page.evaluate(() => document.documentElement.dataset.mirofacturaPlatform) === 'telegram', 'Main entry did not remain Telegram');
   await page.waitForFunction(() => Boolean(window.MirofacturaTrendDeck), null, { timeout: 5000 });
+  await page.waitForFunction(() => Boolean(window.THREE && window.TWEEN && window.confetti), null, { timeout: 15000 });
   await page.waitForFunction(() => performance.getEntriesByName('https://cb.multy.ai/api/v1/hook/app/b9c89cbdf0f21aa63c6111487770196a').length > 0, null, { timeout: 5000 });
   assert(await page.locator('.home-screen').count() === 1, 'Telegram trend warmup replaced the home screen');
+  assert(await page.evaluate(() => typeof window.MirofacturaTrendDeck.preloadLibraries === 'function'), 'Telegram deck libraries cannot be warmed in the background');
   assert(progressLoadRequests.length === 1, 'Telegram progress was not prefetched exactly once');
+  const savedProgress = await page.evaluate(async () => {
+    const adapter = window.MirofacturaPlatforms.current();
+    await adapter.saveProgress({
+      firstLaunchTime: '1783950000',
+      lastDate: '',
+      collected: [2],
+      onboardingSeen: true,
+      bonusCards: 0,
+      invitedFriends: 0
+    });
+    return adapter.loadProgress();
+  });
+  assert(progressSaveRequests.length === 1, 'Telegram progress save did not use the existing save webhook');
+  assert(savedProgress.exists === true && savedProgress.collected.includes(2), 'Saved Telegram progress did not update the session cache');
+  assert(progressLoadRequests.length === 1, 'Reading saved Telegram progress unexpectedly reloaded it');
   await page.click('.share-btn');
   await page.waitForTimeout(50);
   const calls = await page.evaluate(() => window.__telegramCalls);

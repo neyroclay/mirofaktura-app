@@ -11,7 +11,7 @@
   const URL_PARAMS = new URLSearchParams(window.location.search);
   const TELEGRAM_LAUNCH_PARAMS = new URLSearchParams(window.location.hash.replace(/^#/, ''));
   const NATIVE_TRENDS_MODE = URL_PARAMS.get('trends_native');
-  const NATIVE_TRENDS_ASSET_VERSION = '20260719-authors-01';
+  const NATIVE_TRENDS_ASSET_VERSION = '20260719-tg-fast-open-01';
   const APP_PLATFORM = platformAdapter.key;
   document.documentElement.dataset.mirofacturaPlatform = APP_PLATFORM;
   const USE_NATIVE_TRENDS = NATIVE_TRENDS_MODE !== '0';
@@ -2535,8 +2535,9 @@
   function warmTelegramTrendDeck() {
     if (APP_PLATFORM !== 'telegram' || !USE_NATIVE_TRENDS || state.page === 'trends') return;
 
-    platformAdapter.prefetchProgress?.().catch(() => {});
-    loadNativeTrendDeckAssets().catch(() => {});
+    loadNativeTrendDeckAssets()
+      .then(() => window.MirofacturaTrendDeck?.preloadLibraries?.())
+      .catch(() => {});
   }
 
   function scheduleTelegramTrendDeckWarmup() {
@@ -3427,6 +3428,9 @@
   initializeNavigation();
   render();
   dismissStartupLoader();
+  if (APP_PLATFORM === 'telegram' && USE_NATIVE_TRENDS) {
+    platformAdapter.prefetchProgress?.().catch(() => {});
+  }
   window.setTimeout(warmAppImages, 40);
   scheduleTelegramTrendDeckWarmup();
 })();

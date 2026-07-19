@@ -76,9 +76,12 @@ function createContext(platform, extraWindow = {}) {
   assert.equal(adapter.progress.followupItem, 'trend_deck_started_telegram');
   assert.equal(typeof adapter.prefetchProgress, 'function');
   assert.equal(typeof adapter.loadProgress, 'function');
+  assert.equal(typeof adapter.refreshProgress, 'function');
+  assert.equal(typeof adapter.saveProgress, 'function');
 }
 
 assert.match(telegramEntry, /platform\/telegram-adapter\.js/);
+assert.doesNotMatch(telegramSource, /PROGRESS_PREFETCH_MAX_AGE|60000/);
 assert.doesNotMatch(telegramEntry, /platform\/max-adapter\.js/);
 assert.match(maxEntry, /platform\/max-adapter\.js/);
 assert.doesNotMatch(maxEntry, /telegram-web-app\.js|platform\/telegram-adapter\.js|platform=telegram/);
