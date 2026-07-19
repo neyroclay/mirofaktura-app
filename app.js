@@ -2532,32 +2532,10 @@
     ]);
   }
 
-  const TELEGRAM_TREND_RUNTIME_URLS = [
-    'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js',
-    'https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js',
-    'https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js'
-  ];
-
-  function appendResourceHint(rel, href, as = '') {
-    const exists = [...document.querySelectorAll(`link[rel="${rel}"][href]`)]
-      .some((link) => link.href === href);
-    if (exists) return;
-
-    const link = document.createElement('link');
-    link.rel = rel;
-    link.href = href;
-    if (as) link.as = as;
-    if (rel === 'preconnect') link.crossOrigin = 'anonymous';
-    document.head.appendChild(link);
-  }
-
   function warmTelegramTrendDeck() {
     if (APP_PLATFORM !== 'telegram' || !USE_NATIVE_TRENDS || state.page === 'trends') return;
 
-    appendResourceHint('preconnect', 'https://cb.multy.ai');
-    appendResourceHint('preconnect', 'https://cdnjs.cloudflare.com');
-    appendResourceHint('preconnect', 'https://cdn.jsdelivr.net');
-    TELEGRAM_TREND_RUNTIME_URLS.forEach((url) => appendResourceHint('prefetch', url, 'script'));
+    platformAdapter.prefetchProgress?.().catch(() => {});
     loadNativeTrendDeckAssets().catch(() => {});
   }
 
