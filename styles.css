@@ -1024,6 +1024,33 @@ h3 {
   animation: floatMascot 5.8s ease-in-out infinite;
 }
 
+.result-mascot-intro {
+  width: 100%;
+  margin-top: 4px;
+  text-align: center;
+}
+
+.result-mascot-intro strong,
+.result-mascot-intro span {
+  display: block;
+}
+
+.result-mascot-intro strong {
+  color: #073936;
+  font-size: 18px;
+  line-height: 1.2;
+  font-weight: 850;
+}
+
+.result-mascot-intro span {
+  max-width: 34rem;
+  margin: 5px auto 0;
+  color: rgba(9, 38, 35, 0.66);
+  font-size: 14.5px;
+  line-height: 1.4;
+  font-weight: 600;
+}
+
 .result-card {
   display: grid;
   gap: 18px;
@@ -1102,6 +1129,10 @@ h3 {
 }
 
 .result-actions-primary + .potap-panel {
+  margin-top: 16px;
+}
+
+.result-potap-advice + .result-help-note {
   margin-top: 16px;
 }
 
