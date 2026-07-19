@@ -4,6 +4,8 @@
 
   const BOT_URL = 'https://t.me/mirofactura_bot';
   const webApp = window.Telegram?.WebApp || null;
+  const PROGRESS_PREFETCH_MAX_AGE_MS = 60000;
+  let prefetchedProgress = null;
 
   function hasTelegramLaunch() {
     return Boolean(webApp?.initData || webApp?.initDataUnsafe?.user?.id);
@@ -17,6 +19,33 @@
       if (value) return String(value);
     }
     return '';
+  }
+
+  async function requestProgress() {
+    const userId = adapter.getUserId();
+    if (!userId) return { exists: false };
+
+    const controller = typeof AbortController === 'function' ? new AbortController() : null;
+    const timeoutId = controller ? window.setTimeout(() => controller.abort(), 6000) : null;
+    try {
+      const response = await fetch(adapter.progress.loadUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          item: adapter.progress.loadItem,
+          user_id: userId,
+          profile_key: `telegram:${userId}`,
+          platform: adapter.key,
+          messenger: adapter.messenger,
+          source: 'mirofaktura-app'
+        }),
+        signal: controller?.signal
+      });
+      if (!response.ok) throw new Error(`Telegram progress load failed: HTTP ${response.status}`);
+      return await response.json();
+    } finally {
+      if (timeoutId) window.clearTimeout(timeoutId);
+    }
   }
 
   const adapter = {
@@ -63,6 +92,28 @@
     },
     getReferralLink(userId) {
       return userId ? `${BOT_URL}?start=${encodeURIComponent(String(userId))}` : BOT_URL;
+    },
+    prefetchProgress() {
+      if (!adapter.getUserId()) return Promise.resolve({ exists: false });
+      const now = Date.now();
+      if (prefetchedProgress && now - prefetchedProgress.startedAt <= PROGRESS_PREFETCH_MAX_AGE_MS) {
+        return prefetchedProgress.promise;
+      }
+
+      const promise = requestProgress();
+      prefetchedProgress = { startedAt: now, promise };
+      promise.catch(() => {
+        if (prefetchedProgress?.promise === promise) prefetchedProgress = null;
+      });
+      return promise;
+    },
+    loadProgress() {
+      const cached = prefetchedProgress;
+      prefetchedProgress = null;
+      if (cached && Date.now() - cached.startedAt <= PROGRESS_PREFETCH_MAX_AGE_MS) {
+        return cached.promise;
+      }
+      return requestProgress();
     },
     openUrl(rawUrl) {
       const url = new URL(rawUrl);

@@ -89,7 +89,6 @@ async function testMax(browser, viewport, suffix) {
   await page.waitForSelector('.hero');
 
   assert(await page.evaluate(() => document.documentElement.dataset.mirofacturaPlatform) === 'max', 'MAX entry did not select MAX adapter');
-  assert(await page.locator('link[rel="prefetch"][href*="three.min.js"]').count() === 0, 'MAX received Telegram-only trend warmup');
   await page.click('.share-btn');
   await page.waitForTimeout(50);
   const calls = await page.evaluate(() => window.__maxCalls);
@@ -197,20 +196,26 @@ async function testTelegram(browser) {
   const page = await context.newPage();
   const diagnostics = collectDiagnostics(page, 'telegram');
   const maxBridgeRequests = [];
+  const progressLoadRequests = [];
   page.on('request', (request) => {
     if (request.url().includes('max-web-app.js')) maxBridgeRequests.push(request.url());
+    if (request.url().includes('cb.multy.ai') && request.postData()?.includes('trend_deck_load_v2')) {
+      progressLoadRequests.push(request.url());
+    }
   });
+  await page.route('https://cb.multy.ai/**', (route) => route.fulfill({
+    status: 200,
+    contentType: 'application/json',
+    body: JSON.stringify({ exists: false })
+  }));
   await installTelegramStub(page);
   await page.goto(`${BASE_URL}/index.html?platform=max`, { waitUntil: 'domcontentloaded' });
   await page.waitForSelector('.hero');
   assert(await page.evaluate(() => document.documentElement.dataset.mirofacturaPlatform) === 'telegram', 'Main entry did not remain Telegram');
-  await page.waitForFunction(() => Boolean(
-    window.MirofacturaTrendDeck
-    && document.querySelector('link[rel="prefetch"][href*="three.min.js"]')
-    && document.querySelector('link[rel="prefetch"][href*="tween.umd.js"]')
-    && document.querySelector('link[rel="prefetch"][href*="confetti.browser.min.js"]')
-  ), null, { timeout: 5000 });
+  await page.waitForFunction(() => Boolean(window.MirofacturaTrendDeck), null, { timeout: 5000 });
+  await page.waitForFunction(() => performance.getEntriesByName('https://cb.multy.ai/api/v1/hook/app/b9c89cbdf0f21aa63c6111487770196a').length > 0, null, { timeout: 5000 });
   assert(await page.locator('.home-screen').count() === 1, 'Telegram trend warmup replaced the home screen');
+  assert(progressLoadRequests.length === 1, 'Telegram progress was not prefetched exactly once');
   await page.click('.share-btn');
   await page.waitForTimeout(50);
   const calls = await page.evaluate(() => window.__telegramCalls);
@@ -218,6 +223,7 @@ async function testTelegram(browser) {
   assert(calls.some(([name]) => name === 'openTelegramLink'), 'Telegram share flow changed');
   await page.click('[data-action="openTrends"]');
   await page.waitForSelector('.trends-native-host');
+  assert(progressLoadRequests.length === 1, 'Opening Telegram trends ignored the prefetched progress response');
   assert(maxBridgeRequests.length === 0, 'Telegram version loaded MAX Bridge');
   await page.screenshot({ path: path.join(artifacts, 'telegram-main.png'), fullPage: true });
   await context.close();

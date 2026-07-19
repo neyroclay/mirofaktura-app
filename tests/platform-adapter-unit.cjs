@@ -74,6 +74,8 @@ function createContext(platform, extraWindow = {}) {
   assert.equal(adapter.entryUrl, 'https://t.me/mirofactura_bot');
   assert.equal(adapter.getReferralLink('12345'), 'https://t.me/mirofactura_bot?start=12345');
   assert.equal(adapter.progress.followupItem, 'trend_deck_started_telegram');
+  assert.equal(typeof adapter.prefetchProgress, 'function');
+  assert.equal(typeof adapter.loadProgress, 'function');
 }
 
 assert.match(telegramEntry, /platform\/telegram-adapter\.js/);
