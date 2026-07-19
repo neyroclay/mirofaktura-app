@@ -1079,7 +1079,6 @@
     page: getLaunchPage(),
     step: 0,
     answers: {},
-    resultScene: 0,
     contactTask: 'strategy',
     material: 'products',
     pendingMaterial: '',
@@ -1672,78 +1671,56 @@
     const key = resultKey();
     const material = materials[key];
     const advice = quizMascotAdviceData();
-    const scenes = [
-      {
-        id: 'aristarkh',
-        name: 'Аристарх',
-        role: 'Аксолотль-Профессор Мирофактуры',
-        image: assets.aristarch,
-        alt: 'Аристарх, Аксолотль-Профессор Мирофактуры',
-        speech: advice.aristarkh,
-        handoff: 'У моих коллег тоже есть пара мыслей. Степан посмотрел на ваше предложение глазами нового клиента.',
-        button: 'Что скажет Степан?'
-      },
-      {
-        id: 'stepan',
-        name: 'Степан',
-        role: 'Цветок-Критик Мирофактуры',
-        image: assets.stepanStart,
-        alt: 'Степан, Цветок-Критик Мирофактуры',
-        speech: advice.stepan,
-        button: 'Что предложит Потап?'
-      },
-      {
-        id: 'potap',
-        name: 'Потап',
-        role: 'Манул-Творец Мирофактуры',
-        image: assets.potap,
-        alt: 'Потап, Манул-Творец Мирофактуры',
-        speech: advice.potap
-      }
-    ];
-    const sceneIndex = Math.min(Math.max(state.resultScene, 0), scenes.length - 1);
-    const scene = scenes[sceneIndex];
-    const isFinalScene = sceneIndex === scenes.length - 1;
 
     return screen(`
       <button class="back-link" type="button" data-action="startQuiz">← Пройти квиз заново</button>
 
-      <section class="result-story result-story-${scene.id}" aria-live="polite" aria-label="Советы маскотов Мирофактуры">
-        <div class="result-story-stage">
-          <img class="result-story-character" src="${scene.image}" alt="${scene.alt}" decoding="async">
-        </div>
-
-        <div class="result-story-identity">
-          <h1>${scene.name}</h1>
-          <p>${scene.role}</p>
-        </div>
-
-        <article class="result-speech result-speech-main">
-          <p>${scene.speech}</p>
+      <section class="result-scroll" aria-label="Результат квиза и советы маскотов Мирофактуры">
+        <article class="result-main">
+          <img class="result-main-character" src="${assets.aristarch}" alt="Аристарх, Аксолотль-Профессор Мирофактуры" decoding="async">
+          <div class="result-mascot-identity">
+            <h1>Аристарх</h1>
+            <p>Аксолотль-Профессор Мирофактуры</p>
+          </div>
+          <p class="result-main-copy">${advice.aristarkh}</p>
         </article>
 
-        ${scene.handoff ? `
-          <p class="result-story-transition">${scene.handoff}</p>
-        ` : ''}
+        <section class="result-gift" aria-labelledby="result-gift-title">
+          <p class="brand-label">Ваш подарок по результату квиза</p>
+          <h2 id="result-gift-title">${material.title}</h2>
+          <p>${material.text}</p>
+          <p class="result-gift-note">${resultIntentCopy(key)}</p>
+          <button class="primary-btn" type="button" data-action="openMaterial" data-material="${key}">Открыть материал</button>
+        </section>
 
-        ${!isFinalScene ? `
-          <div class="result-story-actions">
-            <button class="primary-btn" type="button" data-action="nextResultScene">${scene.button}</button>
-          </div>
-        ` : `
-          <article class="result-story-material">
-            <p class="brand-label">Материал по вашей задаче</p>
-            <h2>${material.title}</h2>
-            <p>${material.text}</p>
-            <p class="result-story-material-note">${resultIntentCopy(key)}</p>
-            <button class="primary-btn" type="button" data-action="openMaterial" data-material="${key}">Открыть материал</button>
+        <section class="result-extra" aria-labelledby="result-extra-title">
+          <header class="result-extra-head">
+            <p class="brand-label">Если захотите узнать больше</p>
+            <h2 id="result-extra-title">Ещё два коротких совета</h2>
+          </header>
+
+          <article class="result-extra-mascot">
+            <img class="result-extra-character" src="${assets.stepanStart}" alt="Степан, Цветок-Критик Мирофактуры" decoding="async">
+            <div class="result-extra-identity">
+              <h3>Степан</h3>
+              <p>Цветок-Критик Мирофактуры</p>
+            </div>
+            <p class="result-extra-copy">${advice.stepan}</p>
           </article>
 
-          <div class="result-story-secondary-actions">
-            <button class="soft-btn" type="button" data-action="openContacts">Как Мирофактура может помочь</button>
-            <button class="result-story-replay" type="button" data-action="restartResultStory">Посмотреть советы ещё раз</button>
-          </div>
-        `}
+          <article class="result-extra-mascot">
+            <img class="result-extra-character" src="${assets.potap}" alt="Потап, Манул-Творец Мирофактуры" decoding="async">
+            <div class="result-extra-identity">
+              <h3>Потап</h3>
+              <p>Манул-Творец Мирофактуры</p>
+            </div>
+            <p class="result-extra-copy">${advice.potap}</p>
+          </article>
+        </section>
+
+        <div class="result-scroll-actions">
+          <button class="soft-btn" type="button" data-action="openContacts">Как Мирофактура может помочь</button>
+        </div>
       </section>
     `, 'result-screen');
   }
@@ -3154,7 +3131,6 @@
       warmQuizImages();
       state.step = 0;
       state.answers = {};
-      state.resultScene = 0;
       navigateTo('quiz');
       return;
     }
@@ -3211,18 +3187,6 @@
     if (action === 'openContacts') {
       warmContactsImages();
       navigateTo('contacts');
-      return;
-    }
-
-    if (action === 'nextResultScene') {
-      state.resultScene = Math.min(2, state.resultScene + 1);
-      render();
-      return;
-    }
-
-    if (action === 'restartResultStory') {
-      state.resultScene = 0;
-      render();
       return;
     }
 
@@ -3421,7 +3385,6 @@
         state.step += 1;
         render();
       } else {
-        state.resultScene = 0;
         navigateTo('result');
       }
       return;
