@@ -89,6 +89,7 @@ async function testMax(browser, viewport, suffix) {
   await page.waitForSelector('.hero');
 
   assert(await page.evaluate(() => document.documentElement.dataset.mirofacturaPlatform) === 'max', 'MAX entry did not select MAX adapter');
+  assert(await page.locator('link[rel="prefetch"][href*="three.min.js"]').count() === 0, 'MAX received Telegram-only trend warmup');
   await page.click('.share-btn');
   await page.waitForTimeout(50);
   const calls = await page.evaluate(() => window.__maxCalls);
@@ -203,6 +204,13 @@ async function testTelegram(browser) {
   await page.goto(`${BASE_URL}/index.html?platform=max`, { waitUntil: 'domcontentloaded' });
   await page.waitForSelector('.hero');
   assert(await page.evaluate(() => document.documentElement.dataset.mirofacturaPlatform) === 'telegram', 'Main entry did not remain Telegram');
+  await page.waitForFunction(() => Boolean(
+    window.MirofacturaTrendDeck
+    && document.querySelector('link[rel="prefetch"][href*="three.min.js"]')
+    && document.querySelector('link[rel="prefetch"][href*="tween.umd.js"]')
+    && document.querySelector('link[rel="prefetch"][href*="confetti.browser.min.js"]')
+  ), null, { timeout: 5000 });
+  assert(await page.locator('.home-screen').count() === 1, 'Telegram trend warmup replaced the home screen');
   await page.click('.share-btn');
   await page.waitForTimeout(50);
   const calls = await page.evaluate(() => window.__telegramCalls);
