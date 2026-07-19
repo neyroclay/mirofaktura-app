@@ -5,57 +5,26 @@
   const ELIZAVETA_TELEGRAM_CHANNEL_URL = 'https://t.me/gameneurons';
   const ELENA_TELEGRAM_CHANNEL_URL = 'https://t.me/adviceperm';
   const CONTACT_EMAIL = 'info@mirofactura.ru';
-  const PLATFORM_ALIASES = {
-    max: 'max',
-    tg: 'telegram',
-    telegram: 'telegram',
-  };
+  const platformAdapter = window.MirofacturaPlatforms?.current?.();
+  if (!platformAdapter) throw new Error('Mirofactura platform adapter is not loaded');
   const telegramWebApp = window.Telegram?.WebApp || null;
   const URL_PARAMS = new URLSearchParams(window.location.search);
   const TELEGRAM_LAUNCH_PARAMS = new URLSearchParams(window.location.hash.replace(/^#/, ''));
   const NATIVE_TRENDS_MODE = URL_PARAMS.get('trends_native');
   const NATIVE_TRENDS_ASSET_VERSION = '20260719-authors-01';
-  const IS_TELEGRAM_LAUNCH = Boolean(
-    telegramWebApp?.initData
-    || telegramWebApp?.initDataUnsafe?.user?.id
-    || TELEGRAM_LAUNCH_PARAMS.get('tgWebAppData')
-    || TELEGRAM_LAUNCH_PARAMS.get('tgWebAppPlatform')
-  );
-  const IS_MAX_LAUNCH = Boolean(
-    window.WebApp?.initData
-    || window.WebApp?.initDataUnsafe?.user?.id
-    || window.WebApp?.user?.id
-    || window.WebApp?.start_param
-  );
-  const APP_PLATFORM = (() => {
-    const params = URL_PARAMS;
-    const explicit = String(params.get('platform') || params.get('messenger') || '').toLowerCase();
-    if (PLATFORM_ALIASES[explicit]) return PLATFORM_ALIASES[explicit];
-    if (IS_MAX_LAUNCH) return 'max';
-    if (IS_TELEGRAM_LAUNCH) return 'telegram';
-
-    const raw = String(window.MIROFAKTURA_PLATFORM || '').toLowerCase();
-    return PLATFORM_ALIASES[raw] || 'max';
-  })();
+  const APP_PLATFORM = platformAdapter.key;
+  document.documentElement.dataset.mirofacturaPlatform = APP_PLATFORM;
   const USE_NATIVE_TRENDS = NATIVE_TRENDS_MODE !== '0';
   const PLATFORM = {
-    max: {
-      key: 'max',
-      messenger: 'MAX',
-      entryUrl: MAX_CHANNEL_URL,
-      channelUrl: MAX_CHANNEL_URL,
-      channelLabel: '\u041a\u0430\u043d\u0430\u043b \u0432 MAX',
-      channelText: 'Материалы о маркетинге, продуктах и цифровых мирах.',
-    },
-    telegram: {
-      key: 'telegram',
-      messenger: 'Telegram',
-      entryUrl: TELEGRAM_BOT_URL,
-      channelUrl: TELEGRAM_BOT_URL,
-      channelLabel: 'Карманная Вселенная',
-      channelText: 'Бот Мирофактуры с приложением, новыми материалами и напоминаниями.',
-    },
-  }[APP_PLATFORM];
+    key: platformAdapter.key,
+    messenger: platformAdapter.messenger,
+    entryUrl: platformAdapter.entryUrl,
+    channelUrl: platformAdapter.channelUrl,
+    channelLabel: APP_PLATFORM === 'max' ? 'Канал в MAX' : 'Карманная Вселенная',
+    channelText: APP_PLATFORM === 'max'
+      ? 'Материалы о маркетинге, продуктах и цифровых мирах.'
+      : 'Бот Мирофактуры с приложением, новыми материалами и напоминаниями.',
+  };
   const STORY_DESTINATION_URL = PLATFORM.entryUrl;
   const STORY_DESTINATION_CTA_ACTION = APP_PLATFORM === 'telegram'
     ? 'Получить совет в боте Мирофактуры →'
@@ -112,13 +81,7 @@
     return pageAliases[normalized] || 'home';
   };
 
-  if (APP_PLATFORM === 'telegram' && telegramWebApp) {
-    telegramWebApp.ready();
-    telegramWebApp.expand();
-    if (USE_NATIVE_TRENDS && typeof telegramWebApp.disableVerticalSwipes === 'function') {
-      telegramWebApp.disableVerticalSwipes();
-    }
-  }
+  platformAdapter.init({ useNativeTrends: USE_NATIVE_TRENDS });
   const assets = {
     logo: './assets/logo-black-yellow.webp',
     logoStory: './assets/logo-white-yellow.png',
@@ -1134,8 +1097,8 @@
   let navigationDepth = 0;
   let navigationReady = false;
 
-  function syncTelegramBackButton() {
-    const backButton = telegramWebApp?.BackButton;
+  function syncPlatformBackButton() {
+    const backButton = platformAdapter.backButton;
     if (!backButton) return;
 
     if (state.page !== 'home' && navigationDepth > 0) {
@@ -1171,12 +1134,12 @@
           }, '');
         }
       } catch (_) {
-        // Telegram BackButton still provides navigation if WebView history is unavailable.
+        // The host BackButton still provides navigation if WebView history is unavailable.
       }
     }
 
     render({ scroll });
-    syncTelegramBackButton();
+    syncPlatformBackButton();
   }
 
   function goBack(fallbackPage = 'home') {
@@ -1253,39 +1216,15 @@
   }
 
   function getMaxUserId() {
-    const params = new URLSearchParams(window.location.search);
-    return params.get('max_user_id')
-      || params.get('maxUserId')
-      || params.get('max_user')
-      || params.get('user_id')
-      || '';
+    return PLATFORM.key === 'max' ? platformAdapter.getUserId() : '';
   }
 
   function getPlatformUserId() {
-    const params = new URLSearchParams(window.location.search);
-    const keys = PLATFORM.key === 'telegram'
-      ? ['telegram_user_id', 'telegramUserId', 'tg_user_id', 'tgUserId', 'user_id', 'userId']
-      : ['max_user_id', 'maxUserId', 'max_user', 'user_id', 'userId'];
-
-    for (const key of keys) {
-      const value = params.get(key);
-      if (value) return value;
-    }
-
-    if (PLATFORM.key === 'telegram') {
-      const telegramUserId = telegramWebApp?.initDataUnsafe?.user?.id;
-      if (telegramUserId) return String(telegramUserId);
-    }
-
-    return '';
+    return String(platformAdapter.getUserId() || '');
   }
 
   function getPlatformUser() {
-    if (PLATFORM.key === 'telegram') {
-      return telegramWebApp?.initDataUnsafe?.user || {};
-    }
-
-    return window.WebApp?.initDataUnsafe?.user || window.WebApp?.user || {};
+    return platformAdapter.getUser() || {};
   }
 
   async function isSubscribedInMax() {
@@ -2355,11 +2294,11 @@
   }
 
   function renderContacts() {
-    const elizavetaChannelButton = APP_PLATFORM === 'telegram'
-      ? `<button class="author-channel-link" type="button" data-action="openExternalLink" data-url="${ELIZAVETA_TELEGRAM_CHANNEL_URL}">Канал «Игровые нейроны»</button>`
+    const elizavetaChannelButton = platformAdapter.authorUrls?.elizaveta
+      ? `<button class="author-channel-link" type="button" data-action="openExternalLink" data-url="${platformAdapter.authorUrls.elizaveta}">Канал «Игровые нейроны»</button>`
       : '';
-    const elenaChannelButton = APP_PLATFORM === 'telegram'
-      ? `<button class="author-channel-link" type="button" data-action="openExternalLink" data-url="${ELENA_TELEGRAM_CHANNEL_URL}">Канал «Воронки впечатлений»</button>`
+    const elenaChannelButton = platformAdapter.authorUrls?.elena
+      ? `<button class="author-channel-link" type="button" data-action="openExternalLink" data-url="${platformAdapter.authorUrls.elena}">Канал «Воронки впечатлений»</button>`
       : '';
     const nativeDocumentsLink = USE_NATIVE_TRENDS
       ? `
@@ -2710,7 +2649,8 @@
       .then(() => {
         window.MirofacturaTrendDeck?.mount?.({
           containerId: host.id,
-          mode: 'native'
+          mode: 'native',
+          platformAdapter
         });
         setActiveTab('daily');
       })
@@ -3059,7 +2999,6 @@
       } catch (_) {}
     }, 120);
   }
-
   function openExternalUrl(rawUrl) {
     const allowedHosts = new Set(['t.me', 'payform.ru', 'max.ru']);
     let url;
@@ -3075,23 +3014,11 @@
       return;
     }
 
-    if (APP_PLATFORM === 'telegram' && telegramWebApp) {
-      try {
-        if (url.hostname === 't.me' && typeof telegramWebApp.openTelegramLink === 'function') {
-          telegramWebApp.openTelegramLink(url.href);
-          closeTelegramAppSoon();
-          return;
-        }
-        if (typeof telegramWebApp.openLink === 'function') {
-          telegramWebApp.openLink(url.href);
-          return;
-        }
-      } catch (_) {
-        // В обычном браузере и старых версиях Telegram используем безопасный запасной вариант.
-      }
+    try {
+      platformAdapter.openUrl(url.href);
+    } catch (_) {
+      showToast('Не удалось открыть ссылку');
     }
-
-    window.open(url.href, '_blank', 'noopener');
   }
 
   app.addEventListener('click', async (event) => {
@@ -3397,23 +3324,14 @@
       }
 
       const text = 'Мирофактура — мастерская цифровых миров для бизнеса. Создаёт стратегии, контент, маскотов, игры, квизы, мини-приложения и цифровые экосистемы, которые помогают привлекать внимание аудитории, объяснять ценность продукта и поддерживать продажи.';
-      const shareUrl = PLATFORM.entryUrl;
-      if (APP_PLATFORM === 'telegram' && telegramWebApp) {
-        const telegramShareUrl = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(text)}`;
-        openTelegramShare(telegramShareUrl);
-      } else if (navigator.share) {
-        try {
-          await navigator.share({ title: 'Мирофактура', text, url: shareUrl });
-        } catch (error) {
-          if (error?.name !== 'AbortError') showToast('Не удалось открыть меню отправки');
-        }
-      } else {
-        try {
-          await navigator.clipboard.writeText(shareUrl);
-          showToast('Ссылка скопирована');
-        } catch (_) {
-          showToast('Ссылку можно скопировать из адресной строки');
-        }
+      const shareUrl = APP_PLATFORM === 'max'
+        ? platformAdapter.getReferralLink(getPlatformUserId())
+        : PLATFORM.entryUrl;
+      try {
+        const shared = await platformAdapter.share({ title: 'Мирофактура', text, url: shareUrl });
+        if (!shared) showToast('Не удалось открыть меню отправки');
+      } catch (error) {
+        if (error?.name !== 'AbortError') showToast('Не удалось открыть меню отправки');
       }
       return;
     }
@@ -3436,16 +3354,11 @@
       const shareUrl = String(data.url || PLATFORM.entryUrl);
       const shareText = String(data.text || 'Мирофактура');
 
-      if (APP_PLATFORM === 'telegram' && telegramWebApp) {
-        const telegramShareUrl = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`;
-        openTelegramShare(telegramShareUrl);
-      } else if (navigator.share) {
-        navigator.share({
+      platformAdapter.share({
           title: String(data.title || 'Мирофактура'),
           text: shareText,
-          url: shareUrl,
-        }).catch(() => {});
-      }
+          url: shareUrl
+      }).catch(() => {});
       return;
     }
     if (data.type === 'mirofaktura:open-link') {
@@ -3481,14 +3394,17 @@
         : Math.max(0, navigationDepth - 1);
       state.page = PAGE_RENDERERS[historyState.page] ? historyState.page : 'home';
       render();
-      syncTelegramBackButton();
+      syncPlatformBackButton();
     });
 
-    const backButton = telegramWebApp?.BackButton;
+    const backButton = platformAdapter.backButton;
     if (backButton) {
-      backButton.onClick(() => goBack('home'));
+      backButton.onClick(() => {
+        if (window.MirofacturaTrendDeck?.handleBack?.()) return;
+        goBack('home');
+      });
     }
-    syncTelegramBackButton();
+    syncPlatformBackButton();
   }
 
   initializeNavigation();

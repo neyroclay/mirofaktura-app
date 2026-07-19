@@ -185,6 +185,7 @@ summary:focus-visible {
 .app-shell {
   width: min(100%, 430px);
   min-height: 100vh;
+  min-height: 100dvh;
   margin: 0 auto;
   position: relative;
   overflow: hidden;
@@ -211,7 +212,8 @@ summary:focus-visible {
   position: relative;
   z-index: 1;
   min-height: 100vh;
-  padding: 24px var(--page-pad) 36px;
+  min-height: 100dvh;
+  padding: max(24px, env(safe-area-inset-top)) var(--page-pad) 36px;
 }
 
 .screen.home-screen {

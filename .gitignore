@@ -21,3 +21,4 @@ service_account*.json
 secrets/
 .DS_Store
 Thumbs.db
+test-artifacts/

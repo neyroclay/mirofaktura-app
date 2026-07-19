@@ -251,19 +251,6 @@
 9. Изменение Согласия
 Понимаю и принимаю, что настоящие условия могут быть изменены и (или) дополнены Оператором в одностороннем порядке без какого‑либо специального уведомления. Действующая редакция Согласия является открытым и общедоступным документом.`;
 
-    // --- ЗАГРУЗЧИК БИБЛИОТЕКИ MAX ---
-    function loadMaxBridge(callback) {
-        if (window.WebApp || document.querySelector('script[src="https://st.max.ru/js/max-web-app.js"]')) {
-            callback();
-            return;
-        }
-        const script = document.createElement('script');
-        script.src = "https://st.max.ru/js/max-web-app.js";
-        script.onload = () => { console.log("MAX WebApp bridge loaded"); callback(); };
-        script.onerror = () => { console.warn("Fallback mode."); callback(); };
-        document.head.appendChild(script);
-    }
-
     // --- ОСНОВНАЯ ЛОГИКА ПРИЛОЖЕНИЯ ---
     function initMainApp(options = {}) {
         const CONTAINER_ID = options.containerId || DEFAULT_CONTAINER_ID;
@@ -289,6 +276,7 @@
         const instance = {
             showTab: null,
             share: null,
+            handleBack: null,
             destroy() {
                 if (destroyed) return;
                 destroyed = true;
@@ -314,55 +302,20 @@
             container.removeEventListener('contextmenu', preventNativeMenu);
         });
 
-        const maxApp = window.WebApp || null;
-        const telegramApp = window.Telegram?.WebApp || null;
-        if (maxApp && typeof maxApp.ready === 'function') maxApp.ready();
-
         const trendParams = new URLSearchParams(window.location.search);
-        const telegramLaunchDetected = Boolean(
-            telegramApp?.initData
-            || telegramApp?.initDataUnsafe?.user?.id
-            || String(window.MIROFAKTURA_PLATFORM || '').toLowerCase() === 'telegram'
-        );
-        const platformParam = String(
-            trendParams.get('platform')
-            || trendParams.get('messenger')
-            || window.MIROFAKTURA_PLATFORM
-            || (telegramLaunchDetected ? 'telegram' : '')
-            || ''
-        ).toLowerCase();
-        const trendPlatform = (platformParam === 'tg' || platformParam === 'telegram') ? 'telegram' : 'max';
-        const trendMessenger = trendPlatform === 'telegram' ? 'TELEGRAM' : 'MAX';
-        const trendEntryUrl = trendPlatform === 'telegram'
-            ? 'https://t.me/mirofactura_bot'
-            : 'https://max.ru/channel_mirofactura';
-        const elizavetaProfileUrl = trendPlatform === 'telegram'
-            ? 'https://t.me/gameneurons'
-            : 'https://max.ru/u/f9LHodD0cOJ7KLcSGQ2-nIru39qLMDByEa3oTWgNABebA15thaMVXVpHB-w';
-        const elenaProfileUrl = trendPlatform === 'telegram'
-            ? 'https://t.me/adviceperm'
-            : 'https://max.ru/u/f9LHodD0cOL6WZFmWoaBowA5ZAdNLubiIRJlhbrL5vxjlmvr16DBtsGJcLY';
-        const elenaContactUrl = trendPlatform === 'telegram'
-            ? 'https://t.me/PopovaE'
-            : 'https://max.ru/u/f9LHodD0cOL6WZFmWoaBowA5ZAdNLubiIRJlhbrL5vxjlmvr16DBtsGJcLY';
+        const platformAdapter = options.platformAdapter || window.MirofacturaPlatforms?.current?.();
+        if (!platformAdapter) throw new Error('Trend deck platform adapter is not loaded');
+        const trendPlatform = platformAdapter.key;
+        const trendMessenger = platformAdapter.messenger;
+        const trendEntryUrl = platformAdapter.entryUrl;
+        const elizavetaProfileUrl = platformAdapter.authorUrls?.elizaveta || '';
+        const elenaProfileUrl = platformAdapter.authorUrls?.elena || '';
+        const elenaContactUrl = platformAdapter.authorUrls?.elenaContact || elenaProfileUrl;
         const fullDeckPurchaseUrl = 'https://payform.ru/f0b2Chh/';
-        const platformApp = trendPlatform === 'telegram' ? telegramApp : maxApp;
-        const userObj = platformApp?.initDataUnsafe?.user || platformApp?.user || {};
+        const userObj = platformAdapter.getUser() || {};
         const isLocalPreview = window.location.protocol === 'file:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
         const freshPreview = isLocalPreview && trendParams.get('fresh') === '1';
-        const userIdFromQuery = (() => {
-            const keys = trendPlatform === 'telegram'
-                ? ['telegram_user_id', 'telegramUserId', 'tg_user_id', 'tgUserId', 'user_id', 'userId']
-                : ['max_user_id', 'maxUserId', 'max_user', 'user_id', 'userId'];
-
-            for (const key of keys) {
-                const value = trendParams.get(key);
-                if (value) return value;
-            }
-
-            return '';
-        })();
-        const remoteUserId = String(userIdFromQuery || userObj.id || '');
+        const remoteUserId = String(platformAdapter.getUserId() || '');
         const anonymousIdKey = `mirofaktura_anonymous_id_${trendPlatform}`;
         let anonymousId = localStorage.getItem(anonymousIdKey);
         if (!anonymousId) {
@@ -383,9 +336,12 @@
 
         // ВЕБХУКИ BASEROW И MULTY
         const STORAGE_KEY      = `oracle_10_trends_release_v23_${trendPlatform}_${userId}`;
-        const LOAD_URL = 'https://cb.multy.ai/api/v1/hook/app/b9c89cbdf0f21aa63c6111487770196a';
-        const SAVE_URL = 'https://cb.multy.ai/api/v1/hook/app/bfbc41275aaab161df78a4d0b0f399af';
-        const TELEGRAM_FOLLOWUP_URL = 'https://cb.multy.ai/api/v1/hook/app/e0cd16a80fb1553178dbdeace2747156';
+        const LOAD_URL = String(platformAdapter.progress?.loadUrl || '');
+        const SAVE_URL = String(platformAdapter.progress?.saveUrl || '');
+        const FOLLOWUP_URL = String(platformAdapter.progress?.followupUrl || '');
+        const LOAD_ITEM = String(platformAdapter.progress?.loadItem || 'trend_deck_load_v2');
+        const SAVE_ITEM = String(platformAdapter.progress?.saveItem || 'trend_deck_save_v2');
+        const FOLLOWUP_ITEM = String(platformAdapter.progress?.followupItem || 'trend_deck_started_telegram');
         const MULTY_REQUEST_TIMEOUT_MS = 6000;
 
         const TEXT_BACK_IMG = "https://i.postimg.cc/RFxMB2Bd/1-2-copy.jpg";
@@ -657,47 +613,12 @@
         // --- Функция-помощник для всех ссылок (ОБЯЗАТЕЛЬНО должна быть глобальной) ---
         window.app_openBotLink = function(e, url) { 
             if (e) { e.preventDefault(); e.stopPropagation(); } 
-
-            if (trendPlatform === 'telegram') {
+            try {
+                platformAdapter.openUrl(url);
+            } catch (_) {
                 if (window.parent !== window) {
                     window.parent.postMessage({ type: 'mirofaktura:open-link', url }, '*');
-                } else {
-                    if (url.includes('t.me') && typeof telegramApp?.openTelegramLink === 'function') {
-                        telegramApp.openTelegramLink(url);
-                    } else if (typeof telegramApp?.openLink === 'function') {
-                        telegramApp.openLink(url);
-                    } else {
-                        window.open(url, '_blank', 'noopener');
-                    }
                 }
-                return;
-            }
-            
-            if (maxApp) {
-                if (url.includes('max.ru') || url.startsWith('max://')) {
-                    if (typeof maxApp.openMaxLink === 'function') { 
-                        maxApp.openMaxLink(url); 
-                    } else if (typeof maxApp.openLink === 'function') { 
-                        maxApp.openLink(url); 
-                    }
-                    
-                    // Закрытие окна для iOS
-                    if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-                        setTimeout(() => { 
-                            if (typeof maxApp.close === 'function') maxApp.close(); 
-                        }, 200);
-                    }
-                    return;
-                } else {
-                    if (typeof maxApp.openLink === 'function') { maxApp.openLink(url); return; }
-                }
-            }
-            
-            // Фолбэк
-            if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-                window.location.href = url;
-            } else {
-                window.open(url, '_blank');
             }
         };
 
@@ -935,10 +856,11 @@
         let isDailyDone = false, isFlipped = false, currentCardData, preloadedClayImg = null;
         let justFinished = false; 
         let isFinishingProcess = false; 
-        let shouldStartTelegramFollowup = false;
-        let telegramFollowupRequestStarted = false;
+        let shouldStartPlatformFollowup = false;
+        let platformFollowupRequestStarted = false;
 
         async function postMulty(url, payload, timeoutMs = MULTY_REQUEST_TIMEOUT_MS) {
+            if (!url) throw new Error('Multy endpoint is not configured');
             const controller = typeof AbortController === 'function' ? new AbortController() : null;
             const timeoutId = controller ? setTimeout(() => controller.abort(), timeoutMs) : null;
 
@@ -1053,31 +975,31 @@
             return mergedLegacyState;
         }
 
-        async function startTelegramFollowupOnce() {
-            if (!shouldStartTelegramFollowup || telegramFollowupRequestStarted || trendPlatform !== 'telegram' || !hasRemoteIdentity || freshPreview) return;
+        async function startPlatformFollowupOnce() {
+            if (!shouldStartPlatformFollowup || platformFollowupRequestStarted || !hasRemoteIdentity || freshPreview || !FOLLOWUP_URL) return;
 
             const markerKey = `mirofaktura_trend_followup_started_${profileKey}`;
             let followupAlreadyStarted = false;
             try { followupAlreadyStarted = localStorage.getItem(markerKey) === '1'; } catch (error) {}
             if (followupAlreadyStarted) {
-                shouldStartTelegramFollowup = false;
+                shouldStartPlatformFollowup = false;
                 return;
             }
 
-            telegramFollowupRequestStarted = true;
+            platformFollowupRequestStarted = true;
             try {
-                await postMulty(TELEGRAM_FOLLOWUP_URL, {
-                    item: 'trend_deck_started_telegram',
+                await postMulty(FOLLOWUP_URL, {
+                    item: FOLLOWUP_ITEM,
                     user_id: String(userId),
                     messenger: trendMessenger,
                     platform: trendPlatform,
                     source: 'mirofaktura-app'
                 });
                 try { localStorage.setItem(markerKey, '1'); } catch (error) {}
-                shouldStartTelegramFollowup = false;
+                shouldStartPlatformFollowup = false;
             } catch (error) {
-                telegramFollowupRequestStarted = false;
-                console.warn('Telegram trend follow-up was not started', error);
+                platformFollowupRequestStarted = false;
+                console.warn('Trend follow-up was not started', error);
             }
         }
 
@@ -1093,7 +1015,7 @@
                 finishLoad(callback);
                 return;
             }
-            if (!hasRemoteIdentity) {
+            if (!hasRemoteIdentity || !LOAD_URL) {
                 restoreLocalState();
                 finishLoad(callback);
                 return;
@@ -1106,14 +1028,16 @@
             const localOnboardingSeen = appData.onboardingSeen === true;
             let shouldPersistMergedState = mergedLegacyState;
             try {
-                const data = await postMulty(LOAD_URL, {
-                    item: 'trend_deck_load_v2',
-                    user_id: String(userId),
-                    profile_key: profileKey,
-                    platform: trendPlatform,
-                    messenger: trendMessenger,
-                    source: 'mirofaktura-app'
-                });
+                const data = typeof platformAdapter.loadProgress === 'function'
+                    ? await platformAdapter.loadProgress()
+                    : await postMulty(LOAD_URL, {
+                        item: LOAD_ITEM,
+                        user_id: String(userId),
+                        profile_key: profileKey,
+                        platform: trendPlatform,
+                        messenger: trendMessenger,
+                        source: 'mirofaktura-app'
+                    });
                 if (data.exists === true) {
                     const remoteFirstLaunchTime = Number(data.first_launch_time);
                     if (Number.isFinite(remoteFirstLaunchTime) && remoteFirstLaunchTime > 0) {
@@ -1173,11 +1097,13 @@
 
         async function saveState() {
             try { localStorage.setItem(STORAGE_KEY, JSON.stringify(appData)); } catch(e) {}
-            if (freshPreview || !hasRemoteIdentity) return;
+            if (freshPreview || !hasRemoteIdentity || !SAVE_URL) return;
             try {
                 const cardsString = JSON.stringify(appData.collected);
-                await postMulty(SAVE_URL, {
-                        item: 'trend_deck_save_v2',
+                if (typeof platformAdapter.saveProgress === 'function') {
+                    await platformAdapter.saveProgress(appData);
+                } else await postMulty(SAVE_URL, {
+                        item: SAVE_ITEM,
                         user_id: String(userId),
                         profile_key: profileKey,
                         first_name: String(firstName),
@@ -1484,15 +1410,17 @@
                 if (isFinishingProcess) return;
                 isFinishingProcess = true;
 
-                try {
-                    const data = await postMulty(LOAD_URL, {
-                            item: 'trend_deck_load_v2',
+                if (LOAD_URL && hasRemoteIdentity) try {
+                    const data = typeof platformAdapter.loadProgress === 'function'
+                        ? await platformAdapter.loadProgress()
+                        : await postMulty(LOAD_URL, {
+                            item: LOAD_ITEM,
                             user_id: String(userId),
                             profile_key: profileKey,
                             platform: trendPlatform,
                             messenger: trendMessenger,
                             source: 'mirofaktura-app'
-                    }, 2500);
+                        }, 2500);
                     if (data && data.exists === true) {
                         appData.bonusCards = Number(data.bonus_cards) || 0;
                         appData.invitedFriends = Number(data.invited_friends) || 0;
@@ -1526,7 +1454,8 @@
                 
                 if (!appData.collected.includes(currentCardData.id)) appData.collected.push(currentCardData.id);
                 saveState(); renderLibrary();
-                startTelegramFollowupOnce();
+                platformAdapter.reportCardOpened?.({ cardId: currentCardData.id }).catch(() => {});
+                startPlatformFollowupOnce();
 
                 if (appData.bonusCards > 0) {
                     setTimeout(() => {
@@ -1592,27 +1521,27 @@
                     pendingShareRequested = true;
                     return;
                 }
-                const shareUrl = `${trendEntryUrl}?start=${encodeURIComponent(String(userId))}`;
+                const shareUrl = platformAdapter.getReferralLink(userId);
                 const text = `Мне выпал стратегический тренд 2026: ${currentCardData.title}\n\nЗагляни в будущее и собери свою коллекцию инсайтов 👇`;
                 const fullText = text + '\n' + shareUrl;
 
-                if (trendPlatform === 'telegram') {
-                    if (window.parent !== window) {
-                        window.parent.postMessage({
-                            type: 'mirofaktura:share',
-                            title: 'Тренды 2026',
-                            text,
-                            url: shareUrl
-                        }, '*');
-                        return;
+                if (typeof platformAdapter.share === 'function') {
+                    try {
+                        const shared = await platformAdapter.share({ title: 'Тренды 2026', text, url: shareUrl });
+                        if (shared) return;
+                    } catch (error) {
+                        if (error?.name === 'AbortError') return;
                     }
+                }
 
-                    const telegramShareUrl = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(text)}`;
-                    const telegramApp = window.Telegram?.WebApp;
-                    if (typeof telegramApp?.openTelegramLink === 'function') {
-                        telegramApp.openTelegramLink(telegramShareUrl);
-                        return;
-                    }
+                if (window.parent !== window) {
+                    window.parent.postMessage({
+                        type: 'mirofaktura:share',
+                        title: 'Тренды 2026',
+                        text,
+                        url: shareUrl
+                    }, '*');
+                    return;
                 }
 
                 const fallbackCopy = () => {
@@ -1661,7 +1590,7 @@
                 if (window.parent !== window) {
                     window.parent.postMessage({ type: 'mirofaktura:navigate', page: 'home' }, '*');
                 } else {
-                    window.location.href = `./?platform=${encodeURIComponent(trendPlatform)}`;
+                    window.location.href = trendPlatform === 'max' ? './max/' : './';
                 }
             });
             document.getElementById('btn-invite-friend').addEventListener('click', triggerShare);
@@ -1737,12 +1666,28 @@
             }
             document.getElementById('btn-tab-daily').addEventListener('click', ()=>toggleView('daily')); document.getElementById('btn-tab-collection').addEventListener('click', ()=>toggleView('collection')); document.getElementById('btn-tab-authors').addEventListener('click', ()=>toggleView('authors'));
             instance.showTab = toggleView;
+            instance.handleBack = () => {
+                const visibleOverlays = ['custom-dialog', 'consultation-modal', 'read-trend-modal', 'legal-text-modal', 'legal-modal'];
+                for (const id of visibleOverlays) {
+                    const overlay = document.getElementById(id);
+                    if (overlay?.classList.contains('visible')) {
+                        overlay.classList.remove('visible');
+                        return true;
+                    }
+                }
+                if (document.getElementById('library-view')?.classList.contains('visible')
+                    || document.getElementById('authors-view')?.classList.contains('visible')) {
+                    toggleView('daily');
+                    return true;
+                }
+                return false;
+            };
 
             // ОНБОРДИНГ
             const onboardView = document.getElementById('onboarding-view');
             
             if(!appData.onboardingSeen && !isGameOver()) {
-                shouldStartTelegramFollowup = trendPlatform === 'telegram' && hasRemoteIdentity;
+                shouldStartPlatformFollowup = hasRemoteIdentity;
                 container.classList.add('native-onboarding-active');
                 nativeAppShell?.classList.add('native-onboarding-active');
                 onboardView.classList.add('visible'); onboardView.style.opacity = '1';
@@ -1766,7 +1711,7 @@
                     nativeAppShell?.classList.remove('native-onboarding-active');
                     appData.onboardingSeen=true; 
                     saveState(); 
-                    startTelegramFollowupOnce();
+                    startPlatformFollowupOnce();
                     toggleView('daily');
                     if (!isGameOver()) {
                         canvasDiv.style.transition = 'opacity 0.3s ease-in-out'; canvasDiv.style.opacity = '1';
@@ -1804,10 +1749,8 @@
         const currentMount = ++mountSerial;
         if (activeDeckInstance?.destroy) activeDeckInstance.destroy();
         activeDeckInstance = null;
-        loadMaxBridge(() => {
-            if (currentMount !== mountSerial) return;
-            activeDeckInstance = initMainApp(options);
-        });
+        if (currentMount !== mountSerial) return null;
+        activeDeckInstance = initMainApp(options);
         return activeDeckInstance;
     }
 
@@ -1841,6 +1784,9 @@
         isMounted() {
             return Boolean(activeDeckInstance);
         },
+        isReady() {
+            return typeof activeDeckInstance?.showTab === 'function';
+        },
         share() {
             if (activeDeckInstance?.share) {
                 activeDeckInstance.share();
@@ -1851,6 +1797,9 @@
                 return true;
             }
             return false;
+        },
+        handleBack() {
+            return activeDeckInstance?.handleBack?.() === true;
         },
         showTab(tab) {
             activeDeckInstance?.showTab?.(tab);
