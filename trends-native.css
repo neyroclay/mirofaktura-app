@@ -992,3 +992,162 @@ html.native-legal-open body {
     font-size: 14px !important;
   }
 }
+
+/* Selected waiting-screen direction: a light shell with a strong teal timer. */
+.trends-native-screen #c37.trend-native-embedded #game-ui.waiting-for-next-card .native-waiting-sheet,
+.trends-native-screen #c37.trend-native-embedded.platform-max #game-ui.waiting-for-next-card .native-waiting-sheet {
+  padding: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.96);
+  border-radius: 32px;
+  background:
+    radial-gradient(circle at 10% 4%, rgba(249, 236, 159, 0.2), transparent 34%),
+    linear-gradient(150deg, rgba(255, 255, 252, 0.98), rgba(244, 252, 249, 0.97));
+  box-shadow:
+    0 22px 52px rgba(7, 57, 54, 0.13),
+    inset 0 1px 0 rgba(255, 255, 255, 0.98);
+}
+
+.trends-native-screen #c37.trend-native-embedded #game-ui.waiting-for-next-card #daily-timer {
+  min-height: 0;
+  padding: 0 !important;
+  margin: 0 0 20px !important;
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 0 !important;
+  border-radius: 0 !important;
+  color: #073936;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.trends-native-screen #c37.trend-native-embedded #game-ui.waiting-for-next-card #daily-timer > div:first-child {
+  margin-bottom: 11px;
+  color: rgba(65, 92, 91, 0.74) !important;
+  font-size: 10px !important;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+}
+
+.trends-native-screen #c37.trend-native-embedded #game-ui.waiting-for-next-card .timer-digits {
+  display: flex;
+  width: 100%;
+  min-height: 126px;
+  margin-top: 0;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 24px;
+  color: #fff !important;
+  font-size: clamp(40px, 11vw, 48px) !important;
+  line-height: 1;
+  letter-spacing: -1.4px;
+  background-color: #07524d;
+  background-image:
+    radial-gradient(circle at 14% 24%, rgba(255, 216, 74, 0.24), transparent 29%),
+    radial-gradient(circle at 92% 14%, rgba(105, 245, 236, 0.13), transparent 38%),
+    linear-gradient(135deg, rgba(7, 57, 54, 0.94) 0%, rgba(7, 110, 107, 0.88) 52%, rgba(13, 151, 147, 0.72) 100%),
+    url('./assets/trends-waiting-panel.webp');
+  background-position: center 62%;
+  background-size: cover;
+  background-blend-mode: normal;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    0 16px 30px rgba(5, 67, 67, 0.2);
+  text-shadow: 0 3px 16px rgba(0, 20, 20, 0.24);
+}
+
+.trends-native-screen #c37.trend-native-embedded #game-ui.waiting-for-next-card #invite-title {
+  margin-bottom: 10px !important;
+  color: #073936 !important;
+  font-size: 17px !important;
+  letter-spacing: 0.025em !important;
+}
+
+.trends-native-screen #c37.trend-native-embedded #game-ui.waiting-for-next-card #invite-desc {
+  margin-inline: auto;
+  margin-bottom: 15px !important;
+  max-width: 282px;
+  color: rgba(31, 46, 46, 0.7) !important;
+}
+
+.trends-native-screen #c37.trend-native-embedded #game-ui.waiting-for-next-card #invite-desc > div {
+  min-height: 42px;
+  margin-top: 14px;
+  padding: 9px 14px !important;
+  border: 1px solid rgba(89, 205, 193, 0.3) !important;
+  border-radius: 999px !important;
+  background: linear-gradient(100deg, rgba(249, 236, 159, 0.54), rgba(225, 248, 242, 0.84)) !important;
+}
+
+.trends-native-screen #c37.trend-native-embedded #game-ui.waiting-for-next-card #btn-invite-friend {
+  min-height: 58px;
+  border-color: rgba(255, 255, 255, 0.4) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    0 13px 26px rgba(8, 85, 82, 0.19) !important;
+}
+
+@media (orientation: landscape) {
+  .trends-native-screen #c37.trend-native-embedded #game-ui.waiting-for-next-card {
+    padding-right: 20px !important;
+    padding-left: 20px !important;
+  }
+
+  .trends-native-screen #c37.trend-native-embedded #game-ui.waiting-for-next-card #done-ui {
+    max-width: 360px !important;
+  }
+
+  .trends-native-screen #c37.trend-native-embedded #game-ui.waiting-for-next-card .native-waiting-sheet,
+  .trends-native-screen #c37.trend-native-embedded.platform-max #game-ui.waiting-for-next-card .native-waiting-sheet {
+    grid-template-columns: minmax(110px, 0.8fr) minmax(160px, 1.2fr);
+    width: 100%;
+    padding: 10px 12px;
+    transform: translateY(-4px) !important;
+  }
+
+  .trends-native-screen #c37.trend-native-embedded #game-ui.waiting-for-next-card #daily-timer {
+    min-height: 58px;
+    padding: 10px 12px !important;
+    margin: 0 !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-right: 0 !important;
+    border-bottom: 0 !important;
+    border-radius: 18px !important;
+    color: #fff;
+    background-color: #07524d !important;
+    background-image:
+      radial-gradient(circle at 14% 24%, rgba(255, 216, 74, 0.24), transparent 29%),
+      radial-gradient(circle at 92% 14%, rgba(105, 245, 236, 0.13), transparent 38%),
+      linear-gradient(135deg, rgba(7, 57, 54, 0.94) 0%, rgba(7, 110, 107, 0.88) 52%, rgba(13, 151, 147, 0.72) 100%),
+      url('./assets/trends-waiting-panel.webp') !important;
+    background-position: center 62% !important;
+    background-size: cover !important;
+    background-blend-mode: normal;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.16),
+      0 12px 22px rgba(5, 67, 67, 0.18) !important;
+  }
+
+  .trends-native-screen #c37.trend-native-embedded #game-ui.waiting-for-next-card #daily-timer > div:first-child {
+    margin-bottom: 0;
+    color: rgba(240, 255, 252, 0.76) !important;
+  }
+
+  .trends-native-screen #c37.trend-native-embedded #game-ui.waiting-for-next-card .timer-digits {
+    width: auto;
+    min-height: 0;
+    margin-top: 3px;
+    border: 0;
+    border-radius: 0;
+    font-size: 27px !important;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .trends-native-screen #c37.trend-native-embedded #game-ui.waiting-for-next-card #btn-invite-friend {
+    min-height: 52px;
+  }
+}

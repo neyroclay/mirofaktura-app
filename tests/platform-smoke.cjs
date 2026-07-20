@@ -233,6 +233,11 @@ async function testMaxWaitingLayout(browser, viewport, suffix) {
 
   const geometry = await page.evaluate(() => {
     const sheet = document.querySelector('.native-waiting-sheet').getBoundingClientRect();
+    const timer = document.querySelector('#daily-timer');
+    const timerStyle = getComputedStyle(timer);
+    const timerDigitsStyle = getComputedStyle(document.querySelector('.timer-digits'));
+    const inviteButton = document.querySelector('#btn-invite-friend');
+    const inviteButtonRect = inviteButton.getBoundingClientRect();
     const topbar = document.querySelector('.topbar').getBoundingClientRect();
     const tabs = document.querySelector('.trends-native-tabs').getBoundingClientRect();
     const host = document.querySelector('.trends-native-host').getBoundingClientRect();
@@ -247,6 +252,8 @@ async function testMaxWaitingLayout(browser, viewport, suffix) {
       host: { top: host.top, bottom: host.bottom },
       gameUi: { top: gameUi.top, bottom: gameUi.bottom },
       nav: { top: nav.top, bottom: nav.bottom },
+      timer: { backgroundImage: `${timerStyle.backgroundImage} ${timerDigitsStyle.backgroundImage}`, height: timer.getBoundingClientRect().height },
+      inviteButton: { display: getComputedStyle(inviteButton).display, bottom: inviteButtonRect.bottom, height: inviteButtonRect.height },
       availableCenter,
       sheetCenter,
       offset: sheetCenter - availableCenter
@@ -254,6 +261,9 @@ async function testMaxWaitingLayout(browser, viewport, suffix) {
   });
   await page.screenshot({ path: path.join(artifacts, `max-waiting-${suffix}.png`), fullPage: true });
   assert(geometry.sheet.bottom <= geometry.nav.top - 8, `Waiting panel is clipped by navigation: ${JSON.stringify(geometry)}`);
+  assert(geometry.timer.backgroundImage.includes('trends-waiting-panel.webp'), `MAX waiting timer visual is missing: ${JSON.stringify(geometry)}`);
+  assert(geometry.inviteButton.display !== 'none' && geometry.inviteButton.height >= 48, `MAX invite action is missing: ${JSON.stringify(geometry)}`);
+  assert(geometry.inviteButton.bottom <= geometry.sheet.bottom + 1, `MAX invite action requires internal scrolling: ${JSON.stringify(geometry)}`);
   if (viewport.height >= 700) {
     assert(Math.abs(geometry.offset) <= 72, `Waiting panel is not vertically centered: ${JSON.stringify(geometry)}`);
   }
@@ -294,16 +304,21 @@ async function testTelegramWaitingLayout(browser) {
     const canvas = document.querySelector('#canvas-container canvas');
     const inviteButton = document.querySelector('#btn-invite-friend');
     const inviteButtonRect = inviteButton.getBoundingClientRect();
+    const timer = document.querySelector('#daily-timer');
+    const timerStyle = getComputedStyle(timer);
+    const timerDigitsStyle = getComputedStyle(document.querySelector('.timer-digits'));
     return {
       sheet: { top: sheet.top, bottom: sheet.bottom },
       navTop: nav.top,
       offset: ((sheet.top + sheet.bottom) / 2) - ((tabs.bottom + nav.top) / 2),
       canvasVisibility: getComputedStyle(canvas).visibility,
+      timer: { backgroundImage: `${timerStyle.backgroundImage} ${timerDigitsStyle.backgroundImage}`, height: timer.getBoundingClientRect().height },
       inviteButton: { display: getComputedStyle(inviteButton).display, top: inviteButtonRect.top, bottom: inviteButtonRect.bottom, height: inviteButtonRect.height }
     };
   });
   await page.screenshot({ path: path.join(artifacts, 'telegram-waiting-phone-portrait.png'), fullPage: true });
   assert(geometry.canvasVisibility === 'hidden', `Telegram waiting screen still shows the daily card: ${JSON.stringify(geometry)}`);
+  assert(geometry.timer.backgroundImage.includes('trends-waiting-panel.webp'), `Telegram waiting timer visual is missing: ${JSON.stringify(geometry)}`);
   assert(geometry.inviteButton.display !== 'none' && geometry.inviteButton.height >= 48, `Telegram invite action is missing: ${JSON.stringify(geometry)}`);
   assert(geometry.inviteButton.bottom <= geometry.sheet.bottom + 1, `Telegram invite action requires internal scrolling: ${JSON.stringify(geometry)}`);
   assert(geometry.sheet.bottom <= geometry.navTop - 8, `Telegram waiting panel is clipped by navigation: ${JSON.stringify(geometry)}`);
