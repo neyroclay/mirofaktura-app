@@ -1333,9 +1333,8 @@
                 } else {
                     gameUi?.classList.remove('just-finished');
                     gameUi?.classList.add('waiting-for-next-card');
-                    const keepLastCardVisible = trendPlatform === 'max';
-                    canvasDiv.style.opacity = keepLastCardVisible ? '1' : '0';
-                    canvasDiv.style.visibility = keepLastCardVisible ? 'visible' : 'hidden';
+                    canvasDiv.style.opacity = '0';
+                    canvasDiv.style.visibility = 'hidden';
                     if (collectionHint) collectionHint.style.display = 'none';
                     timerBox.style.display = 'block';
                     inviteBanner.style.display = 'block';
