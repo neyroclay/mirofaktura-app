@@ -251,6 +251,34 @@ async function testTelegram(browser) {
   return diagnostics;
 }
 
+async function testTelegramOnboardingLayout(browser) {
+  const context = await browser.newContext({ viewport: { width: 480, height: 1218 }, deviceScaleFactor: 1 });
+  const page = await context.newPage();
+  const diagnostics = collectDiagnostics(page, 'telegram-onboarding-layout');
+  await installTelegramStub(page);
+  await page.route('https://cb.multy.ai/**', (route) => route.fulfill({
+    status: 200,
+    contentType: 'application/json',
+    body: JSON.stringify({ exists: false })
+  }));
+  await page.goto(`${BASE_URL}/index.html`, { waitUntil: 'domcontentloaded' });
+  await page.click('[data-action="openTrends"]');
+  await page.waitForSelector('#onboarding-view.visible', { timeout: 15000 });
+  await page.waitForFunction(() => window.MirofacturaTrendDeck?.isReady?.() === true, null, { timeout: 15000 });
+  const geometry = await page.evaluate(() => {
+    const topbar = document.querySelector('.topbar').getBoundingClientRect();
+    const card = document.querySelector('#onboarding-view').getBoundingClientRect();
+    const nav = document.querySelector('.bottom-nav').getBoundingClientRect();
+    const availableCenter = (topbar.bottom + nav.top) / 2;
+    const cardCenter = (card.top + card.bottom) / 2;
+    return { availableCenter, cardCenter, offset: cardCenter - availableCenter };
+  });
+  assert(Math.abs(geometry.offset) <= 48, `Telegram onboarding is not vertically centered: ${JSON.stringify(geometry)}`);
+  await page.screenshot({ path: path.join(artifacts, 'telegram-onboarding-tall.png'), fullPage: true });
+  await context.close();
+  return diagnostics;
+}
+
 (async () => {
   const executablePath = process.env.MIROFAKTURA_BROWSER_PATH || 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
   const browser = await chromium.launch({ headless: true, executablePath });
@@ -262,6 +290,7 @@ async function testTelegram(browser) {
     results.push(await testMax(browser, { width: 768, height: 1024 }, 'tablet-portrait'));
     results.push(await testMax(browser, { width: 1024, height: 768 }, 'tablet-landscape'));
     results.push(await testMaxPersistence(browser));
+    results.push(await testTelegramOnboardingLayout(browser));
   } finally {
     await browser.close();
   }
