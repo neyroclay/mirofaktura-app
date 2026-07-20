@@ -11,10 +11,8 @@
   const URL_PARAMS = new URLSearchParams(window.location.search);
   const TELEGRAM_LAUNCH_PARAMS = new URLSearchParams(window.location.hash.replace(/^#/, ''));
   const NATIVE_TRENDS_MODE = URL_PARAMS.get('trends_native');
+  const NATIVE_TRENDS_ASSET_VERSION = '20260719-tg-fast-open-01';
   const APP_PLATFORM = platformAdapter.key;
-  const NATIVE_TRENDS_ASSET_VERSION = APP_PLATFORM === 'telegram'
-    ? '20260720-tg-onboarding-center-09'
-    : '20260719-tg-fast-open-01';
   document.documentElement.dataset.mirofacturaPlatform = APP_PLATFORM;
   const USE_NATIVE_TRENDS = NATIVE_TRENDS_MODE !== '0';
   const PLATFORM = {
