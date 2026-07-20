@@ -4,57 +4,160 @@
     let mountSerial = 0;
     let pendingShareRequested = false;
     const DEFAULT_CONTAINER_ID = 'c37';
-    const DECK_LIBRARIES = [
-        { src: 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js', globalName: 'THREE' },
-        { src: 'https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js', globalName: 'TWEEN' },
-        { src: 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js', globalName: 'confetti' }
+    const REQUIRED_DECK_LIBRARIES = [
+        {
+            sources: [
+                'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js',
+                'https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js'
+            ],
+            globalName: 'THREE'
+        },
+        {
+            sources: [
+                'https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js',
+                'https://cdn.jsdelivr.net/npm/@tweenjs/tween.js@18.6.4/dist/tween.umd.js'
+            ],
+            globalName: 'TWEEN'
+        }
+    ];
+    const OPTIONAL_DECK_LIBRARIES = [
+        {
+            sources: [
+                'https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js',
+                'https://cdnjs.cloudflare.com/ajax/libs/canvas-confetti/1.6.0/confetti.browser.min.js'
+            ],
+            globalName: 'confetti'
+        }
     ];
     let deckLibrariesPromise = null;
 
-    function loadDeckLibrary({ src, globalName }) {
+    function loadDeckLibrary({ sources, globalName }) {
         if (window[globalName]) return Promise.resolve();
 
         return new Promise((resolve) => {
-            let script = document.querySelector(`script[src="${src}"]`);
             let settled = false;
+            let sourceIndex = 0;
+            let timeoutId = 0;
+            let attempt = 0;
             const finish = () => {
                 if (settled) return;
                 settled = true;
                 window.clearTimeout(timeoutId);
                 resolve();
             };
-            const timeoutId = window.setTimeout(finish, 8000);
-
-            if (script) {
-                if (script.dataset.mirofacturaLoadState === 'loaded' || script.dataset.mirofacturaLoadState === 'failed') {
+            const tryNextSource = () => {
+                if (window[globalName]) {
                     finish();
                     return;
                 }
-                script.addEventListener('load', finish, { once: true });
-                script.addEventListener('error', finish, { once: true });
-                return;
-            }
+                if (sourceIndex >= sources.length) {
+                    finish();
+                    return;
+                }
 
-            script = document.createElement('script');
-            script.src = src;
-            script.dataset.mirofacturaLoadState = 'loading';
-            script.addEventListener('load', () => {
-                script.dataset.mirofacturaLoadState = 'loaded';
-                finish();
-            }, { once: true });
-            script.addEventListener('error', () => {
-                script.dataset.mirofacturaLoadState = 'failed';
-                finish();
-            }, { once: true });
-            document.head.appendChild(script);
+                const src = sources[sourceIndex++];
+                const attemptId = ++attempt;
+                let script = document.querySelector(`script[src="${src}"]`);
+                const continueLoading = () => {
+                    if (settled || attemptId !== attempt) return;
+                    window.clearTimeout(timeoutId);
+                    if (window[globalName]) finish();
+                    else tryNextSource();
+                };
+
+                if (script?.dataset.mirofacturaLoadState === 'loaded') {
+                    continueLoading();
+                    return;
+                }
+                if (script?.dataset.mirofacturaLoadState === 'failed') {
+                    tryNextSource();
+                    return;
+                }
+                if (!script) {
+                    script = document.createElement('script');
+                    script.src = src;
+                    script.dataset.mirofacturaLoadState = 'loading';
+                    document.head.appendChild(script);
+                }
+                script.addEventListener('load', () => {
+                    script.dataset.mirofacturaLoadState = 'loaded';
+                    continueLoading();
+                }, { once: true });
+                script.addEventListener('error', () => {
+                    script.dataset.mirofacturaLoadState = 'failed';
+                    continueLoading();
+                }, { once: true });
+                timeoutId = window.setTimeout(() => {
+                    if (settled || attemptId !== attempt) return;
+                    script.dataset.mirofacturaLoadState = 'failed';
+                    tryNextSource();
+                }, 2400);
+            };
+            tryNextSource();
         });
     }
 
     function preloadDeckLibraries() {
         if (!deckLibrariesPromise) {
-            deckLibrariesPromise = Promise.all(DECK_LIBRARIES.map(loadDeckLibrary));
+            deckLibrariesPromise = Promise.all(REQUIRED_DECK_LIBRARIES.map(loadDeckLibrary));
+            OPTIONAL_DECK_LIBRARIES.forEach((library) => loadDeckLibrary(library));
         }
         return deckLibrariesPromise;
+    }
+
+    function getImageCandidates(src) {
+        const candidates = [src];
+        const match = String(src).match(/^https:\/\/cdn\.jsdelivr\.net\/gh\/([^/]+)\/([^@/]+)@[^/]+\/(.+)$/i);
+        if (match) {
+            const [, owner, repo, path] = match;
+            candidates.push(`https://raw.githubusercontent.com/${owner}/${repo}/main/${path}`);
+        }
+        return [...new Set(candidates)];
+    }
+
+    function loadImageWithFallback(src, timeoutMs = 6500) {
+        const candidates = getImageCandidates(src);
+        return new Promise((resolve, reject) => {
+            let settled = false;
+            const startedAt = Date.now();
+
+            const tryCandidate = (index) => {
+                if (settled) return;
+                if (index >= candidates.length || Date.now() - startedAt >= timeoutMs) {
+                    settled = true;
+                    reject(new Error('Image loading failed'));
+                    return;
+                }
+                const image = new Image();
+                let attemptDone = false;
+                image.crossOrigin = 'Anonymous';
+                const remaining = Math.max(800, timeoutMs - (Date.now() - startedAt));
+                const advance = () => {
+                    if (settled || attemptDone) return;
+                    attemptDone = true;
+                    window.clearTimeout(attemptTimeout);
+                    tryCandidate(index + 1);
+                };
+                const attemptTimeout = window.setTimeout(() => {
+                    if (attemptDone) return;
+                    image.src = '';
+                    advance();
+                }, Math.min(remaining, 3600));
+                image.onload = () => {
+                    if (settled || attemptDone) return;
+                    attemptDone = true;
+                    settled = true;
+                    window.clearTimeout(attemptTimeout);
+                    resolve(image);
+                };
+                image.onerror = () => {
+                    advance();
+                };
+                image.src = candidates[index];
+            };
+
+            tryCandidate(0);
+        });
     }
     // --- ТЕКСТЫ ДОКУМЕНТОВ ---
     const LEGAL_TEXT_PRIVACY = `Политика в отношении обработки персональных данных (политика конфиденциальности)
@@ -905,7 +1008,7 @@
         // --- 5. LOGIC: STATE ---
         const todayStr = new Date().toDateString();
         let appData = { lastDate:null, collected:[], onboardingSeen:false, timerSeen:false, firstLaunchTime:null, bonusCards: 0, invitedFriends: 0 };
-        let isDailyDone = false, isFlipped = false, currentCardData, preloadedClayImg = null;
+        let isDailyDone = false, isFlipped = false, currentCardData, preloadedClayImg = null, preloadedClayPromise = null;
         let justFinished = false; 
         let isFinishingProcess = false; 
         let shouldStartPlatformFollowup = false;
@@ -1179,7 +1282,13 @@
             } else {
                 let pool = CARDS_DB.filter(c => !appData.collected.includes(c.id)); if (!pool.length) pool = CARDS_DB; currentCardData = pool[getSeededRandom(pool.length)];
             }
-            preloadedClayImg = new Image(); preloadedClayImg.crossOrigin = 'Anonymous'; preloadedClayImg.src = currentCardData.imgFront;
+            preloadedClayImg = null;
+            preloadedClayPromise = loadImageWithFallback(currentCardData.imgFront)
+                .then((image) => {
+                    preloadedClayImg = image;
+                    return image;
+                })
+                .catch(() => null);
         }
 
         function updateTimer() {
@@ -1221,8 +1330,9 @@
                 } else {
                     gameUi?.classList.remove('just-finished');
                     gameUi?.classList.add('waiting-for-next-card');
-                    canvasDiv.style.opacity = '0';
-                    canvasDiv.style.visibility = 'hidden';
+                    const keepLastCardVisible = trendPlatform === 'max';
+                    canvasDiv.style.opacity = keepLastCardVisible ? '1' : '0';
+                    canvasDiv.style.visibility = keepLastCardVisible ? 'visible' : 'hidden';
                     if (collectionHint) collectionHint.style.display = 'none';
                     timerBox.style.display = 'block';
                     inviteBanner.style.display = 'block';
@@ -1324,7 +1434,7 @@
 
        // --- 7. THREE.JS ---
        function initThreeJS() {
-           if (typeof THREE === 'undefined') {
+           if (typeof THREE === 'undefined' || typeof TWEEN === 'undefined') {
                const hint = document.getElementById('main-hint');
                hint.innerHTML = "Не удалось загрузить 3D-окружение 🪄<br>Возможно, интернет-соединение нестабильно.";
                hint.style.opacity = 1; hint.style.visibility = 'visible';
@@ -1357,13 +1467,79 @@
            canvasDiv.appendChild(renderer.domElement); const canvas = renderer.domElement;
             canvas.style.touchAction = 'none';
 
+            let maxCardFallback = null;
+            let maxCardFront = null;
+            let maxCardBack = null;
+            let maxCardScratch = null;
+            let maxCardScratchCtx = null;
+            let maxCardTapTarget = null;
+            let maxCardReadAction = null;
+            let max2dDragging = false;
+
+            function paintMaxScratchLayer() {
+                if (!maxCardScratchCtx || !maxCardScratch) return;
+                const gradient = maxCardScratchCtx.createLinearGradient(0, 0, maxCardScratch.width, maxCardScratch.height);
+                gradient.addColorStop(0, '#485957');
+                gradient.addColorStop(0.52, '#6c7a77');
+                gradient.addColorStop(1, '#3d4c4a');
+                maxCardScratchCtx.globalCompositeOperation = 'source-over';
+                maxCardScratchCtx.clearRect(0, 0, maxCardScratch.width, maxCardScratch.height);
+                maxCardScratchCtx.fillStyle = gradient;
+                maxCardScratchCtx.fillRect(0, 0, maxCardScratch.width, maxCardScratch.height);
+                maxCardScratchCtx.globalAlpha = 0.16;
+                maxCardScratchCtx.fillStyle = '#ffffff';
+                for (let y = 18; y < maxCardScratch.height; y += 32) {
+                    maxCardScratchCtx.fillRect(0, y, maxCardScratch.width, 1);
+                }
+                maxCardScratchCtx.globalAlpha = 1;
+            }
+
+            function prepareMaxCardSurface(card, scratchEnabled) {
+                if (!maxCardFallback || !card) return;
+                const cardId = card.id;
+                maxCardFallback.classList.remove('is-flipped');
+                maxCardScratch.style.opacity = scratchEnabled ? '1' : '0';
+                maxCardScratch.style.visibility = scratchEnabled ? 'visible' : 'hidden';
+                maxCardScratch.style.pointerEvents = scratchEnabled ? 'auto' : 'none';
+                if (maxCardTapTarget) maxCardTapTarget.style.pointerEvents = scratchEnabled ? 'none' : 'auto';
+                if (scratchEnabled) paintMaxScratchLayer();
+
+                loadImageWithFallback(card.imgFront).then((image) => {
+                    if (!destroyed && currentCardData?.id === cardId && maxCardFront) maxCardFront.src = image.src;
+                }).catch(() => {});
+                loadImageWithFallback(card.imgBack || TEXT_BACK_IMG).then((image) => {
+                    if (!destroyed && currentCardData?.id === cardId && maxCardBack) maxCardBack.src = image.src;
+                }).catch(() => {});
+            }
+
+            if (trendPlatform === 'max') {
+                maxCardFallback = document.createElement('div');
+                maxCardFallback.className = 'max-card-fallback';
+                maxCardFallback.innerHTML = `
+                    <img class="max-card-front" alt="">
+                    <img class="max-card-back" alt="">
+                    <button type="button" class="max-card-tap-target" aria-label="Перевернуть карту"></button>
+                    <button type="button" class="max-card-read-action">Открыть текст</button>
+                    <canvas class="max-card-scratch" width="512" height="768" aria-hidden="true"></canvas>
+                `;
+                canvasDiv.insertBefore(maxCardFallback, canvas);
+                maxCardFront = maxCardFallback.querySelector('.max-card-front');
+                maxCardBack = maxCardFallback.querySelector('.max-card-back');
+                maxCardScratch = maxCardFallback.querySelector('.max-card-scratch');
+                maxCardScratchCtx = maxCardScratch.getContext('2d');
+                maxCardTapTarget = maxCardFallback.querySelector('.max-card-tap-target');
+                maxCardReadAction = maxCardFallback.querySelector('.max-card-read-action');
+                canvas.classList.add('max-card-webgl-input');
+                prepareMaxCardSurface(currentCardData, !isDailyDone || appData.bonusCards > 0);
+            }
+
             const preventCanvasTouch = function(e) { if (e.cancelable) e.preventDefault(); };
             canvas.addEventListener('touchmove', preventCanvasTouch, { passive: false });
             addCleanup(() => canvas.removeEventListener('touchmove', preventCanvasTouch));
             scene.add(new THREE.AmbientLight(0xffffff, 0.7)); const dir = new THREE.DirectionalLight(0xffffff, 0.8); dir.position.set(5, 5, 10); scene.add(dir);
 
             const cardGroup = new THREE.Group(); cardGroup.position.y = cardY; scene.add(cardGroup);
-            const cardGeo = new THREE.PlaneGeometry(3.5, 5.0); const txLoader = new THREE.TextureLoader(); txLoader.crossOrigin = 'Anonymous';
+            const cardGeo = new THREE.PlaneGeometry(3.5, 5.0);
 
             const glowGeo = new THREE.PlaneGeometry(6, 7.5); const gc = document.createElement('canvas'); gc.width = gc.height = 128; const gx = gc.getContext('2d');
             const gr = gx.createRadialGradient(64,64,0,64,64,64); gr.addColorStop(0, 'rgba(138,183,170,0.55)'); gr.addColorStop(0.5, 'rgba(138,183,170,0.16)'); gr.addColorStop(1, 'rgba(0,0,0,0)');
@@ -1374,17 +1550,19 @@
 
             const frontMat = new THREE.MeshBasicMaterial({ color:0x8AB7AA, side:THREE.FrontSide, transparent:true, opacity:0.8 });
             const frontMesh = new THREE.Mesh(cardGeo, frontMat); frontMesh.position.z = 0.01; cardGroup.add(frontMesh);
-            txLoader.load(
-               currentCardData.imgFront, 
-               tx => { 
+            const applyFrontImage = (image) => {
+                   const tx = new THREE.Texture(image);
+                   tx.needsUpdate = true;
                    frontMesh.material.map = tx; 
                    frontMesh.material.color.setHex(0xffffff); 
                    frontMesh.material.needsUpdate = true; 
                    if (isDailyDone && appData.bonusCards <= 0) window.hidePreloader(); 
-               },
-               undefined,
-               () => { window.hidePreloader(); } 
-           );
+            };
+            const frontImagePromise = preloadedClayPromise || loadImageWithFallback(currentCardData.imgFront);
+            frontImagePromise.then((image) => {
+                if (image) applyFrontImage(image);
+                else window.hidePreloader();
+            }).catch(() => window.hidePreloader());
 
             const backCvs = document.createElement('canvas'); backCvs.width = 512; backCvs.height = 768; const bCtx = backCvs.getContext('2d'); const backTex = new THREE.CanvasTexture(backCvs);
             const backMat = new THREE.MeshBasicMaterial({ map:backTex, side:THREE.FrontSide }); const backMesh = new THREE.Mesh(cardGeo, backMat); backMesh.rotation.y = Math.PI; backMesh.position.z = -0.01; cardGroup.add(backMesh);
@@ -1401,7 +1579,19 @@
                     bCtx.restore(); backTex.needsUpdate = true;
                 };
                 if (cachedBackImg && cachedBackImg.dataset.id === String(card.id)) { draw(); return; }
-                const img = new Image(); img.crossOrigin='Anonymous'; img.dataset.id = card.id; img.src = card.imgBack || TEXT_BACK_IMG; img.onload = () => { cachedBackImg = img; draw(); };
+                loadImageWithFallback(card.imgBack || TEXT_BACK_IMG)
+                    .then((img) => {
+                        img.dataset.id = card.id;
+                        cachedBackImg = img;
+                        draw();
+                    })
+                    .catch(() => {
+                        cachedBackImg = null;
+                        bCtx.clearRect(0, 0, 512, 768);
+                        bCtx.fillStyle = '#F7F7F7';
+                        bCtx.fillRect(0, 0, 512, 768);
+                        draw();
+                    });
             }
             updateBackSide(currentCardData);
 
@@ -1410,17 +1600,45 @@
                 if (clayMesh) { cardGroup.remove(clayMesh); clayMesh = null; } scratchedCells.clear();
                 maskCvs = document.createElement('canvas'); maskCvs.width = 512; maskCvs.height = 768; maskCtx = maskCvs.getContext('2d'); maskTex = new THREE.CanvasTexture(maskCvs);
                 const cm = new THREE.MeshBasicMaterial({ map:maskTex, transparent:true, side:THREE.DoubleSide, alphaTest:0.01 }); clayMesh = new THREE.Mesh(cardGeo, cm); clayMesh.position.z = 0.02; clayMesh.renderOrder = 999; cardGroup.add(clayMesh); frontMesh.visible = false;
+                const drawFallbackClay = () => {
+                   maskCtx.globalCompositeOperation = 'source-over';
+                   maskCtx.clearRect(0, 0, 512, 768);
+                   maskCtx.fillStyle = '#596765';
+                   maskCtx.fillRect(0, 0, 512, 768);
+                   maskTex.needsUpdate = true;
+                };
                 const apply = (img) => { 
-                   try { maskCtx.globalCompositeOperation = 'source-over'; maskCtx.drawImage(img, 0, 0, 512, 768); const id = maskCtx.getImageData(0,0,512,768); const d = id.data; for (let i=0; i<d.length; i+=4) { const v=0.3*d[i]+0.59*d[i+1]+0.11*d[i+2]; d[i]=v*0.5; d[i+1]=v*0.5; d[i+2]=v*0.5; } maskCtx.putImageData(id, 0, 0); maskTex.needsUpdate = true; } catch(e) {} 
+                   try {
+                       maskCtx.globalCompositeOperation = 'source-over';
+                       maskCtx.clearRect(0, 0, 512, 768);
+                       maskCtx.drawImage(img, 0, 0, 512, 768);
+                       const id = maskCtx.getImageData(0,0,512,768); const d = id.data;
+                       for (let i=0; i<d.length; i+=4) { const v=0.3*d[i]+0.59*d[i+1]+0.11*d[i+2]; d[i]=v*0.5; d[i+1]=v*0.5; d[i+2]=v*0.5; }
+                       maskCtx.putImageData(id, 0, 0);
+                       maskTex.needsUpdate = true;
+                   } catch(e) {
+                       drawFallbackClay();
+                   }
                    frontMesh.visible = true; 
                    window.hidePreloader(); 
                };
                if (preloadedClayImg?.complete && preloadedClayImg.naturalWidth > 0) { 
                    apply(preloadedClayImg); 
                } else { 
-                   const img = new Image(); img.crossOrigin='Anonymous'; img.src = currentCardData.imgFront; 
-                   img.onload = () => apply(img); 
-                   img.onerror = () => window.hidePreloader(); 
+                   (preloadedClayPromise || loadImageWithFallback(currentCardData.imgFront))
+                       .then((image) => {
+                           if (image) apply(image);
+                           else {
+                               drawFallbackClay();
+                               frontMesh.visible = true;
+                               window.hidePreloader();
+                           }
+                       })
+                       .catch(() => {
+                           drawFallbackClay();
+                           frontMesh.visible = true;
+                           window.hidePreloader();
+                       });
                }
             }
 
@@ -1440,18 +1658,45 @@
             const raycaster = new THREE.Raycaster(), mouse = new THREE.Vector2(); let isDragging=false, touchStartX=0, touchStartY=0, isTap=false, targetRotX=0, targetRotY=0, baseRotationY=0;
 
             function getMouse(e) { const r = canvas.getBoundingClientRect(); let cx, cy; if (e.changedTouches?.length) { cx=e.changedTouches[0].clientX; cy=e.changedTouches[0].clientY; } else if (e.touches?.length) { cx=e.touches[0].clientX; cy=e.touches[0].clientY; } else { cx=e.clientX; cy=e.clientY; } return { x:((cx-r.left)/r.width)*2-1, y:-((cy-r.top)/r.height)*2+1 }; }
-            function onDown(e) { if (e.cancelable) e.preventDefault(); isDragging=true; isTap=true; if (!isAudioUnlocked) { winSound.muted=true; scratchSound.muted=true; const p1=scratchSound.play(); if(p1) p1.then(()=>{scratchSound.pause();scratchSound.muted=false;}).catch(()=>{}); const p2=winSound.play(); if(p2) p2.then(()=>{winSound.pause();winSound.currentTime=0;winSound.muted=false;}).catch(()=>{}); isAudioUnlocked=true; } touchStartX = e.touches?e.touches[0].clientX:e.clientX; touchStartY = e.touches?e.touches[0].clientY:e.clientY; interact(e); }
+            function unlockAudio() { if (!isAudioUnlocked) { winSound.muted=true; scratchSound.muted=true; const p1=scratchSound.play(); if(p1) p1.then(()=>{scratchSound.pause();scratchSound.muted=false;}).catch(()=>{}); const p2=winSound.play(); if(p2) p2.then(()=>{winSound.pause();winSound.currentTime=0;winSound.muted=false;}).catch(()=>{}); isAudioUnlocked=true; } }
+            function onDown(e) { if (e.cancelable) e.preventDefault(); isDragging=true; isTap=true; unlockAudio(); touchStartX = e.touches?e.touches[0].clientX:e.clientX; touchStartY = e.touches?e.touches[0].clientY:e.clientY; interact(e); }
             function onMove(e) { updateParallax(e); if (isDragging) { if (e.cancelable) e.preventDefault(); const cx=e.touches?e.touches[0].clientX:e.clientX; const cy=e.touches?e.touches[0].clientY:e.clientY; if (Math.abs(cx-touchStartX)>15 || Math.abs(cy-touchStartY)>15) isTap=false; interact(e); } else { checkHover(e); } }
             function onUp(e) { isDragging=false; if (isScratching) { scratchSound.pause(); isScratching=false; } clearTimeout(scratchTimeout); if (isTap) { if ((isDailyDone && appData.bonusCards <= 0) || !clayMesh) { const m = getMouse(e); if (!isNaN(m.x)) { raycaster.setFromCamera(m, camera); if (isFlipped) { const hits = raycaster.intersectObject(backMesh); if (hits.length && hits[0].uv.y>0.04 && hits[0].uv.y<0.12) { window.app_openReadModal(currentCardData.id); isTap=false; return; } } const hits = raycaster.intersectObjects([frontMesh, backMesh]); if (hits.length) flipCard(); } } } isTap=false; }
             function checkHover(e) { const m=getMouse(e); if(isNaN(m.x)) return; mouse.set(m.x,m.y); raycaster.setFromCamera(mouse,camera); if (!clayMesh) { let hov=false; if (isFlipped) { const h=raycaster.intersectObject(backMesh); if(h.length&&h[0].uv.y>0.04&&h[0].uv.y<0.12) hov=true; } if (hov!==isBtnHovered) { isBtnHovered=hov; updateBackSide(currentCardData); } canvas.style.cursor='pointer'; return; } const h=raycaster.intersectObject(clayMesh); canvas.style.cursor=h.length?'crosshair':'default'; }
             function interact(e) { if (document.getElementById('library-view').classList.contains('visible') || document.getElementById('authors-view').classList.contains('visible') || document.getElementById('onboarding-view').classList.contains('visible') || document.getElementById('read-trend-modal').classList.contains('visible') || document.getElementById('legal-text-modal').classList.contains('visible') ) return; const m=getMouse(e); if(isNaN(m.x)) return; mouse.set(m.x,m.y); raycaster.setFromCamera(mouse,camera); if (clayMesh && (!isDailyDone || appData.bonusCards > 0)) { const h=raycaster.intersectObject(clayMesh); if (h.length) dig(h[0].uv.x, h[0].uv.y); } }
             
+            function recordScratchProgress(x, y) {
+                const gx=Math.floor(x/40), gy=Math.floor(y/40), key=`${gx}:${gy}`;
+                if (!scratchedCells.has(key)) { scratchedCells.add(key); const p=Math.min(100,(scratchedCells.size/80)*100); document.getElementById('p-bar').style.width=p+'%'; if (p>=100) finishDaily(); }
+            }
+
             function dig(uvX, uvY) {
                 if (isAudioUnlocked && !isScratching) { isScratching=true; const p=scratchSound.play(); if(p) p.catch(()=>{}); } clearTimeout(scratchTimeout); scratchTimeout=setTimeout(()=>{ if(isScratching){scratchSound.pause();isScratching=false;} },100);
                 const hand=document.getElementById('hand-icon'); if (hand.style.display!=='none') hand.style.display='none';
                 const x=uvX*512, y=(1-uvY)*768; maskCtx.globalCompositeOperation='destination-out'; maskCtx.beginPath(); maskCtx.arc(x,y,70,0,Math.PI*2); maskCtx.fill(); maskTex.needsUpdate=true;
-                const gx=Math.floor(x/40), gy=Math.floor(y/40), key=`${gx}:${gy}`;
-                if (!scratchedCells.has(key)) { scratchedCells.add(key); const p=Math.min(100,(scratchedCells.size/80)*100); document.getElementById('p-bar').style.width=p+'%'; if (p>=100) finishDaily(); }
+                if (maxCardScratchCtx) {
+                    maxCardScratchCtx.globalCompositeOperation = 'destination-out';
+                    maxCardScratchCtx.beginPath();
+                    maxCardScratchCtx.arc(x, y, 70, 0, Math.PI * 2);
+                    maxCardScratchCtx.fill();
+                }
+                recordScratchProgress(x, y);
+            }
+
+            function digMaxCard(clientX, clientY) {
+                if (!maxCardScratch || !maxCardScratchCtx || isFinishingProcess) return;
+                const rect = maxCardScratch.getBoundingClientRect();
+                if (!rect.width || !rect.height) return;
+                const x = Math.max(0, Math.min(512, ((clientX - rect.left) / rect.width) * 512));
+                const y = Math.max(0, Math.min(768, ((clientY - rect.top) / rect.height) * 768));
+                maxCardScratchCtx.globalCompositeOperation = 'destination-out';
+                maxCardScratchCtx.beginPath();
+                maxCardScratchCtx.arc(x, y, 70, 0, Math.PI * 2);
+                maxCardScratchCtx.fill();
+                const hand=document.getElementById('hand-icon'); if (hand.style.display!=='none') hand.style.display='none';
+                if (isAudioUnlocked && !isScratching) { isScratching=true; const p=scratchSound.play(); if(p) p.catch(()=>{}); }
+                clearTimeout(scratchTimeout); scratchTimeout=setTimeout(()=>{ if(isScratching){scratchSound.pause();isScratching=false;} },100);
+                recordScratchProgress(x, y);
             }
 
             async function finishDaily() {
@@ -1498,6 +1743,15 @@
                 justFinished = true; 
                 updateDoneUI(); 
 
+                if (maxCardScratch) {
+                    maxCardScratch.style.opacity = '0';
+                    maxCardScratch.style.pointerEvents = 'none';
+                    if (maxCardTapTarget) maxCardTapTarget.style.pointerEvents = 'auto';
+                    window.setTimeout(() => {
+                        if (maxCardScratch) maxCardScratch.style.visibility = 'hidden';
+                    }, 820);
+                }
+
                 appData.timerSeen=true; const ch=document.querySelector('.collection-hint'); if(ch) ch.style.opacity='1';
                 new TWEEN.Tween(clayMesh.material).to({opacity:0},800).onComplete(()=>{cardGroup.remove(clayMesh);clayMesh=null;}).start(); new TWEEN.Tween(frontMesh.material).to({opacity:1},1000).start();
                 glowMesh.material.color.setHex(0xFFC845); new TWEEN.Tween(glowMat).to({opacity:0.6},1000).yoyo(true).repeat(Infinity).start();
@@ -1525,13 +1779,14 @@
                 isFlipped = false; baseRotationY = 0; cardGroup.rotation.set(0,0,0);
                 selectCard();
                 createClayLayer();
+                prepareMaxCardSurface(currentCardData, true);
                 document.getElementById('done-ui').style.display = 'none';
                 document.getElementById('active-ui').style.display = 'block';
                 document.getElementById('hand-icon').style.display = 'flex';
                 updateHint('СОТРИТЕ СЛОЙ');
             });
 
-            function flipCard() { isFlipped=!isFlipped; const target=isFlipped?Math.PI:0; const el=document.getElementById('main-hint'); if (el) el.style.opacity = isFlipped?'0':'1'; new TWEEN.Tween({y:baseRotationY}).to({y:target},600).easing(TWEEN.Easing.Back.Out).onUpdate(o=>baseRotationY=o.y).start(); }
+            function flipCard() { isFlipped=!isFlipped; const target=isFlipped?Math.PI:0; const el=document.getElementById('main-hint'); if (el) el.style.opacity = isFlipped?'0':'1'; maxCardFallback?.classList.toggle('is-flipped', isFlipped); new TWEEN.Tween({y:baseRotationY}).to({y:target},600).easing(TWEEN.Easing.Back.Out).onUpdate(o=>baseRotationY=o.y).start(); }
             function updateParallax(e) { const m=getMouse(e); if (!isNaN(m.x)&&window.innerWidth>=768) { targetRotX=m.y*0.15; targetRotY=m.x*0.15; } }
             function animate(t) { if (destroyed) return; rafId = requestAnimationFrame(animate); TWEEN.update(t); cardGroup.rotation.x+=(targetRotX-cardGroup.rotation.x)*0.1; cardGroup.rotation.y+=((targetRotY+baseRotationY)-cardGroup.rotation.y)*0.1; renderer.render(scene,camera); }
             function updateHint(text) { const el=document.getElementById('main-hint'); el.style.opacity=0; setTimeout(()=>{el.textContent=text; el.style.visibility='visible'; el.style.opacity=1;},200); }
@@ -1772,6 +2027,39 @@
 
             const timerInterval = setInterval(updateTimer, 1000);
             canvas.addEventListener('pointerdown', onDown, { passive:false }); window.addEventListener('pointermove', onMove, { passive:false }); window.addEventListener('pointerup', onUp); window.addEventListener('pointercancel', onUp);
+            const onMaxScratchDown = (event) => {
+                if (!maxCardScratch || maxCardScratch.style.pointerEvents === 'none') return;
+                if (event.cancelable) event.preventDefault();
+                max2dDragging = true;
+                unlockAudio();
+                try { maxCardScratch.setPointerCapture(event.pointerId); } catch (error) {}
+                digMaxCard(event.clientX, event.clientY);
+            };
+            const onMaxScratchMove = (event) => {
+                if (!max2dDragging) return;
+                if (event.cancelable) event.preventDefault();
+                digMaxCard(event.clientX, event.clientY);
+            };
+            const onMaxScratchUp = (event) => {
+                max2dDragging = false;
+                if (isScratching) { scratchSound.pause(); isScratching=false; }
+                clearTimeout(scratchTimeout);
+                try { maxCardScratch?.releasePointerCapture(event.pointerId); } catch (error) {}
+            };
+            const onMaxCardTap = () => {
+                if (maxCardScratch?.style.pointerEvents !== 'none') return;
+                flipCard();
+            };
+            const onMaxRead = (event) => {
+                event.stopPropagation();
+                if (isFlipped) window.app_openReadModal(currentCardData.id);
+            };
+            maxCardScratch?.addEventListener('pointerdown', onMaxScratchDown, { passive:false });
+            maxCardScratch?.addEventListener('pointermove', onMaxScratchMove, { passive:false });
+            maxCardScratch?.addEventListener('pointerup', onMaxScratchUp);
+            maxCardScratch?.addEventListener('pointercancel', onMaxScratchUp);
+            maxCardTapTarget?.addEventListener('click', onMaxCardTap);
+            maxCardReadAction?.addEventListener('click', onMaxRead);
             addCleanup(() => {
                 clearInterval(timerInterval);
                 cancelAnimationFrame(rafId);
@@ -1779,6 +2067,12 @@
                 window.removeEventListener('pointermove', onMove);
                 window.removeEventListener('pointerup', onUp);
                 window.removeEventListener('pointercancel', onUp);
+                maxCardScratch?.removeEventListener('pointerdown', onMaxScratchDown);
+                maxCardScratch?.removeEventListener('pointermove', onMaxScratchMove);
+                maxCardScratch?.removeEventListener('pointerup', onMaxScratchUp);
+                maxCardScratch?.removeEventListener('pointercancel', onMaxScratchUp);
+                maxCardTapTarget?.removeEventListener('click', onMaxCardTap);
+                maxCardReadAction?.removeEventListener('click', onMaxRead);
             });
             const resizeScene = ()=>{
                 if (destroyed) return;
