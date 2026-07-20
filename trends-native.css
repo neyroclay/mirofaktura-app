@@ -82,102 +82,6 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-/* MAX WebView can keep a working WebGL context while presenting its canvas as
-   transparent. The 2D card mirrors the same state and scratch progress, while
-   the invisible WebGL surface continues to handle the established gestures. */
-.trends-native-screen #c37.trend-native-embedded .max-card-fallback {
-  position: absolute;
-  top: clamp(24px, 5vh, 52px);
-  left: 50%;
-  z-index: 1;
-  width: min(72%, 292px);
-  aspect-ratio: 7 / 10;
-  border-radius: 15px;
-  overflow: hidden;
-  background: #8ab7aa;
-  box-shadow: 0 18px 42px rgba(7, 57, 54, 0.16);
-  transform: translateX(-50%);
-  pointer-events: auto;
-}
-
-.trends-native-screen #c37.trend-native-embedded .max-card-fallback img,
-.trends-native-screen #c37.trend-native-embedded .max-card-scratch {
-  position: absolute;
-  inset: 0;
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-
-.trends-native-screen #c37.trend-native-embedded .max-card-fallback img {
-  object-fit: cover;
-}
-
-.trends-native-screen #c37.trend-native-embedded .max-card-back {
-  opacity: 0;
-}
-
-.trends-native-screen #c37.trend-native-embedded .max-card-fallback.is-flipped .max-card-front {
-  opacity: 0;
-}
-
-.trends-native-screen #c37.trend-native-embedded .max-card-fallback.is-flipped .max-card-back {
-  opacity: 1;
-}
-
-.trends-native-screen #c37.trend-native-embedded .max-card-read-action {
-  position: absolute;
-  right: 10%;
-  bottom: 4.5%;
-  left: 10%;
-  z-index: 3;
-  display: none;
-  min-height: 42px;
-  place-items: center;
-  border-radius: 999px;
-  color: #073936;
-  background: linear-gradient(105deg, #f9ec9f 0%, #def8f1 68%, #cff5f1 100%);
-  box-shadow: 0 8px 18px rgba(14, 77, 72, 0.14);
-  font-size: 13px;
-  font-weight: 850;
-  font-family: inherit;
-  border: 0;
-  cursor: pointer;
-}
-
-.trends-native-screen #c37.trend-native-embedded .max-card-fallback.is-flipped .max-card-read-action {
-  display: grid;
-}
-
-.trends-native-screen #c37.trend-native-embedded .max-card-scratch {
-  z-index: 4;
-  transition: opacity 800ms ease;
-  touch-action: none;
-  cursor: crosshair;
-}
-
-.trends-native-screen #c37.trend-native-embedded .max-card-tap-target {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  display: block;
-  width: 100%;
-  height: 100%;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.trends-native-screen #c37.trend-native-embedded .max-card-webgl-input {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  opacity: 0;
-  pointer-events: none;
-}
-
 /* When the completed-collection card fits, keep it visually centered in the
    free space between the top tabs and the app navigation. On shorter screens
    the spacers collapse to zero, so the card stays top-aligned and scrollable. */
@@ -505,7 +409,9 @@ html.native-legal-open body {
 .app-shell.trends-native-shell.native-onboarding-active .trends-native-screen {
   height: auto;
   min-height: 100svh;
-  display: block;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
   padding-bottom: calc(116px + env(safe-area-inset-bottom));
   overflow: visible;
   overscroll-behavior: auto;
@@ -516,13 +422,21 @@ html.native-legal-open body {
 }
 
 .app-shell.trends-native-shell.native-onboarding-active .trends-native-page {
-  display: block;
-  margin-top: clamp(22px, 4vh, 36px);
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  min-height: 0;
+  margin-top: 0;
+  padding: clamp(18px, 3vh, 36px) 0;
+  box-sizing: border-box;
 }
 
 @media (max-height: 760px) {
   .app-shell.trends-native-shell.native-onboarding-active .trends-native-page {
-    margin-top: 10px;
+    justify-content: flex-start;
+    padding-top: 10px;
   }
 
   .trends-native-screen #c37.trend-native-embedded.native-onboarding-active #onboarding-view {
@@ -849,5 +763,96 @@ html.native-legal-open body {
 
   .trends-native-screen #c37.trend-native-embedded #game-ui.waiting-for-next-card #btn-invite-friend {
     min-height: 52px;
+  }
+}
+
+/* MAX keeps the opened 3D card on screen while the next-card panel is shown.
+   Keep the whole panel above the app navigation instead of letting its action
+   button slide underneath the fixed menu. */
+.trends-native-screen #c37.trend-native-embedded.platform-max #game-ui.waiting-for-next-card .native-waiting-sheet {
+  bottom: calc(110px + env(safe-area-inset-bottom));
+}
+
+@media (max-height: 900px) and (orientation: portrait) {
+  .trends-native-screen #c37.trend-native-embedded.platform-max #game-ui.waiting-for-next-card .native-waiting-sheet {
+    padding: 12px 14px 11px;
+  }
+
+  .trends-native-screen #c37.trend-native-embedded.platform-max #game-ui.waiting-for-next-card #daily-timer {
+    padding-bottom: 9px !important;
+    margin-bottom: 9px !important;
+  }
+
+  .trends-native-screen #c37.trend-native-embedded.platform-max #game-ui.waiting-for-next-card .timer-digits {
+    font-size: 29px !important;
+  }
+
+  .trends-native-screen #c37.trend-native-embedded.platform-max #game-ui.waiting-for-next-card #invite-title {
+    margin-bottom: 5px !important;
+    font-size: 14px !important;
+  }
+
+  .trends-native-screen #c37.trend-native-embedded.platform-max #game-ui.waiting-for-next-card #invite-desc {
+    margin-bottom: 7px !important;
+    font-size: 12px !important;
+    line-height: 1.3 !important;
+  }
+
+  .trends-native-screen #c37.trend-native-embedded.platform-max #game-ui.waiting-for-next-card #invite-desc > div {
+    margin-top: 7px;
+    padding-block: 7px !important;
+  }
+
+  .trends-native-screen #c37.trend-native-embedded.platform-max #game-ui.waiting-for-next-card #btn-invite-friend {
+    min-height: 48px;
+    font-size: 15px !important;
+  }
+}
+
+@media (orientation: landscape) {
+  .trends-native-screen #c37.trend-native-embedded.platform-max #game-ui.waiting-for-next-card .native-waiting-sheet {
+    top: 8px;
+    bottom: auto;
+    left: 67%;
+    display: grid;
+    grid-template-columns: minmax(88px, 0.8fr) minmax(132px, 1.2fr);
+    gap: 10px;
+    width: min(64%, 280px);
+    padding: 9px 10px;
+    align-items: center;
+  }
+
+  .trends-native-screen #c37.trend-native-embedded.platform-max #game-ui.waiting-for-next-card #daily-timer {
+    padding: 0 10px 0 0 !important;
+    margin: 0 !important;
+    border-right: 1px solid rgba(82, 124, 118, 0.16);
+    border-bottom: 0;
+  }
+
+  .trends-native-screen #c37.trend-native-embedded.platform-max #game-ui.waiting-for-next-card #daily-timer > div:first-child {
+    font-size: 8px !important;
+    line-height: 1.2;
+  }
+
+  .trends-native-screen #c37.trend-native-embedded.platform-max #game-ui.waiting-for-next-card .timer-digits {
+    font-size: 24px !important;
+    letter-spacing: -0.5px;
+  }
+
+  .trends-native-screen #c37.trend-native-embedded.platform-max #game-ui.waiting-for-next-card #invite-title,
+  .trends-native-screen #c37.trend-native-embedded.platform-max #game-ui.waiting-for-next-card #invite-desc {
+    display: none !important;
+  }
+
+  .trends-native-screen #c37.trend-native-embedded.platform-max #game-ui.waiting-for-next-card #btn-invite-friend {
+    min-height: 48px;
+    gap: 4px;
+    padding: 0 6px !important;
+    font-size: 12px !important;
+    white-space: nowrap;
+  }
+
+  .trends-native-screen #c37.trend-native-embedded.platform-max #game-ui.waiting-for-next-card #btn-invite-friend .material-icons-round {
+    display: none;
   }
 }
