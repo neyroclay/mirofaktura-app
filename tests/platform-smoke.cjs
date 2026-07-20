@@ -187,6 +187,11 @@ async function testMaxPersistence(browser) {
   await page.click('[data-trends-tab="collection"]');
   await page.waitForTimeout(100);
   assert(await page.locator('#lib-grid-content .lib-card-container').count() >= 1, 'Saved card was not restored in the collection');
+  const maxCollectionCard = page.locator('#lib-grid-content .lib-card-container').first();
+  await maxCollectionCard.click();
+  await page.waitForTimeout(700);
+  assert(await maxCollectionCard.evaluate((card) => card.classList.contains('flipped')), 'Saved MAX collection card did not flip');
+  assert(await maxCollectionCard.locator('.lib-card-inner').evaluate((inner) => getComputedStyle(inner).transform !== 'none'), 'Saved MAX collection card has no flip transform');
   await context.close();
   return diagnostics;
 }
@@ -303,6 +308,13 @@ async function testTelegramWaitingLayout(browser) {
   assert(geometry.inviteButton.bottom <= geometry.sheet.bottom + 1, `Telegram invite action requires internal scrolling: ${JSON.stringify(geometry)}`);
   assert(geometry.sheet.bottom <= geometry.navTop - 8, `Telegram waiting panel is clipped by navigation: ${JSON.stringify(geometry)}`);
   assert(Math.abs(geometry.offset) <= 48, `Telegram waiting panel is not vertically centered: ${JSON.stringify(geometry)}`);
+  await page.click('[data-trends-tab="collection"]');
+  const telegramCollectionCard = page.locator('#lib-grid-content .lib-card-container').first();
+  await telegramCollectionCard.waitFor();
+  await telegramCollectionCard.click();
+  await page.waitForTimeout(700);
+  assert(await telegramCollectionCard.evaluate((card) => card.classList.contains('flipped')), 'Saved Telegram collection card did not flip');
+  assert(await telegramCollectionCard.locator('.lib-card-inner').evaluate((inner) => getComputedStyle(inner).transform !== 'none'), 'Saved Telegram collection card has no flip transform');
   await context.close();
   return diagnostics;
 }

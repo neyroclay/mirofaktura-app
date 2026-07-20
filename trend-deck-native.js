@@ -1859,9 +1859,10 @@
                 document.getElementById('library-view').classList.remove('visible'); document.getElementById('authors-view').classList.remove('visible'); document.getElementById('gameover-view').style.display='none';
                 
                 const topHeader = document.getElementById('top-header-nav');
+                const gameUi = document.getElementById('game-ui');
                 if (topHeader) topHeader.style.display = 'flex';
-                
-                canvasDiv.style.opacity='1'; document.getElementById('game-ui').style.opacity='1'; container.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active')); const hand=document.getElementById('hand-icon');
+
+                canvasDiv.style.opacity='1'; gameUi.style.opacity='1'; gameUi.style.visibility='visible'; gameUi.style.pointerEvents='auto'; container.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active')); const hand=document.getElementById('hand-icon');
                 if (viewId==='daily') {
                     document.getElementById('btn-tab-daily').classList.add('active');
                     
@@ -1873,7 +1874,9 @@
                     if (isGameOver()) { 
                         document.getElementById('gameover-view').style.display='flex'; 
                         canvasDiv.style.opacity='0'; 
-                        document.getElementById('game-ui').style.opacity='0'; 
+                        gameUi.style.opacity='0';
+                        gameUi.style.visibility='hidden';
+                        gameUi.style.pointerEvents='none';
                         hand.style.display='none'; 
                         
                         if (appData.invitedFriends < 3) {
@@ -1885,7 +1888,7 @@
                         if (!isDailyDone || appData.bonusCards > 0) hand.style.display='flex'; else hand.style.display='none'; 
                     }
                 } else if (viewId==='collection') { 
-                    renderLibrary(); document.getElementById('library-view').classList.add('visible'); canvasDiv.style.opacity='0'; document.getElementById('game-ui').style.opacity='0'; document.getElementById('btn-tab-collection').classList.add('active'); hand.style.display='none'; 
+                    renderLibrary(); document.getElementById('library-view').classList.add('visible'); canvasDiv.style.opacity='0'; gameUi.style.opacity='0'; gameUi.style.visibility='hidden'; gameUi.style.pointerEvents='none'; document.getElementById('btn-tab-collection').classList.add('active'); hand.style.display='none';
                     
                     const st = document.getElementById('library-view').scrollTop;
                     if (topHeader) {
@@ -1894,7 +1897,7 @@
                     }
                 } 
                 else if (viewId==='authors') { 
-                    document.getElementById('authors-view').classList.add('visible'); canvasDiv.style.opacity='0'; document.getElementById('game-ui').style.opacity='0'; document.getElementById('btn-tab-authors').classList.add('active'); hand.style.display='none';
+                    document.getElementById('authors-view').classList.add('visible'); canvasDiv.style.opacity='0'; gameUi.style.opacity='0'; gameUi.style.visibility='hidden'; gameUi.style.pointerEvents='none'; document.getElementById('btn-tab-authors').classList.add('active'); hand.style.display='none';
                     
                     const st = document.getElementById('authors-view').scrollTop;
                     if (topHeader) {
