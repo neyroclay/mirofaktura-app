@@ -523,9 +523,6 @@
         addCleanup(() => window.removeEventListener('resize', setAppHeight));
         const isIPad = /iPad/i.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Macintosh/i.test(navigator.userAgent));
         if (isIPad) container.classList.add('platform-ipad');
-        const platformClass = `platform-${trendPlatform}`;
-        container.classList.add(platformClass);
-        addCleanup(() => container.classList.remove(platformClass));
         container.style.minHeight = nativeMode ? '0' : '600px'; container.style.overflow = 'hidden';
         container.style.backgroundColor = nativeMode ? 'transparent' : '#F4F7F8'; container.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
         container.style.touchAction = nativeMode ? 'pan-y' : 'none';
@@ -1451,22 +1448,8 @@
                && window.innerWidth >= 560
                && window.innerHeight >= 900
                && window.innerHeight > window.innerWidth;
-           const getSceneLayout = (sceneWidth, sceneHeight) => {
-               const sceneAspect = sceneWidth / sceneHeight;
-               const maxWaiting = trendPlatform === 'max' && isDailyDone && !justFinished && appData.bonusCards <= 0;
-               if (maxWaiting && window.innerWidth > window.innerHeight) return { cameraZ: 8.5, cardY: 1.2, cardX: -4 };
-               if (maxWaiting && window.innerWidth >= 560) return { cameraZ: 10.5, cardY: 2.5, cardX: 0 };
-               if (maxWaiting && window.innerHeight <= 900) return { cameraZ: 12, cardY: 2.4, cardX: 0 };
-               if (maxWaiting) return { cameraZ: 10.5, cardY: 1.5, cardX: 0 };
-               if (usesTallPortraitLayout()) return { cameraZ: 8.6, cardY: 2.0, cardX: 0 };
-               if (nativeMode && sceneAspect > 0.6) return { cameraZ: 7.8, cardY: 0.8, cardX: 0 };
-               if (sceneAspect > 0.6) return { cameraZ: 8.2, cardY: 0.9, cardX: 0 };
-               if (isIPad) return { cameraZ: 7.5, cardY: 0.7, cardX: 0 };
-               if (sceneWidth < 768) return { cameraZ: 7.5, cardY: 0.4, cardX: 0 };
-               return { cameraZ: 6, cardY: 0.3, cardX: 0 };
-           };
-           const initialSceneLayout = getSceneLayout(width, height);
-           let cameraZ = initialSceneLayout.cameraZ, cardY = initialSceneLayout.cardY;
+           let cameraZ = 6, cardY = 0.3;
+           if (usesTallPortraitLayout()) { cameraZ = 8.6; cardY = 2.0; } else if (nativeMode && aspect > 0.6) { cameraZ = 7.8; cardY = 0.8; } else if (aspect > 0.6) { cameraZ = 8.2; cardY = 0.9; } else if (isIPad) { cameraZ = 7.5; cardY = 0.7; } else if (width < 768) { cameraZ = 7.5; cardY = 0.4; }
            const camera = new THREE.PerspectiveCamera(60, aspect, 0.1, 100); camera.position.z = cameraZ;
            
            renderer = null;
@@ -1484,27 +1467,78 @@
            canvasDiv.appendChild(renderer.domElement); const canvas = renderer.domElement;
             canvas.style.touchAction = 'none';
 
+            let maxCardFallback = null;
+            let maxCardFront = null;
+            let maxCardBack = null;
+            let maxCardScratch = null;
+            let maxCardScratchCtx = null;
+            let maxCardTapTarget = null;
+            let maxCardReadAction = null;
+            let max2dDragging = false;
+
+            function paintMaxScratchLayer() {
+                if (!maxCardScratchCtx || !maxCardScratch) return;
+                const gradient = maxCardScratchCtx.createLinearGradient(0, 0, maxCardScratch.width, maxCardScratch.height);
+                gradient.addColorStop(0, '#485957');
+                gradient.addColorStop(0.52, '#6c7a77');
+                gradient.addColorStop(1, '#3d4c4a');
+                maxCardScratchCtx.globalCompositeOperation = 'source-over';
+                maxCardScratchCtx.clearRect(0, 0, maxCardScratch.width, maxCardScratch.height);
+                maxCardScratchCtx.fillStyle = gradient;
+                maxCardScratchCtx.fillRect(0, 0, maxCardScratch.width, maxCardScratch.height);
+                maxCardScratchCtx.globalAlpha = 0.16;
+                maxCardScratchCtx.fillStyle = '#ffffff';
+                for (let y = 18; y < maxCardScratch.height; y += 32) {
+                    maxCardScratchCtx.fillRect(0, y, maxCardScratch.width, 1);
+                }
+                maxCardScratchCtx.globalAlpha = 1;
+            }
+
+            function prepareMaxCardSurface(card, scratchEnabled) {
+                if (!maxCardFallback || !card) return;
+                const cardId = card.id;
+                maxCardFallback.classList.remove('is-flipped');
+                maxCardScratch.style.opacity = scratchEnabled ? '1' : '0';
+                maxCardScratch.style.visibility = scratchEnabled ? 'visible' : 'hidden';
+                maxCardScratch.style.pointerEvents = scratchEnabled ? 'auto' : 'none';
+                if (maxCardTapTarget) maxCardTapTarget.style.pointerEvents = scratchEnabled ? 'none' : 'auto';
+                if (scratchEnabled) paintMaxScratchLayer();
+
+                loadImageWithFallback(card.imgFront).then((image) => {
+                    if (!destroyed && currentCardData?.id === cardId && maxCardFront) maxCardFront.src = image.src;
+                }).catch(() => {});
+                loadImageWithFallback(card.imgBack || TEXT_BACK_IMG).then((image) => {
+                    if (!destroyed && currentCardData?.id === cardId && maxCardBack) maxCardBack.src = image.src;
+                }).catch(() => {});
+            }
+
+            if (trendPlatform === 'max') {
+                maxCardFallback = document.createElement('div');
+                maxCardFallback.className = 'max-card-fallback';
+                maxCardFallback.innerHTML = `
+                    <img class="max-card-front" alt="">
+                    <img class="max-card-back" alt="">
+                    <button type="button" class="max-card-tap-target" aria-label="Перевернуть карту"></button>
+                    <button type="button" class="max-card-read-action">Открыть текст</button>
+                    <canvas class="max-card-scratch" width="512" height="768" aria-hidden="true"></canvas>
+                `;
+                canvasDiv.insertBefore(maxCardFallback, canvas);
+                maxCardFront = maxCardFallback.querySelector('.max-card-front');
+                maxCardBack = maxCardFallback.querySelector('.max-card-back');
+                maxCardScratch = maxCardFallback.querySelector('.max-card-scratch');
+                maxCardScratchCtx = maxCardScratch.getContext('2d');
+                maxCardTapTarget = maxCardFallback.querySelector('.max-card-tap-target');
+                maxCardReadAction = maxCardFallback.querySelector('.max-card-read-action');
+                canvas.classList.add('max-card-webgl-input');
+                prepareMaxCardSurface(currentCardData, !isDailyDone || appData.bonusCards > 0);
+            }
+
             const preventCanvasTouch = function(e) { if (e.cancelable) e.preventDefault(); };
             canvas.addEventListener('touchmove', preventCanvasTouch, { passive: false });
             addCleanup(() => canvas.removeEventListener('touchmove', preventCanvasTouch));
             scene.add(new THREE.AmbientLight(0xffffff, 0.7)); const dir = new THREE.DirectionalLight(0xffffff, 0.8); dir.position.set(5, 5, 10); scene.add(dir);
 
-            const cardGroup = new THREE.Group(); cardGroup.position.set(initialSceneLayout.cardX, cardY, 0); scene.add(cardGroup);
-            const applySceneLayout = (animateLayout = false) => {
-                const w=container.clientWidth, h=container.clientHeight;
-                const layout = getSceneLayout(w, h);
-                camera.aspect=w/h;
-                camera.updateProjectionMatrix();
-                renderer.setSize(w,h);
-                if (animateLayout) {
-                    new TWEEN.Tween(camera.position).to({ z:layout.cameraZ }, 520).easing(TWEEN.Easing.Cubic.Out).start();
-                    new TWEEN.Tween(cardGroup.position).to({ x:layout.cardX, y:layout.cardY }, 520).easing(TWEEN.Easing.Cubic.Out).start();
-                } else {
-                    camera.position.z=layout.cameraZ;
-                    cardGroup.position.x=layout.cardX;
-                    cardGroup.position.y=layout.cardY;
-                }
-            };
+            const cardGroup = new THREE.Group(); cardGroup.position.y = cardY; scene.add(cardGroup);
             const cardGeo = new THREE.PlaneGeometry(3.5, 5.0);
 
             const glowGeo = new THREE.PlaneGeometry(6, 7.5); const gc = document.createElement('canvas'); gc.width = gc.height = 128; const gx = gc.getContext('2d');
@@ -1640,6 +1674,28 @@
                 if (isAudioUnlocked && !isScratching) { isScratching=true; const p=scratchSound.play(); if(p) p.catch(()=>{}); } clearTimeout(scratchTimeout); scratchTimeout=setTimeout(()=>{ if(isScratching){scratchSound.pause();isScratching=false;} },100);
                 const hand=document.getElementById('hand-icon'); if (hand.style.display!=='none') hand.style.display='none';
                 const x=uvX*512, y=(1-uvY)*768; maskCtx.globalCompositeOperation='destination-out'; maskCtx.beginPath(); maskCtx.arc(x,y,70,0,Math.PI*2); maskCtx.fill(); maskTex.needsUpdate=true;
+                if (maxCardScratchCtx) {
+                    maxCardScratchCtx.globalCompositeOperation = 'destination-out';
+                    maxCardScratchCtx.beginPath();
+                    maxCardScratchCtx.arc(x, y, 70, 0, Math.PI * 2);
+                    maxCardScratchCtx.fill();
+                }
+                recordScratchProgress(x, y);
+            }
+
+            function digMaxCard(clientX, clientY) {
+                if (!maxCardScratch || !maxCardScratchCtx || isFinishingProcess) return;
+                const rect = maxCardScratch.getBoundingClientRect();
+                if (!rect.width || !rect.height) return;
+                const x = Math.max(0, Math.min(512, ((clientX - rect.left) / rect.width) * 512));
+                const y = Math.max(0, Math.min(768, ((clientY - rect.top) / rect.height) * 768));
+                maxCardScratchCtx.globalCompositeOperation = 'destination-out';
+                maxCardScratchCtx.beginPath();
+                maxCardScratchCtx.arc(x, y, 70, 0, Math.PI * 2);
+                maxCardScratchCtx.fill();
+                const hand=document.getElementById('hand-icon'); if (hand.style.display!=='none') hand.style.display='none';
+                if (isAudioUnlocked && !isScratching) { isScratching=true; const p=scratchSound.play(); if(p) p.catch(()=>{}); }
+                clearTimeout(scratchTimeout); scratchTimeout=setTimeout(()=>{ if(isScratching){scratchSound.pause();isScratching=false;} },100);
                 recordScratchProgress(x, y);
             }
 
@@ -1686,7 +1742,15 @@
                 
                 justFinished = true; 
                 updateDoneUI(); 
-                applySceneLayout(true);
+
+                if (maxCardScratch) {
+                    maxCardScratch.style.opacity = '0';
+                    maxCardScratch.style.pointerEvents = 'none';
+                    if (maxCardTapTarget) maxCardTapTarget.style.pointerEvents = 'auto';
+                    window.setTimeout(() => {
+                        if (maxCardScratch) maxCardScratch.style.visibility = 'hidden';
+                    }, 820);
+                }
 
                 appData.timerSeen=true; const ch=document.querySelector('.collection-hint'); if(ch) ch.style.opacity='1';
                 new TWEEN.Tween(clayMesh.material).to({opacity:0},800).onComplete(()=>{cardGroup.remove(clayMesh);clayMesh=null;}).start(); new TWEEN.Tween(frontMesh.material).to({opacity:1},1000).start();
@@ -1715,13 +1779,14 @@
                 isFlipped = false; baseRotationY = 0; cardGroup.rotation.set(0,0,0);
                 selectCard();
                 createClayLayer();
+                prepareMaxCardSurface(currentCardData, true);
                 document.getElementById('done-ui').style.display = 'none';
                 document.getElementById('active-ui').style.display = 'block';
                 document.getElementById('hand-icon').style.display = 'flex';
                 updateHint('СОТРИТЕ СЛОЙ');
             });
 
-            function flipCard() { isFlipped=!isFlipped; const target=isFlipped?Math.PI:0; const el=document.getElementById('main-hint'); if (el) el.style.opacity = isFlipped?'0':'1'; new TWEEN.Tween({y:baseRotationY}).to({y:target},600).easing(TWEEN.Easing.Back.Out).onUpdate(o=>baseRotationY=o.y).start(); }
+            function flipCard() { isFlipped=!isFlipped; const target=isFlipped?Math.PI:0; const el=document.getElementById('main-hint'); if (el) el.style.opacity = isFlipped?'0':'1'; maxCardFallback?.classList.toggle('is-flipped', isFlipped); new TWEEN.Tween({y:baseRotationY}).to({y:target},600).easing(TWEEN.Easing.Back.Out).onUpdate(o=>baseRotationY=o.y).start(); }
             function updateParallax(e) { const m=getMouse(e); if (!isNaN(m.x)&&window.innerWidth>=768) { targetRotX=m.y*0.15; targetRotY=m.x*0.15; } }
             function animate(t) { if (destroyed) return; rafId = requestAnimationFrame(animate); TWEEN.update(t); cardGroup.rotation.x+=(targetRotX-cardGroup.rotation.x)*0.1; cardGroup.rotation.y+=((targetRotY+baseRotationY)-cardGroup.rotation.y)*0.1; renderer.render(scene,camera); }
             function updateHint(text) { const el=document.getElementById('main-hint'); el.style.opacity=0; setTimeout(()=>{el.textContent=text; el.style.visibility='visible'; el.style.opacity=1;},200); }
@@ -1962,6 +2027,39 @@
 
             const timerInterval = setInterval(updateTimer, 1000);
             canvas.addEventListener('pointerdown', onDown, { passive:false }); window.addEventListener('pointermove', onMove, { passive:false }); window.addEventListener('pointerup', onUp); window.addEventListener('pointercancel', onUp);
+            const onMaxScratchDown = (event) => {
+                if (!maxCardScratch || maxCardScratch.style.pointerEvents === 'none') return;
+                if (event.cancelable) event.preventDefault();
+                max2dDragging = true;
+                unlockAudio();
+                try { maxCardScratch.setPointerCapture(event.pointerId); } catch (error) {}
+                digMaxCard(event.clientX, event.clientY);
+            };
+            const onMaxScratchMove = (event) => {
+                if (!max2dDragging) return;
+                if (event.cancelable) event.preventDefault();
+                digMaxCard(event.clientX, event.clientY);
+            };
+            const onMaxScratchUp = (event) => {
+                max2dDragging = false;
+                if (isScratching) { scratchSound.pause(); isScratching=false; }
+                clearTimeout(scratchTimeout);
+                try { maxCardScratch?.releasePointerCapture(event.pointerId); } catch (error) {}
+            };
+            const onMaxCardTap = () => {
+                if (maxCardScratch?.style.pointerEvents !== 'none') return;
+                flipCard();
+            };
+            const onMaxRead = (event) => {
+                event.stopPropagation();
+                if (isFlipped) window.app_openReadModal(currentCardData.id);
+            };
+            maxCardScratch?.addEventListener('pointerdown', onMaxScratchDown, { passive:false });
+            maxCardScratch?.addEventListener('pointermove', onMaxScratchMove, { passive:false });
+            maxCardScratch?.addEventListener('pointerup', onMaxScratchUp);
+            maxCardScratch?.addEventListener('pointercancel', onMaxScratchUp);
+            maxCardTapTarget?.addEventListener('click', onMaxCardTap);
+            maxCardReadAction?.addEventListener('click', onMaxRead);
             addCleanup(() => {
                 clearInterval(timerInterval);
                 cancelAnimationFrame(rafId);
@@ -1969,10 +2067,17 @@
                 window.removeEventListener('pointermove', onMove);
                 window.removeEventListener('pointerup', onUp);
                 window.removeEventListener('pointercancel', onUp);
+                maxCardScratch?.removeEventListener('pointerdown', onMaxScratchDown);
+                maxCardScratch?.removeEventListener('pointermove', onMaxScratchMove);
+                maxCardScratch?.removeEventListener('pointerup', onMaxScratchUp);
+                maxCardScratch?.removeEventListener('pointercancel', onMaxScratchUp);
+                maxCardTapTarget?.removeEventListener('click', onMaxCardTap);
+                maxCardReadAction?.removeEventListener('click', onMaxRead);
             });
             const resizeScene = ()=>{
                 if (destroyed) return;
-                applySceneLayout(false);
+                const w=container.clientWidth, h=container.clientHeight, a=w/h; camera.aspect=a; camera.updateProjectionMatrix(); renderer.setSize(w,h);
+                if (usesTallPortraitLayout()) { camera.position.z=8.6; cardGroup.position.y=2.0; } else if (nativeMode && a>0.6) { camera.position.z=7.8; cardGroup.position.y=0.8; } else if (a>0.6) { camera.position.z=8.2; cardGroup.position.y=0.9; } else if (isIPad) { camera.position.z=7.5; cardGroup.position.y=0.7; } else if (w<768) { camera.position.z=7.5; cardGroup.position.y=0.4; } else { camera.position.z=6; cardGroup.position.y=0.3; }
             };
             window.addEventListener('resize', resizeScene);
             addCleanup(() => window.removeEventListener('resize', resizeScene));
