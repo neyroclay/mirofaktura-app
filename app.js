@@ -2389,7 +2389,7 @@
             </button>
           `).join('')}
         </div>
-        <article class="task-detail" aria-live="polite">
+        <article class="task-detail" id="marketing-task-detail" aria-live="polite">
           <h3>${selectedTask.title}</h3>
           <dl>
             <div><dt>Что сделаем</dt><dd>${selectedTask.text}</dd></div>
@@ -3190,7 +3190,8 @@
       render({ scroll: false });
       window.setTimeout(() => {
         app.querySelector(`[data-task="${state.contactTask}"]`)?.focus({ preventScroll: true });
-      }, 0);
+        document.getElementById('marketing-task-detail')?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+      }, 40);
       return;
     }
 
