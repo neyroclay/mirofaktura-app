@@ -191,6 +191,65 @@ async function testMaxPersistence(browser) {
   return diagnostics;
 }
 
+async function testMaxWaitingLayout(browser, viewport, suffix) {
+  const context = await browser.newContext({ viewport, deviceScaleFactor: 1 });
+  const page = await context.newPage();
+  const diagnostics = collectDiagnostics(page, `max-waiting-${suffix}`);
+  await installMaxStub(page);
+  await page.route('https://cb.multy.ai/**', (route) => route.fulfill({
+    status: 200,
+    contentType: 'application/json',
+    body: JSON.stringify({ exists: false })
+  }));
+  await page.goto(`${BASE_URL}/max/`, { waitUntil: 'domcontentloaded' });
+  await page.evaluate(() => {
+    localStorage.setItem('oracle_10_trends_release_v23_max_777', JSON.stringify({
+      lastDate: new Date().toDateString(),
+      collected: [1],
+      onboardingSeen: true,
+      timerSeen: true,
+      firstLaunchTime: String(Date.now()),
+      bonusCards: 0,
+      invitedFriends: 0
+    }));
+  });
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  await page.click('[data-action="openTrends"]');
+  await page.waitForFunction(() => window.MirofacturaTrendDeck?.isReady?.() === true, null, { timeout: 15000 });
+  await page.waitForSelector('#game-ui.waiting-for-next-card .native-waiting-sheet');
+  await page.waitForTimeout(1200);
+
+  assert(await page.locator('.max-card-fallback').count() === 0, 'MAX daily card was replaced with a 2D fallback');
+  const canvasInput = await page.locator('#canvas-container canvas').evaluate((canvas) => ({
+    opacity: getComputedStyle(canvas).opacity,
+    pointerEvents: getComputedStyle(canvas).pointerEvents
+  }));
+  assert(canvasInput.opacity !== '0' && canvasInput.pointerEvents !== 'none', `MAX 3D canvas is not interactive: ${JSON.stringify(canvasInput)}`);
+
+  if (suffix === 'phone-portrait') {
+    const canvas = page.locator('#canvas-container canvas');
+    const beforeFlip = await canvas.screenshot();
+    const box = await canvas.boundingBox();
+    await page.mouse.click(box.x + box.width / 2, box.y + box.height * 0.3);
+    await page.waitForTimeout(800);
+    const afterFlip = await canvas.screenshot();
+    assert(!beforeFlip.equals(afterFlip), 'MAX daily 3D card did not visually flip');
+  }
+
+  const geometry = await page.evaluate(() => {
+    const sheet = document.querySelector('.native-waiting-sheet').getBoundingClientRect();
+    const nav = document.querySelector('.bottom-nav').getBoundingClientRect();
+    return {
+      sheet: { top: sheet.top, bottom: sheet.bottom, height: sheet.height },
+      nav: { top: nav.top, bottom: nav.bottom }
+    };
+  });
+  await page.screenshot({ path: path.join(artifacts, `max-waiting-${suffix}.png`), fullPage: true });
+  assert(geometry.sheet.bottom <= geometry.nav.top - 8, `Waiting panel is clipped by navigation: ${JSON.stringify(geometry)}`);
+  await context.close();
+  return diagnostics;
+}
+
 async function testTelegram(browser) {
   const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
   const page = await context.newPage();
@@ -251,6 +310,34 @@ async function testTelegram(browser) {
   return diagnostics;
 }
 
+async function testTelegramOnboardingLayout(browser) {
+  const context = await browser.newContext({ viewport: { width: 480, height: 1218 }, deviceScaleFactor: 1 });
+  const page = await context.newPage();
+  const diagnostics = collectDiagnostics(page, 'telegram-onboarding-layout');
+  await installTelegramStub(page);
+  await page.route('https://cb.multy.ai/**', (route) => route.fulfill({
+    status: 200,
+    contentType: 'application/json',
+    body: JSON.stringify({ exists: false })
+  }));
+  await page.goto(`${BASE_URL}/index.html`, { waitUntil: 'domcontentloaded' });
+  await page.click('[data-action="openTrends"]');
+  await page.waitForSelector('#onboarding-view.visible', { timeout: 15000 });
+  await page.waitForFunction(() => window.MirofacturaTrendDeck?.isReady?.() === true, null, { timeout: 15000 });
+  const geometry = await page.evaluate(() => {
+    const topbar = document.querySelector('.topbar').getBoundingClientRect();
+    const card = document.querySelector('#onboarding-view').getBoundingClientRect();
+    const nav = document.querySelector('.bottom-nav').getBoundingClientRect();
+    const availableCenter = (topbar.bottom + nav.top) / 2;
+    const cardCenter = (card.top + card.bottom) / 2;
+    return { availableCenter, cardCenter, offset: cardCenter - availableCenter };
+  });
+  assert(Math.abs(geometry.offset) <= 48, `Telegram onboarding is not vertically centered: ${JSON.stringify(geometry)}`);
+  await page.screenshot({ path: path.join(artifacts, 'telegram-onboarding-tall.png'), fullPage: true });
+  await context.close();
+  return diagnostics;
+}
+
 (async () => {
   const executablePath = process.env.MIROFAKTURA_BROWSER_PATH || 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
   const browser = await chromium.launch({ headless: true, executablePath });
@@ -262,6 +349,10 @@ async function testTelegram(browser) {
     results.push(await testMax(browser, { width: 768, height: 1024 }, 'tablet-portrait'));
     results.push(await testMax(browser, { width: 1024, height: 768 }, 'tablet-landscape'));
     results.push(await testMaxPersistence(browser));
+    results.push(await testMaxWaitingLayout(browser, { width: 390, height: 844 }, 'phone-portrait'));
+    results.push(await testMaxWaitingLayout(browser, { width: 480, height: 1218 }, 'phone-tall'));
+    results.push(await testMaxWaitingLayout(browser, { width: 844, height: 390 }, 'phone-landscape'));
+    results.push(await testTelegramOnboardingLayout(browser));
   } finally {
     await browser.close();
   }
