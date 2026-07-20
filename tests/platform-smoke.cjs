@@ -235,13 +235,16 @@ async function testMaxWaitingLayout(browser, viewport, suffix) {
     const sheet = document.querySelector('.native-waiting-sheet').getBoundingClientRect();
     const timer = document.querySelector('#daily-timer');
     const timerStyle = getComputedStyle(timer);
-    const timerDigitsStyle = getComputedStyle(document.querySelector('.timer-digits'));
+    const timerDigits = document.querySelector('.timer-digits');
+    const timerDigitsStyle = getComputedStyle(timerDigits);
     const inviteButton = document.querySelector('#btn-invite-friend');
     const inviteButtonRect = inviteButton.getBoundingClientRect();
     const topbar = document.querySelector('.topbar').getBoundingClientRect();
     const tabs = document.querySelector('.trends-native-tabs').getBoundingClientRect();
     const host = document.querySelector('.trends-native-host').getBoundingClientRect();
     const gameUi = document.querySelector('#game-ui').getBoundingClientRect();
+    const gameUiElement = document.querySelector('#game-ui');
+    const gameUiStyle = getComputedStyle(gameUiElement);
     const nav = document.querySelector('.bottom-nav').getBoundingClientRect();
     const availableCenter = (tabs.bottom + nav.top) / 2;
     const sheetCenter = (sheet.top + sheet.bottom) / 2;
@@ -251,8 +254,10 @@ async function testMaxWaitingLayout(browser, viewport, suffix) {
       tabs: { top: tabs.top, bottom: tabs.bottom },
       host: { top: host.top, bottom: host.bottom },
       gameUi: { top: gameUi.top, bottom: gameUi.bottom },
+      scroll: { clientHeight: gameUiElement.clientHeight, scrollHeight: gameUiElement.scrollHeight, overflowY: gameUiStyle.overflowY, touchAction: gameUiStyle.touchAction },
       nav: { top: nav.top, bottom: nav.bottom },
       timer: { backgroundImage: `${timerStyle.backgroundImage} ${timerDigitsStyle.backgroundImage}`, height: timer.getBoundingClientRect().height },
+      timerDigits: { clientWidth: timerDigits.clientWidth, scrollWidth: timerDigits.scrollWidth },
       inviteButton: { display: getComputedStyle(inviteButton).display, bottom: inviteButtonRect.bottom, height: inviteButtonRect.height },
       availableCenter,
       sheetCenter,
@@ -260,11 +265,25 @@ async function testMaxWaitingLayout(browser, viewport, suffix) {
     };
   });
   await page.screenshot({ path: path.join(artifacts, `max-waiting-${suffix}.png`), fullPage: true });
-  assert(geometry.sheet.bottom <= geometry.nav.top - 8, `Waiting panel is clipped by navigation: ${JSON.stringify(geometry)}`);
+  const scrollable = geometry.scroll.scrollHeight > geometry.scroll.clientHeight + 1;
+  assert(geometry.scroll.overflowY === 'auto' && geometry.scroll.touchAction === 'pan-y', `MAX waiting screen cannot scroll: ${JSON.stringify(geometry)}`);
+  if (scrollable) {
+    const scrollTop = await page.locator('#game-ui').evaluate((element) => {
+      element.scrollTop = element.scrollHeight;
+      return element.scrollTop;
+    });
+    assert(scrollTop > 0, `MAX waiting screen reports overflow but does not scroll: ${JSON.stringify(geometry)}`);
+    await page.waitForTimeout(150);
+    await page.screenshot({ path: path.join(artifacts, `max-waiting-${suffix}-scrolled.png`), fullPage: true });
+  }
+  if (!scrollable) {
+    assert(geometry.sheet.bottom <= geometry.nav.top - 8, `Waiting panel is clipped by navigation: ${JSON.stringify(geometry)}`);
+  }
   assert(geometry.timer.backgroundImage.includes('trends-waiting-panel.webp'), `MAX waiting timer visual is missing: ${JSON.stringify(geometry)}`);
+  assert(geometry.timerDigits.scrollWidth <= geometry.timerDigits.clientWidth + 1, `MAX timer digits are clipped: ${JSON.stringify(geometry)}`);
   assert(geometry.inviteButton.display !== 'none' && geometry.inviteButton.height >= 48, `MAX invite action is missing: ${JSON.stringify(geometry)}`);
   assert(geometry.inviteButton.bottom <= geometry.sheet.bottom + 1, `MAX invite action requires internal scrolling: ${JSON.stringify(geometry)}`);
-  if (viewport.height >= 700) {
+  if (viewport.height >= 700 && !scrollable) {
     assert(Math.abs(geometry.offset) <= 72, `Waiting panel is not vertically centered: ${JSON.stringify(geometry)}`);
   }
   await context.close();
@@ -432,6 +451,8 @@ async function testTelegramOnboardingLayout(browser) {
       results.push(await testMaxWaitingLayout(browser, { width: 390, height: 844 }, 'phone-portrait'));
       results.push(await testMaxWaitingLayout(browser, { width: 480, height: 1218 }, 'phone-tall'));
       results.push(await testMaxWaitingLayout(browser, { width: 844, height: 390 }, 'phone-landscape'));
+      results.push(await testMaxWaitingLayout(browser, { width: 1024, height: 768 }, 'tablet-landscape'));
+      results.push(await testMaxWaitingLayout(browser, { width: 1024, height: 320 }, 'tablet-landscape-short'));
     } else {
     results.push(await testTelegram(browser));
     results.push(await testMax(browser, { width: 390, height: 844 }, 'phone-portrait'));
@@ -442,6 +463,8 @@ async function testTelegramOnboardingLayout(browser) {
     results.push(await testMaxWaitingLayout(browser, { width: 390, height: 844 }, 'phone-portrait'));
     results.push(await testMaxWaitingLayout(browser, { width: 480, height: 1218 }, 'phone-tall'));
     results.push(await testMaxWaitingLayout(browser, { width: 844, height: 390 }, 'phone-landscape'));
+    results.push(await testMaxWaitingLayout(browser, { width: 1024, height: 768 }, 'tablet-landscape'));
+    results.push(await testMaxWaitingLayout(browser, { width: 1024, height: 320 }, 'tablet-landscape-short'));
     results.push(await testTelegramOnboardingLayout(browser));
     }
   } finally {
