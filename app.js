@@ -11,7 +11,7 @@
   const URL_PARAMS = new URLSearchParams(window.location.search);
   const TELEGRAM_LAUNCH_PARAMS = new URLSearchParams(window.location.hash.replace(/^#/, ''));
   const NATIVE_TRENDS_MODE = URL_PARAMS.get('trends_native');
-  const NATIVE_TRENDS_ASSET_VERSION = '20260721-button-unify-21';
+  const NATIVE_TRENDS_ASSET_VERSION = '20260721-library-cleanup-22';
   const APP_PLATFORM = platformAdapter.key;
   document.documentElement.dataset.mirofacturaPlatform = APP_PLATFORM;
   const USE_NATIVE_TRENDS = NATIVE_TRENDS_MODE !== '0';
@@ -2384,7 +2384,6 @@
       <section class="task-map-panel" id="marketing-task-map" aria-labelledby="task-map-title">
         <p class="brand-label">Задачи бизнеса</p>
         <h2 class="contacts-section-title" id="task-map-title">С нами можно</h2>
-        <p class="contacts-section-lead">Выберите результат, который сейчас важнее всего.</p>
         <div class="task-map" aria-label="Задачи, которые помогает решить Мирофактура">
           ${marketingTasks.map((task) => `
             <button class="task-node ${task.id === selectedTask.id ? 'selected' : ''}" type="button" data-action="selectContactTask" data-task="${task.id}" aria-pressed="${task.id === selectedTask.id}">
