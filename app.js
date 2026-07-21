@@ -90,9 +90,9 @@
     stepanChannels: './assets/stepan-clients-channels.webp',
     stepanRegularity: './assets/stepan-sales-regularity.webp',
     stepanFinal: './assets/stepan-final-map.webp',
-    aristarch: './assets/aristarch-recommendations.webp',
-    aristarchLibrary: './assets/aristarch-library-soft-glow.webp?v=20260721-aristarch-four-fingers-28',
-    aristarchStory: './assets/aristarch-recommendations.png',
+    aristarch: './assets/aristarch-library-soft-glow.webp?v=20260721-aristarch-everywhere-29',
+    aristarchLibrary: './assets/aristarch-library-soft-glow.webp?v=20260721-aristarch-everywhere-29',
+    aristarchStory: './assets/aristarch-library-soft-glow.webp?v=20260721-aristarch-everywhere-29',
     potap: './assets/potap-digital-system.webp',
     authors: './assets/authors-photo-labeled.jpg'
   };
