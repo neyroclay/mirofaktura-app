@@ -563,23 +563,23 @@
             #${CONTAINER_ID}.trend-native-embedded #gameover-view > div { margin:0 auto !important; }
             #${CONTAINER_ID}.trend-native-embedded #game-ui.waiting-for-next-card #done-ui::before { height:clamp(72px, 11vh, 116px); }
             #${CONTAINER_ID}.trend-native-embedded .waiting-card-status { position:static; transform:none; margin:0 auto clamp(34px, 5.5vh, 50px); }
-            #${CONTAINER_ID}.trend-native-embedded .ask-ai-main-btn { background:radial-gradient(circle at 8% 34%,rgba(255,216,74,0.94),transparent 32%),linear-gradient(100deg,#FFF0A0 0%,#DFF9ED 52%,#49D8CF 100%); color:#073936; box-shadow:0 15px 28px rgba(7,104,99,0.2); border:1px solid rgba(255,255,255,0.94); }
+            #${CONTAINER_ID}.trend-native-embedded .ask-ai-main-btn { background:radial-gradient(circle at 8% 34%,rgba(255,216,74,0.46),transparent 34%),linear-gradient(100deg,#F9ECAA 0%,#E4F8F1 56%,#BFEEE9 100%); color:#073936; box-shadow:0 12px 24px rgba(7,104,99,0.15); border:1px solid rgba(255,255,255,0.94); }
             #${CONTAINER_ID}.trend-native-embedded .collection-hint span { color:#087f7a !important; }
             #${CONTAINER_ID} .onboard-btn,
             #${CONTAINER_ID} .ask-ai-main-btn,
             #${CONTAINER_ID} .primary-btn,
             #${CONTAINER_ID} .consult-btn,
             #${CONTAINER_ID} .lib-read-btn {
-                background:radial-gradient(circle at 8% 34%,rgba(255,216,74,0.94),transparent 32%),linear-gradient(100deg,#FFF0A0 0%,#DFF9ED 52%,#49D8CF 100%) !important;
+                background:radial-gradient(circle at 8% 34%,rgba(255,216,74,0.46),transparent 34%),linear-gradient(100deg,#F9ECAA 0%,#E4F8F1 56%,#BFEEE9 100%) !important;
                 color:#073936 !important;
                 border:1px solid rgba(255,255,255,0.92) !important;
                 box-shadow:0 8px 18px rgba(14,77,72,0.12) !important;
             }
             #${CONTAINER_ID} .consult-btn {
-                background:radial-gradient(circle at 8% 34%,rgba(255,216,74,0.94),transparent 32%),linear-gradient(100deg,#FFF0A0 0%,#DFF9ED 52%,#49D8CF 100%) !important;
+                background:radial-gradient(circle at 8% 34%,rgba(255,216,74,0.46),transparent 34%),linear-gradient(100deg,#F9ECAA 0%,#E4F8F1 56%,#BFEEE9 100%) !important;
                 color:#073936 !important;
                 border:1px solid rgba(255,255,255,0.94) !important;
-                box-shadow:inset 0 1px 0 rgba(255,255,255,0.94),0 15px 28px rgba(7,104,99,0.2),0 0 0 4px rgba(78,221,209,0.07) !important;
+                box-shadow:inset 0 1px 0 rgba(255,255,255,0.94),0 12px 24px rgba(7,104,99,0.15),0 0 0 4px rgba(78,221,209,0.05) !important;
             }
             #${CONTAINER_ID} .progress-fill,
             #${CONTAINER_ID} .nav-item.active::after { background:#8AB7AA !important; box-shadow:0 0 8px rgba(138,183,170,0.45) !important; }
@@ -591,7 +591,7 @@
             #${CONTAINER_ID} .read-scroll-area span[style*="#00D2D3"] { color:#087f7a !important; }
             #${CONTAINER_ID} .read-scroll-area span[style*="rgba(0,210,211"] { background:rgba(249,236,159,0.32) !important; border-left-color:#8AB7AA !important; }
             #${CONTAINER_ID} [style*="#00D2D3"] { color:#087f7a !important; border-color:#8AB7AA !important; border-top-color:#8AB7AA !important; border-left-color:#8AB7AA !important; }
-            #${CONTAINER_ID} [style*="background:#00D2D3"] { background:radial-gradient(circle at 8% 34%,rgba(255,216,74,0.94),transparent 32%),linear-gradient(100deg,#FFF0A0 0%,#DFF9ED 52%,#49D8CF 100%) !important; color:#073936 !important; box-shadow:0 15px 28px rgba(7,104,99,0.2) !important; }
+            #${CONTAINER_ID} [style*="background:#00D2D3"] { background:radial-gradient(circle at 8% 34%,rgba(255,216,74,0.46),transparent 34%),linear-gradient(100deg,#F9ECAA 0%,#E4F8F1 56%,#BFEEE9 100%) !important; color:#073936 !important; box-shadow:0 12px 24px rgba(7,104,99,0.15) !important; }
             #${CONTAINER_ID} [style*="rgba(0,210,211"],
             #${CONTAINER_ID} [style*="rgba(0, 210, 211"] { background:rgba(249,236,159,0.22) !important; border-color:#8AB7AA !important; border-top-color:#8AB7AA !important; border-left-color:#8AB7AA !important; box-shadow:0 8px 20px rgba(14,77,72,0.08) !important; }
             
@@ -648,7 +648,7 @@
             #${CONTAINER_ID} #library-view.visible .lib-grid,
             #${CONTAINER_ID} #authors-view.visible .authors-container { animation:fadeInView 0.5s ease both; }
             #${CONTAINER_ID} .lib-card-container { perspective:1000px; aspect-ratio:2/3; cursor:pointer; width:280px; flex:0 0 280px; }
-            #${CONTAINER_ID} .lib-read-btn { background:radial-gradient(circle at 8% 34%,rgba(255,216,74,0.94),transparent 32%),linear-gradient(100deg,#FFF0A0 0%,#DFF9ED 52%,#49D8CF 100%); color:#073936; padding:8px 32px; border-radius:30px; font-size:12px; font-weight:bold; text-decoration:none; border:1px solid rgba(255,255,255,0.94); width:auto; align-self:flex-start; transition:transform 0.25s ease,filter 0.25s ease; cursor:pointer; box-sizing:border-box; display:block; text-align:center; box-shadow:0 15px 28px rgba(7,104,99,0.2); }
+            #${CONTAINER_ID} .lib-read-btn { background:radial-gradient(circle at 8% 34%,rgba(255,216,74,0.46),transparent 34%),linear-gradient(100deg,#F9ECAA 0%,#E4F8F1 56%,#BFEEE9 100%); color:#073936; padding:8px 32px; border-radius:30px; font-size:12px; font-weight:bold; text-decoration:none; border:1px solid rgba(255,255,255,0.94); width:auto; align-self:flex-start; transition:transform 0.25s ease,filter 0.25s ease; cursor:pointer; box-sizing:border-box; display:block; text-align:center; box-shadow:0 12px 24px rgba(7,104,99,0.15); }
             #${CONTAINER_ID} .collection-hint { color:#8A9999; font-size:13px; font-weight:600; margin-top:5px; margin-bottom:15px; text-align:center; pointer-events:auto; transition:opacity 0.3s; }
             #${CONTAINER_ID} .nav { position:absolute; bottom:max(20px, env(safe-area-inset-bottom)); left:50%; transform:translateX(-50%); width:calc(100% - 40px); max-width:400px; background:rgba(255,255,255,0.75); backdrop-filter:blur(25px); -webkit-backdrop-filter:blur(25px); display:flex; border:1px solid rgba(255,255,255,0.6); pointer-events:auto; z-index:50; padding:10px 15px; box-sizing:border-box; align-items:center; border-radius:40px; box-shadow:0 15px 35px rgba(0,0,0,0.1), inset 0 0 0 1px rgba(255,255,255,0.4); }
             #${CONTAINER_ID}.platform-ipad .nav { bottom:max(55px, env(safe-area-inset-bottom)); } #${CONTAINER_ID}.platform-ipad #game-ui { padding-bottom:115px; } #${CONTAINER_ID}.platform-ipad #gameover-view { padding-top:80px !important; padding-bottom:calc(164px + env(safe-area-inset-bottom)) !important; }
@@ -670,6 +670,8 @@
             }
             #${CONTAINER_ID} .author-card { display:flex; align-items:flex-start; margin-bottom:20px; background:#F7F7F7; padding:15px; border-radius:16px; border:1px solid #E0E0E0; text-decoration:none; cursor:pointer; transition:all 0.3s ease; }
             #${CONTAINER_ID} .author-card:hover { transform:scale(1.02); box-shadow:0 8px 25px rgba(0,210,211,0.15); border-color:rgba(0,210,211,0.4); }
+            #${CONTAINER_ID} .author-card-static { cursor:default; }
+            #${CONTAINER_ID} .author-card-static:hover { transform:none; box-shadow:none; border-color:#E0E0E0; }
             #${CONTAINER_ID} .author-img { width:60px; height:60px; border-radius:50%; object-fit:cover; margin-right:15px; border:2px solid #00D2D3; flex-shrink:0; }
             #${CONTAINER_ID} .author-name { color:#00D2D3; font-weight:800; font-size:15px; margin-bottom:5px; margin-top:5px; }
             #${CONTAINER_ID} .author-desc { color:#1F2E2E; font-size:12px; line-height:1.5; }
@@ -891,20 +893,24 @@
                 <div class="authors-container">
                     
                     <div style="text-align:center;color:#1F2E2E;font-weight:800;margin-bottom:20px;letter-spacing:2px;font-size:14px;">АВТОРЫ ПРОЕКТА</div>
-                    <a href="${elizavetaProfileUrl}" class="author-card" onclick="window.app_openBotLink(event, '${elizavetaProfileUrl}')">
+                    ${elizavetaProfileUrl
+                      ? `<a href="${elizavetaProfileUrl}" class="author-card" onclick="window.app_openBotLink(event, '${elizavetaProfileUrl}')">`
+                      : '<div class="author-card author-card-static">'}
                         <img src="${AUTHOR_1_IMG}" class="author-img" alt="Елизавета Викулова" loading="lazy" decoding="async">
                         <div class="author-info">
                             <div class="author-name">Елизавета Викулова</div>
                             <div class="author-desc">Проектирует продукты-миры и цифровые экосистемы для бизнеса на стыке режиссуры, геймдизайна и психологии внимания.</div>
                         </div>
-                    </a>
-                    <a href="${elenaProfileUrl}" class="author-card" onclick="window.app_openBotLink(event, '${elenaProfileUrl}')">
+                    ${elizavetaProfileUrl ? '</a>' : '</div>'}
+                    ${elenaProfileUrl
+                      ? `<a href="${elenaProfileUrl}" class="author-card" onclick="window.app_openBotLink(event, '${elenaProfileUrl}')">`
+                      : '<div class="author-card author-card-static">'}
                         <img src="${AUTHOR_2_IMG}" class="author-img" alt="Елена Попова" loading="lazy" decoding="async">
                         <div class="author-info">
                             <div class="author-name">Елена Попова</div>
                             <div class="author-desc">Проектирует системный маркетинг и воронки впечатлений: от первого знакомства с продуктом до повторной покупки и рекомендации.</div>
                         </div>
-                    </a>
+                    ${elenaProfileUrl ? '</a>' : '</div>'}
 
                     <div style="background:#FFF;border-radius:20px;border:1px solid #E0E0E0;padding:25px 20px;text-align:left;margin-bottom:30px;box-shadow:0 10px 30px rgba(0,0,0,0.05);">
                         <div style="color:#1F2E2E;font-size:18px;font-weight:900;text-align:center;margin-top:0;margin-bottom:15px;text-transform:uppercase;">Как применять тренды?</div>
@@ -1472,7 +1478,7 @@
                if (maxWaiting && window.innerWidth >= 560) return { cameraZ: 10.5, cardY: 2.5, cardX: 0 };
                if (maxWaiting && window.innerHeight <= 900) return { cameraZ: 12, cardY: 2.4, cardX: 0 };
                if (maxWaiting) return { cameraZ: 10.5, cardY: 1.5, cardX: 0 };
-               if (usesTallPortraitLayout()) return { cameraZ: 8.6, cardY: 2.0, cardX: 0 };
+               if (usesTallPortraitLayout()) return { cameraZ: 8.6, cardY: 1.0, cardX: 0 };
                if (nativeMode && sceneWidth <= 620 && sceneHeight >= 440) return { cameraZ: 6.2, cardY: 0.45, cardX: 0 };
                if (nativeMode && sceneAspect > 0.6) return { cameraZ: 7.8, cardY: 0.8, cardX: 0 };
                if (sceneAspect > 0.6) return { cameraZ: 8.2, cardY: 0.9, cardX: 0 };
@@ -1554,7 +1560,7 @@
                     bCtx.clearRect(0, 0, 512, 768); if (cachedBackImg) bCtx.drawImage(cachedBackImg, 0, 0, 512, 768);
                     const btnW=280, btnH=60, btnX=40; bCtx.save(); const sc = isBtnHovered ? 1.02 : 1; bCtx.translate(btnX+btnW/2, 675+btnH/2); bCtx.scale(sc, sc); bCtx.translate(-(btnX+btnW/2), -(675+btnH/2));
                     const btnGradient = bCtx.createLinearGradient(btnX, 675, btnX + btnW, 675);
-                    btnGradient.addColorStop(0, '#FFF0A0'); btnGradient.addColorStop(0.52, '#DFF9ED'); btnGradient.addColorStop(1, '#49D8CF');
+                    btnGradient.addColorStop(0, '#F9ECAA'); btnGradient.addColorStop(0.56, '#E4F8F1'); btnGradient.addColorStop(1, '#BFEEE9');
                     bCtx.shadowColor='rgba(7,57,54,0.12)'; bCtx.shadowBlur=14; bCtx.shadowOffsetY=4; bCtx.beginPath(); if (bCtx.roundRect) bCtx.roundRect(btnX, 675, btnW, btnH, 30); else bCtx.rect(btnX, 675, btnW, btnH);
                     bCtx.fillStyle=btnGradient; bCtx.fill(); bCtx.shadowColor='transparent'; bCtx.strokeStyle='rgba(255,255,255,0.92)'; bCtx.lineWidth=2; bCtx.stroke(); bCtx.font='800 20px system-ui, sans-serif'; bCtx.fillStyle='#073936'; bCtx.textAlign='center'; bCtx.textBaseline='middle'; bCtx.fillText('Открыть текст', btnX+btnW/2, 675+btnH/2);
                     bCtx.restore(); backTex.needsUpdate = true;

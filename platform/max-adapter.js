@@ -26,8 +26,8 @@
     botUrl: BOT_URL,
     channelUrl: CHANNEL_URL,
     authorUrls: {
-      elizaveta: 'https://max.ru/u/f9LHodD0cOJ7KLcSGQ2-nIru39qLMDByEa3oTWgNABebA15thaMVXVpHB-w',
-      elena: 'https://max.ru/u/f9LHodD0cOL6WZFmWoaBowA5ZAdNLubiIRJlhbrL5vxjlmvr16DBtsGJcLY',
+      elizaveta: '',
+      elena: '',
       elenaContact: 'https://max.ru/u/f9LHodD0cOL6WZFmWoaBowA5ZAdNLubiIRJlhbrL5vxjlmvr16DBtsGJcLY'
     },
     progress: {
