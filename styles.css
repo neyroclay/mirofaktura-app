@@ -2991,16 +2991,23 @@ h3 {
   display: grid;
   align-content: center;
   justify-items: center;
-  gap: 24px;
+  gap: 16px;
   min-height: 320px;
   padding: 28px;
-  background:
-    radial-gradient(circle at 20% 16%, rgba(255, 216, 74, 0.18), transparent 34%),
-    radial-gradient(circle at 82% 18%, rgba(40, 212, 206, 0.3), transparent 38%),
-    linear-gradient(165deg, #ecfaf5, #fffaf0 66%, #f6ecd6);
+  background: transparent;
   opacity: 1;
   visibility: visible;
   transition: opacity 260ms ease, visibility 260ms ease;
+}
+
+.trends-native-loader__logo {
+  display: block;
+  width: clamp(220px, 68vw, 300px);
+  max-width: 78%;
+  height: auto;
+  margin-bottom: 10px;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 16px rgba(7, 57, 54, 0.08));
 }
 
 .trends-native-loader__mark {

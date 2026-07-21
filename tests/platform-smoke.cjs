@@ -176,6 +176,10 @@ async function testMaxLoadingVisual(browser) {
   await page.waitForSelector('.hero');
   await page.click('[data-action="openTrends"]');
   await page.waitForSelector('.trends-native-loader');
+  await page.waitForFunction(() => {
+    const logo = document.querySelector('.trends-native-loader__logo');
+    return Boolean(logo && logo.complete && logo.naturalWidth > 0);
+  }, null, { timeout: 5000 });
   await page.waitForTimeout(120);
   const loader = await page.locator('.trends-native-loader').evaluate((element) => {
     const style = getComputedStyle(element);
