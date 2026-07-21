@@ -579,7 +579,21 @@
                 background:radial-gradient(circle at 8% 34%,rgba(255,216,74,0.46),transparent 34%),linear-gradient(100deg,#F9ECAA 0%,#E4F8F1 56%,#BFEEE9 100%) !important;
                 color:#073936 !important;
                 border:1px solid rgba(255,255,255,0.94) !important;
-                box-shadow:inset 0 1px 0 rgba(255,255,255,0.94),0 12px 24px rgba(7,104,99,0.15),0 0 0 4px rgba(78,221,209,0.05) !important;
+            }
+            #${CONTAINER_ID} .consult-btn,
+            #${CONTAINER_ID} .primary-btn {
+                min-height:60px !important;
+                padding:0 24px !important;
+                display:flex !important;
+                align-items:center !important;
+                justify-content:center !important;
+                box-sizing:border-box !important;
+                border-radius:999px !important;
+                font-family:inherit !important;
+                font-size:14px !important;
+                font-weight:800 !important;
+                line-height:1.2 !important;
+                box-shadow:inset 0 1px 0 rgba(255,255,255,0.72),0 8px 18px rgba(14,77,72,0.12) !important;
             }
             #${CONTAINER_ID} .progress-fill,
             #${CONTAINER_ID} .nav-item.active::after { background:#8AB7AA !important; box-shadow:0 0 8px rgba(138,183,170,0.45) !important; }
