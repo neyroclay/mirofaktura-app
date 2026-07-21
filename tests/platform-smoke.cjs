@@ -169,7 +169,7 @@ async function testMaxLoadingVisual(browser) {
   const diagnostics = collectDiagnostics(page, 'max-loading-visual');
   await installMaxStub(page);
   await page.route('**/trend-deck-native.js*', async (route) => {
-    await new Promise((resolve) => setTimeout(resolve, 1200));
+    await new Promise((resolve) => setTimeout(resolve, 3500));
     await route.continue();
   });
   await page.goto(`${BASE_URL}/max/`, { waitUntil: 'domcontentloaded' });
@@ -183,11 +183,15 @@ async function testMaxLoadingVisual(browser) {
     return {
       backgroundColor: style.backgroundColor,
       backgroundImage: style.backgroundImage,
-      logoVisible: Boolean(logo && logo.complete && logo.naturalWidth > 0 && logo.getBoundingClientRect().width >= 120)
+      logoVisible: Boolean(logo && logo.complete && logo.naturalWidth > 0 && logo.getBoundingClientRect().width >= 220),
+      logoSource: logo?.getAttribute('src') || '',
+      text: element.querySelector('.trends-native-loader__text')?.textContent || ''
     };
   });
   assert(loader.backgroundColor === 'rgba(0, 0, 0, 0)' && loader.backgroundImage === 'none', `MAX loader still paints a rectangular surface: ${JSON.stringify(loader)}`);
   assert(loader.logoVisible, `MAX loader logo is missing or too small: ${JSON.stringify(loader)}`);
+  assert(loader.logoSource.includes('logo-black-aqua.webp'), `MAX loader does not use the aqua logo: ${JSON.stringify(loader)}`);
+  assert(loader.text === 'Раскладываем карты…', `MAX loader initial message is unexpected: ${JSON.stringify(loader)}`);
   await page.screenshot({ path: path.join(artifacts, 'max-loading-visual.png'), fullPage: true });
   await page.waitForFunction(() => window.MirofacturaTrendDeck?.isReady?.() === true, null, { timeout: 15000 });
   await context.close();

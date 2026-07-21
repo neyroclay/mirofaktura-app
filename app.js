@@ -11,7 +11,7 @@
   const URL_PARAMS = new URLSearchParams(window.location.search);
   const TELEGRAM_LAUNCH_PARAMS = new URLSearchParams(window.location.hash.replace(/^#/, ''));
   const NATIVE_TRENDS_MODE = URL_PARAMS.get('trends_native');
-  const NATIVE_TRENDS_ASSET_VERSION = '20260721-loader-logo-13';
+  const NATIVE_TRENDS_ASSET_VERSION = '20260721-loader-aqua-14';
   const APP_PLATFORM = platformAdapter.key;
   document.documentElement.dataset.mirofacturaPlatform = APP_PLATFORM;
   const USE_NATIVE_TRENDS = NATIVE_TRENDS_MODE !== '0';
@@ -2499,9 +2499,9 @@
           </div>
           <div id="c37" class="trends-native-host" aria-label="Колода трендов 2026">
             <div class="trends-native-loader" role="status" aria-label="Загрузка колоды трендов">
-              <img class="trends-native-loader__logo" src="./assets/logo-black-yellow.webp" alt="" aria-hidden="true" loading="eager" decoding="async">
+              <img class="trends-native-loader__logo" src="./assets/logo-black-aqua.webp" alt="" aria-hidden="true" loading="eager" decoding="async">
               <span class="trends-native-loader__mark" aria-hidden="true"></span>
-              <span class="trends-native-loader__text">Открываем колоду…</span>
+              <span class="trends-native-loader__text">Раскладываем карты…</span>
             </div>
           </div>
         </div>
@@ -2536,7 +2536,20 @@
   function prepareTrendsFrame() {
     const nativeHost = app.querySelector('.trends-native-host');
     if (nativeHost) {
+      const loaderText = nativeHost.querySelector('.trends-native-loader__text');
+      const loaderMessages = ['Раскладываем карты…', 'Загружаем 3D-магию…', 'Отрисовываем детали…', 'Ещё буквально секунду…'];
+      let loaderMessageIndex = 0;
+      const loaderMessageTimer = window.setInterval(() => {
+        if (!nativeHost.isConnected) {
+          window.clearInterval(loaderMessageTimer);
+          return;
+        }
+        if (!loaderText) return;
+        loaderMessageIndex = (loaderMessageIndex + 1) % loaderMessages.length;
+        loaderText.textContent = loaderMessages[loaderMessageIndex];
+      }, 2200);
       nativeHost.addEventListener('mirofactura:trend-ready', () => {
+        window.clearInterval(loaderMessageTimer);
         nativeHost.classList.add('is-ready');
         window.setTimeout(() => nativeHost.querySelector('.trends-native-loader')?.remove(), 300);
       }, { once: true });

@@ -91,9 +91,10 @@
 
 .trends-native-screen .trends-native-loader__logo {
   display: block;
-  width: clamp(120px, 32vw, 154px);
+  width: clamp(220px, 68vw, 300px);
+  max-width: 78%;
   height: auto;
-  margin-bottom: 4px;
+  margin-bottom: 10px;
   object-fit: contain;
   filter: drop-shadow(0 8px 16px rgba(7, 57, 54, 0.08));
 }
