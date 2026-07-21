@@ -168,8 +168,10 @@ async function testMaxLoadingVisual(browser) {
   const page = await context.newPage();
   const diagnostics = collectDiagnostics(page, 'max-loading-visual');
   await installMaxStub(page);
+  let releaseDeckScript;
+  const deckScriptGate = new Promise((resolve) => { releaseDeckScript = resolve; });
   await page.route('**/trend-deck-native.js*', async (route) => {
-    await new Promise((resolve) => setTimeout(resolve, 3500));
+    await deckScriptGate;
     await route.continue();
   });
   await page.goto(`${BASE_URL}/max/`, { waitUntil: 'domcontentloaded' });
@@ -180,6 +182,12 @@ async function testMaxLoadingVisual(browser) {
     const logo = document.querySelector('.trends-native-loader__logo');
     return Boolean(logo && logo.complete && logo.naturalWidth > 0);
   }, null, { timeout: 5000 });
+  await page.locator('.trends-native-host').evaluate((host) => {
+    const probe = document.createElement('div');
+    probe.id = 'loader-leak-probe';
+    probe.style.cssText = 'width:160px;height:3px;background:#fff';
+    host.appendChild(probe);
+  });
   await page.waitForTimeout(120);
   const loader = await page.locator('.trends-native-loader').evaluate((element) => {
     const style = getComputedStyle(element);
@@ -189,14 +197,23 @@ async function testMaxLoadingVisual(browser) {
       backgroundImage: style.backgroundImage,
       logoVisible: Boolean(logo && logo.complete && logo.naturalWidth > 0 && logo.getBoundingClientRect().width >= 220),
       logoSource: logo?.getAttribute('src') || '',
-      text: element.querySelector('.trends-native-loader__text')?.textContent || ''
+      text: element.querySelector('.trends-native-loader__text')?.textContent || '',
+      leakedContent: [...element.parentElement.children].some((child) => {
+        if (child === element) return false;
+        const rect = child.getBoundingClientRect();
+        const childStyle = getComputedStyle(child);
+        return rect.width > 0 && rect.height > 0 && childStyle.visibility !== 'hidden' && Number(childStyle.opacity || 1) > 0;
+      })
     };
   });
   assert(loader.backgroundColor === 'rgba(0, 0, 0, 0)' && loader.backgroundImage === 'none', `MAX loader still paints a rectangular surface: ${JSON.stringify(loader)}`);
   assert(loader.logoVisible, `MAX loader logo is missing or too small: ${JSON.stringify(loader)}`);
   assert(loader.logoSource.includes('logo-black-aqua.webp'), `MAX loader does not use the aqua logo: ${JSON.stringify(loader)}`);
   assert(loader.text === 'Раскладываем карты…', `MAX loader initial message is unexpected: ${JSON.stringify(loader)}`);
+  assert(!loader.leakedContent, `MAX loader reveals the unfinished deck underneath: ${JSON.stringify(loader)}`);
   await page.screenshot({ path: path.join(artifacts, 'max-loading-visual.png'), fullPage: true });
+  await page.evaluate(() => document.getElementById('loader-leak-probe')?.remove());
+  releaseDeckScript();
   await page.waitForFunction(() => window.MirofacturaTrendDeck?.isReady?.() === true, null, { timeout: 15000 });
   await context.close();
   return diagnostics;
