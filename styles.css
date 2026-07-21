@@ -1447,6 +1447,13 @@ h3 {
   margin-bottom: -10px;
   object-fit: contain;
   filter: drop-shadow(0 22px 28px rgba(4, 94, 91, 0.14));
+  transform-origin: 50% 100%;
+  animation: aristarchBreathe 6.8s ease-in-out infinite;
+}
+
+@keyframes aristarchBreathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.006); }
 }
 
 .aristarch .caption {
