@@ -11,7 +11,7 @@
   const URL_PARAMS = new URLSearchParams(window.location.search);
   const TELEGRAM_LAUNCH_PARAMS = new URLSearchParams(window.location.hash.replace(/^#/, ''));
   const NATIVE_TRENDS_MODE = URL_PARAMS.get('trends_native');
-  const NATIVE_TRENDS_ASSET_VERSION = '20260721-card-scroll-16';
+  const NATIVE_TRENDS_ASSET_VERSION = '20260721-accent-aristarch-18';
   const APP_PLATFORM = platformAdapter.key;
   document.documentElement.dataset.mirofacturaPlatform = APP_PLATFORM;
   const USE_NATIVE_TRENDS = NATIVE_TRENDS_MODE !== '0';
@@ -91,6 +91,7 @@
     stepanRegularity: './assets/stepan-sales-regularity.webp',
     stepanFinal: './assets/stepan-final-map.webp',
     aristarch: './assets/aristarch-recommendations.webp',
+    aristarchLibrary: './assets/aristarch-library-soft-glow.webp',
     aristarchStory: './assets/aristarch-recommendations.png',
     potap: './assets/potap-digital-system.webp',
     authors: './assets/authors-photo-labeled.jpg'
@@ -1689,7 +1690,9 @@
       </article>
 
       <div class="result-actions result-actions-primary">
-        <button class="primary-btn" type="button" data-action="openMaterial" data-material="${key}">Открыть подарок</button>
+        <button class="primary-btn accent-cta gift-open-btn" type="button" data-action="openMaterial" data-material="${key}">
+          <span>Открыть подарок</span>
+        </button>
       </div>
 
       <div class="potap-figure">
@@ -1799,7 +1802,7 @@
       </div>
 
       <div class="aristarch">
-        <img src="${assets.aristarch}" alt="Аристарх, Аксолотль-Профессор Мирофактуры" loading="lazy" decoding="async">
+        <img src="${assets.aristarchLibrary}" alt="Аристарх, Аксолотль-Профессор Мирофактуры" loading="lazy" decoding="async">
         <div class="caption">
           <b>Аристарх</b>
           <span>Аксолотль-Профессор, маскот-аналитик Мирофактуры. Сравнивает ответы и помогает выбрать подходящий материал.</span>
@@ -1982,7 +1985,7 @@
       <section class="lead-cta">
         <h2>Нужно разобрать ваши продукты?</h2>
         <p>Поможем увидеть, что уже можно связать в линейку и какое предложение добавить следующим.</p>
-        <button class="primary-btn" type="button" data-action="openEmail" data-service="Продуктовая линейка">Написать нам</button>
+        <button class="primary-btn accent-cta" type="button" data-action="openEmail" data-service="Продуктовая линейка">Написать нам</button>
       </section>
     `, 'material-screen product-lines-screen');
   }
@@ -2161,7 +2164,7 @@
       <section class="lead-cta">
         <h2>Нужна помощь с выбором канала?</h2>
         <p>Разберём продукт, аудиторию и доступный ресурс, а затем выберем один канал для первого теста.</p>
-        <button class="primary-btn" type="button" data-action="openEmail" data-service="Выбор канала продвижения">Написать нам</button>
+        <button class="primary-btn accent-cta" type="button" data-action="openEmail" data-service="Выбор канала продвижения">Написать нам</button>
       </section>
     `, 'material-screen product-lines-screen traffic-atlas-screen');
   }
@@ -2337,7 +2340,7 @@
       <section class="lead-cta">
         <h2>Нужна помощь с выбором канала?</h2>
         <p>Разберём текущие продажи, найдём слабое место и выберем один канал для проверки.</p>
-        <button class="primary-btn" type="button" data-action="openEmail" data-service="Выбор канала продаж">Написать нам</button>
+        <button class="primary-btn accent-cta" type="button" data-action="openEmail" data-service="Выбор канала продаж">Написать нам</button>
       </section>
     `, 'material-screen product-lines-screen sales-channels-screen');
   }
@@ -2374,7 +2377,7 @@
         <p class="lead">Соединяем маркетинг, технологии и геймдизайн. Цифровой мир для нас — не просто сайт или приложение. Это вся система вокруг продукта: как человек узнаёт о нём, что понимает перед покупкой, где выбирает подходящий вариант, что получает после покупки и что можно предложить ему дальше. Каждая часть этой системы помогает бизнесу получить конкретный результат: заявку, продажу или повторное обращение.</p>
         <div class="contacts-hero-actions">
           <button class="primary-btn" type="button" data-action="focusContactMap">Посмотреть возможности</button>
-          <button class="soft-btn" type="button" data-action="openEmail">Написать нам</button>
+          <button class="primary-btn accent-cta" type="button" data-action="openEmail">Написать нам</button>
         </div>
       </section>
 
@@ -2452,7 +2455,7 @@
         <p class="brand-label">Обсудить проект</p>
         <h2>Расскажите о задаче</h2>
         <p>Напишите, что вы предлагаете и какой результат хотите получить: понятнее объяснить продукт, получить больше заявок, запустить новое направление, увеличить повторные продажи или сократить ручную работу. Мы посмотрим на задачу и предложим подходящий формат работы.</p>
-        <button class="primary-btn" type="button" data-action="openEmail">Написать нам</button>
+        <button class="primary-btn accent-cta" type="button" data-action="openEmail">Написать нам</button>
       </section>
 
       ${nativeDocumentsLink}
