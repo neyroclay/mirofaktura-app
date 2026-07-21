@@ -91,7 +91,7 @@
     stepanRegularity: './assets/stepan-sales-regularity.webp',
     stepanFinal: './assets/stepan-final-map.webp',
     aristarch: './assets/aristarch-recommendations.webp',
-    aristarchLibrary: './assets/aristarch-library-soft-glow.webp',
+    aristarchLibrary: './assets/aristarch-library-soft-glow.webp?v=20260721-aristarch-image-25',
     aristarchStory: './assets/aristarch-recommendations.png',
     potap: './assets/potap-digital-system.webp',
     authors: './assets/authors-photo-labeled.jpg'
