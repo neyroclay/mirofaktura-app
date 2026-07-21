@@ -163,6 +163,37 @@ async function testMax(browser, viewport, suffix) {
   return diagnostics;
 }
 
+async function testMaxLoadingVisual(browser) {
+  const context = await browser.newContext({ viewport: { width: 609, height: 1280 }, deviceScaleFactor: 1 });
+  const page = await context.newPage();
+  const diagnostics = collectDiagnostics(page, 'max-loading-visual');
+  await installMaxStub(page);
+  await page.route('**/trend-deck-native.js*', async (route) => {
+    await new Promise((resolve) => setTimeout(resolve, 1200));
+    await route.continue();
+  });
+  await page.goto(`${BASE_URL}/max/`, { waitUntil: 'domcontentloaded' });
+  await page.waitForSelector('.hero');
+  await page.click('[data-action="openTrends"]');
+  await page.waitForSelector('.trends-native-loader');
+  await page.waitForTimeout(120);
+  const loader = await page.locator('.trends-native-loader').evaluate((element) => {
+    const style = getComputedStyle(element);
+    const logo = element.querySelector('.trends-native-loader__logo');
+    return {
+      backgroundColor: style.backgroundColor,
+      backgroundImage: style.backgroundImage,
+      logoVisible: Boolean(logo && logo.complete && logo.naturalWidth > 0 && logo.getBoundingClientRect().width >= 120)
+    };
+  });
+  assert(loader.backgroundColor === 'rgba(0, 0, 0, 0)' && loader.backgroundImage === 'none', `MAX loader still paints a rectangular surface: ${JSON.stringify(loader)}`);
+  assert(loader.logoVisible, `MAX loader logo is missing or too small: ${JSON.stringify(loader)}`);
+  await page.screenshot({ path: path.join(artifacts, 'max-loading-visual.png'), fullPage: true });
+  await page.waitForFunction(() => window.MirofacturaTrendDeck?.isReady?.() === true, null, { timeout: 15000 });
+  await context.close();
+  return diagnostics;
+}
+
 async function testMaxPersistence(browser) {
   const context = await browser.newContext({ viewport: { width: 390, height: 844 } });
   const page = await context.newPage();
@@ -257,7 +288,7 @@ async function testMaxWaitingLayout(browser, viewport, suffix) {
       scroll: { clientHeight: gameUiElement.clientHeight, scrollHeight: gameUiElement.scrollHeight, overflowY: gameUiStyle.overflowY, touchAction: gameUiStyle.touchAction },
       nav: { top: nav.top, bottom: nav.bottom },
       timer: { backgroundImage: `${timerStyle.backgroundImage} ${timerDigitsStyle.backgroundImage}`, height: timer.getBoundingClientRect().height },
-      timerDigits: { clientWidth: timerDigits.clientWidth, scrollWidth: timerDigits.scrollWidth },
+      timerDigits: { clientWidth: timerDigits.clientWidth, scrollWidth: timerDigits.scrollWidth, boxShadow: timerDigitsStyle.boxShadow },
       inviteButton: { display: getComputedStyle(inviteButton).display, bottom: inviteButtonRect.bottom, height: inviteButtonRect.height },
       availableCenter,
       sheetCenter,
@@ -281,6 +312,7 @@ async function testMaxWaitingLayout(browser, viewport, suffix) {
   }
   assert(geometry.timer.backgroundImage.includes('trends-waiting-panel.webp'), `MAX waiting timer visual is missing: ${JSON.stringify(geometry)}`);
   assert(geometry.timerDigits.scrollWidth <= geometry.timerDigits.clientWidth + 1, `MAX timer digits are clipped: ${JSON.stringify(geometry)}`);
+  assert(!geometry.timerDigits.boxShadow.includes('16px 30px'), `MAX waiting timer still has the detached lower shadow: ${JSON.stringify(geometry)}`);
   assert(geometry.inviteButton.display !== 'none' && geometry.inviteButton.height >= 48, `MAX invite action is missing: ${JSON.stringify(geometry)}`);
   assert(geometry.inviteButton.bottom <= geometry.sheet.bottom + 1, `MAX invite action requires internal scrolling: ${JSON.stringify(geometry)}`);
   if (viewport.height >= 700 && !scrollable) {
@@ -446,7 +478,9 @@ async function testTelegramOnboardingLayout(browser) {
   const browser = await chromium.launch({ headless: true, executablePath });
   const results = [];
   try {
-    if (process.env.MIROFAKTURA_SMOKE_FOCUS === 'waiting') {
+    if (process.env.MIROFAKTURA_SMOKE_FOCUS === 'loading') {
+      results.push(await testMaxLoadingVisual(browser));
+    } else if (process.env.MIROFAKTURA_SMOKE_FOCUS === 'waiting') {
       results.push(await testTelegramWaitingLayout(browser));
       results.push(await testMaxWaitingLayout(browser, { width: 390, height: 844 }, 'phone-portrait'));
       results.push(await testMaxWaitingLayout(browser, { width: 480, height: 1218 }, 'phone-tall'));
@@ -459,6 +493,7 @@ async function testTelegramOnboardingLayout(browser) {
     results.push(await testMax(browser, { width: 844, height: 390 }, 'phone-landscape'));
     results.push(await testMax(browser, { width: 768, height: 1024 }, 'tablet-portrait'));
     results.push(await testMax(browser, { width: 1024, height: 768 }, 'tablet-landscape'));
+    results.push(await testMaxLoadingVisual(browser));
     results.push(await testMaxPersistence(browser));
     results.push(await testMaxWaitingLayout(browser, { width: 390, height: 844 }, 'phone-portrait'));
     results.push(await testMaxWaitingLayout(browser, { width: 480, height: 1218 }, 'phone-tall'));

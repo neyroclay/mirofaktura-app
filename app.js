@@ -11,7 +11,7 @@
   const URL_PARAMS = new URLSearchParams(window.location.search);
   const TELEGRAM_LAUNCH_PARAMS = new URLSearchParams(window.location.hash.replace(/^#/, ''));
   const NATIVE_TRENDS_MODE = URL_PARAMS.get('trends_native');
-  const NATIVE_TRENDS_ASSET_VERSION = '20260720-waiting-contrast-11';
+  const NATIVE_TRENDS_ASSET_VERSION = '20260721-loader-logo-13';
   const APP_PLATFORM = platformAdapter.key;
   document.documentElement.dataset.mirofacturaPlatform = APP_PLATFORM;
   const USE_NATIVE_TRENDS = NATIVE_TRENDS_MODE !== '0';
@@ -2499,6 +2499,7 @@
           </div>
           <div id="c37" class="trends-native-host" aria-label="Колода трендов 2026">
             <div class="trends-native-loader" role="status" aria-label="Загрузка колоды трендов">
+              <img class="trends-native-loader__logo" src="./assets/logo-black-yellow.webp" alt="" aria-hidden="true" loading="eager" decoding="async">
               <span class="trends-native-loader__mark" aria-hidden="true"></span>
               <span class="trends-native-loader__text">Открываем колоду…</span>
             </div>
