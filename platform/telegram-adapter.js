@@ -7,6 +7,7 @@
   let progressCachePromise = null;
   let progressRefreshPromise = null;
   let progressSaveQueue = Promise.resolve();
+  let progressSaveInFlight = null;
   let progressRevision = 0;
   let lastSavedRevision = 0;
   let visibilityRefreshBound = false;
@@ -27,12 +28,13 @@
 
   async function postProgress(url, payload, errorLabel) {
     const controller = typeof AbortController === 'function' ? new AbortController() : null;
-    const timeoutId = controller ? window.setTimeout(() => controller.abort(), 6000) : null;
+    const timeoutId = controller ? window.setTimeout(() => controller.abort(), 20000) : null;
     try {
       const response = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
+        keepalive: true,
         signal: controller?.signal
       });
       if (!response.ok) throw new Error(`${errorLabel}: HTTP ${response.status}`);
@@ -178,7 +180,7 @@
       const revision = ++progressRevision;
       progressCachePromise = Promise.resolve(snapshot);
 
-      const request = progressSaveQueue.then(async () => {
+      const persist = async () => {
         await postProgress(adapter.progress.saveUrl, {
           item: adapter.progress.saveItem,
           user_id: userId,
@@ -197,8 +199,13 @@
         }, 'Telegram progress save failed');
         lastSavedRevision = Math.max(lastSavedRevision, revision);
         return { ok: true };
-      });
+      };
+      const request = progressSaveInFlight ? progressSaveQueue.then(persist) : persist();
+      progressSaveInFlight = request;
       progressSaveQueue = request.catch(() => {});
+      request.finally(() => {
+        if (progressSaveInFlight === request) progressSaveInFlight = null;
+      }).catch(() => {});
       return request;
     },
     openUrl(rawUrl) {

@@ -497,7 +497,7 @@
         const LOAD_ITEM = String(platformAdapter.progress?.loadItem || 'trend_deck_load_v2');
         const SAVE_ITEM = String(platformAdapter.progress?.saveItem || 'trend_deck_save_v2');
         const FOLLOWUP_ITEM = String(platformAdapter.progress?.followupItem || 'trend_deck_started_telegram');
-        const MULTY_REQUEST_TIMEOUT_MS = 6000;
+        const MULTY_REQUEST_TIMEOUT_MS = 20000;
 
         const TEXT_BACK_IMG = "https://i.postimg.cc/RFxMB2Bd/1-2-copy.jpg";
         const AUTHOR_1_IMG  = "https://cdn.jsdelivr.net/gh/neyroclay/img-host-trends-2026@main/Elizaveta-Vikulova-new.jpg";
@@ -1027,6 +1027,7 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload),
+                    keepalive: true,
                     ...(controller ? { signal: controller.signal } : {})
                 });
 
@@ -1223,6 +1224,8 @@
                         appData.onboardingSeen = true;
                     }
                     appData.timerSeen = true;
+                } else if (localCollected.length || localLastDate || localOnboardingSeen) {
+                    shouldPersistMergedState = true;
                 }
             } catch (error) { console.warn('Remote trend progress is unavailable', error); }
             finishLoad(callback);
@@ -1458,6 +1461,7 @@
                if (maxWaiting && window.innerHeight <= 900) return { cameraZ: 12, cardY: 2.4, cardX: 0 };
                if (maxWaiting) return { cameraZ: 10.5, cardY: 1.5, cardX: 0 };
                if (usesTallPortraitLayout()) return { cameraZ: 8.6, cardY: 2.0, cardX: 0 };
+               if (nativeMode && sceneWidth <= 520 && sceneHeight >= 520) return { cameraZ: 7.0, cardY: 0.6, cardX: 0 };
                if (nativeMode && sceneAspect > 0.6) return { cameraZ: 7.8, cardY: 0.8, cardX: 0 };
                if (sceneAspect > 0.6) return { cameraZ: 8.2, cardY: 0.9, cardX: 0 };
                if (isIPad) return { cameraZ: 7.5, cardY: 0.7, cardX: 0 };
@@ -1626,7 +1630,7 @@
             function unlockAudio() { if (!isAudioUnlocked) { winSound.muted=true; scratchSound.muted=true; const p1=scratchSound.play(); if(p1) p1.then(()=>{scratchSound.pause();scratchSound.muted=false;}).catch(()=>{}); const p2=winSound.play(); if(p2) p2.then(()=>{winSound.pause();winSound.currentTime=0;winSound.muted=false;}).catch(()=>{}); isAudioUnlocked=true; } }
             function onDown(e) { if (e.cancelable) e.preventDefault(); isDragging=true; isTap=true; unlockAudio(); touchStartX = e.touches?e.touches[0].clientX:e.clientX; touchStartY = e.touches?e.touches[0].clientY:e.clientY; interact(e); }
             function onMove(e) { updateParallax(e); if (isDragging) { if (e.cancelable) e.preventDefault(); const cx=e.touches?e.touches[0].clientX:e.clientX; const cy=e.touches?e.touches[0].clientY:e.clientY; if (Math.abs(cx-touchStartX)>15 || Math.abs(cy-touchStartY)>15) isTap=false; interact(e); } else { checkHover(e); } }
-            function onUp(e) { isDragging=false; if (isScratching) { scratchSound.pause(); isScratching=false; } clearTimeout(scratchTimeout); if (isTap) { if ((isDailyDone && appData.bonusCards <= 0) || !clayMesh) { const m = getMouse(e); if (!isNaN(m.x)) { raycaster.setFromCamera(m, camera); if (isFlipped) { const hits = raycaster.intersectObject(backMesh); if (hits.length && hits[0].uv.y>0.04 && hits[0].uv.y<0.12) { window.app_openReadModal(currentCardData.id); isTap=false; return; } } const hits = raycaster.intersectObjects([frontMesh, backMesh]); if (hits.length) flipCard(); } } } isTap=false; }
+            function onUp(e) { isDragging=false; if (isScratching) { scratchSound.pause(); isScratching=false; } clearTimeout(scratchTimeout); if (isTap) { if ((isDailyDone && appData.bonusCards <= 0) || !clayMesh) { const m = getMouse(e); if (!isNaN(m.x)) { mouse.set(m.x,m.y); raycaster.setFromCamera(mouse,camera); if (isFlipped) { const hits = raycaster.intersectObject(backMesh); if (hits.length) { window.app_openReadModal(currentCardData.id); isTap=false; return; } } const hits = raycaster.intersectObjects([frontMesh, backMesh]); if (hits.length) flipCard(); } } } isTap=false; }
             function checkHover(e) { const m=getMouse(e); if(isNaN(m.x)) return; mouse.set(m.x,m.y); raycaster.setFromCamera(mouse,camera); if (!clayMesh) { let hov=false; if (isFlipped) { const h=raycaster.intersectObject(backMesh); if(h.length&&h[0].uv.y>0.04&&h[0].uv.y<0.12) hov=true; } if (hov!==isBtnHovered) { isBtnHovered=hov; updateBackSide(currentCardData); } canvas.style.cursor='pointer'; return; } const h=raycaster.intersectObject(clayMesh); canvas.style.cursor=h.length?'crosshair':'default'; }
             function interact(e) { if (document.getElementById('library-view').classList.contains('visible') || document.getElementById('authors-view').classList.contains('visible') || document.getElementById('onboarding-view').classList.contains('visible') || document.getElementById('read-trend-modal').classList.contains('visible') || document.getElementById('legal-text-modal').classList.contains('visible') ) return; const m=getMouse(e); if(isNaN(m.x)) return; mouse.set(m.x,m.y); raycaster.setFromCamera(mouse,camera); if (clayMesh && (!isDailyDone || appData.bonusCards > 0)) { const h=raycaster.intersectObject(clayMesh); if (h.length) dig(h[0].uv.x, h[0].uv.y); } }
             
