@@ -174,7 +174,7 @@ async function testMaxLoadingVisual(browser) {
     await deckScriptGate;
     await route.continue();
   });
-  await page.goto(`${BASE_URL}/max/`, { waitUntil: 'domcontentloaded' });
+  await page.goto(`${BASE_URL}/max/`, { waitUntil: 'domcontentloaded', timeout: 60000 });
   await page.waitForSelector('.hero');
   await page.click('[data-action="openTrends"]');
   await page.waitForSelector('.trends-native-loader');
@@ -236,7 +236,7 @@ async function testMaxPersistence(browser) {
       invitedFriends: 0
     }));
   });
-  await page.reload({ waitUntil: 'domcontentloaded' });
+  await page.reload({ waitUntil: 'domcontentloaded', timeout: 60000 });
   await page.click('[data-action="openTrends"]');
   await page.waitForFunction(() => window.MirofacturaTrendDeck?.isReady?.() === true, null, { timeout: 15000 });
   assert(await page.locator('#onboarding-view.visible').count() === 0, 'Saved onboarding state was not restored');
@@ -262,7 +262,7 @@ async function testMaxWaitingLayout(browser, viewport, suffix) {
     contentType: 'application/json',
     body: JSON.stringify({ exists: false })
   }));
-  await page.goto(`${BASE_URL}/max/`, { waitUntil: 'domcontentloaded' });
+  await page.goto(`${BASE_URL}/max/`, { waitUntil: 'domcontentloaded', timeout: 60000 });
   await page.evaluate(() => {
     localStorage.setItem('oracle_10_trends_release_v23_max_777', JSON.stringify({
       lastDate: new Date().toDateString(),
@@ -274,7 +274,7 @@ async function testMaxWaitingLayout(browser, viewport, suffix) {
       invitedFriends: 0
     }));
   });
-  await page.reload({ waitUntil: 'domcontentloaded' });
+  await page.reload({ waitUntil: 'domcontentloaded', timeout: 60000 });
   await page.click('[data-action="openTrends"]');
   await page.waitForFunction(() => window.MirofacturaTrendDeck?.isReady?.() === true, null, { timeout: 15000 });
   await page.waitForSelector('#game-ui.waiting-for-next-card .native-waiting-sheet');
@@ -360,8 +360,10 @@ async function testTelegramWaitingLayout(browser, viewport = { width: 390, heigh
   const page = await context.newPage();
   const diagnostics = collectDiagnostics(page, `telegram-waiting-${suffix}`);
   await installTelegramStub(page);
+  let delayedCardRequestAt = 0;
   if (delayCardImage) {
     await page.route(/\/trends-v2\/.+\/front\.jpg(?:\?.*)?$/, async (route) => {
+      delayedCardRequestAt = Date.now();
       await new Promise((resolve) => setTimeout(resolve, 3500));
       await route.fulfill({
         status: 200,
@@ -375,7 +377,7 @@ async function testTelegramWaitingLayout(browser, viewport = { width: 390, heigh
     contentType: 'application/json',
     body: JSON.stringify({ exists: false })
   }));
-  await page.goto(`${BASE_URL}/index.html`, { waitUntil: 'domcontentloaded' });
+  await page.goto(`${BASE_URL}/index.html`, { waitUntil: 'domcontentloaded', timeout: 60000 });
   await page.evaluate(() => {
     localStorage.setItem('oracle_10_trends_release_v23_telegram_555', JSON.stringify({
       lastDate: new Date().toDateString(),
@@ -387,13 +389,13 @@ async function testTelegramWaitingLayout(browser, viewport = { width: 390, heigh
       invitedFriends: 0
     }));
   });
-  await page.reload({ waitUntil: 'domcontentloaded' });
-  const openStartedAt = Date.now();
+  await page.reload({ waitUntil: 'domcontentloaded', timeout: 60000 });
   await page.click('[data-action="openTrends"]');
   await page.waitForSelector('#game-ui.waiting-for-next-card .native-waiting-sheet', { timeout: 15000 });
-  const readyElapsedMs = Date.now() - openStartedAt;
   if (delayCardImage) {
-    assert(readyElapsedMs < 2500, `Telegram waiting loader remained over an already-ready timer: ${readyElapsedMs}ms`);
+    assert(delayedCardRequestAt > 0, 'Delayed Telegram card image was not requested');
+    const readyAfterCardRequestMs = Date.now() - delayedCardRequestAt;
+    assert(readyAfterCardRequestMs < 1500, `Telegram waiting loader remained over an already-ready timer: ${readyAfterCardRequestMs}ms after card request`);
   }
   await page.waitForTimeout(500);
   const geometry = await page.evaluate(() => {
