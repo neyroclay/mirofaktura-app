@@ -1330,7 +1330,13 @@
                     gameUi?.classList.add('just-finished');
                     canvasDiv.style.opacity = '1';
                     canvasDiv.style.visibility = 'visible';
-                    if (collectionHint) collectionHint.style.display = 'block';
+                    if (collectionHint) {
+                        collectionHint.style.display = 'block';
+                        collectionHint.style.opacity = isFlipped ? '0' : '1';
+                        collectionHint.style.visibility = isFlipped ? 'hidden' : 'visible';
+                        collectionHint.style.pointerEvents = isFlipped ? 'none' : 'auto';
+                    }
+                    document.getElementById('done-ui').style.pointerEvents = isFlipped ? 'none' : 'auto';
                     timerBox.style.display = 'none';
                     inviteBanner.style.display = 'none';
                 } else {
@@ -1461,7 +1467,7 @@
                if (maxWaiting && window.innerHeight <= 900) return { cameraZ: 12, cardY: 2.4, cardX: 0 };
                if (maxWaiting) return { cameraZ: 10.5, cardY: 1.5, cardX: 0 };
                if (usesTallPortraitLayout()) return { cameraZ: 8.6, cardY: 2.0, cardX: 0 };
-               if (nativeMode && sceneWidth <= 520 && sceneHeight >= 520) return { cameraZ: 7.0, cardY: 0.6, cardX: 0 };
+               if (nativeMode && sceneWidth <= 620 && sceneHeight >= 440) return { cameraZ: 6.2, cardY: 0.45, cardX: 0 };
                if (nativeMode && sceneAspect > 0.6) return { cameraZ: 7.8, cardY: 0.8, cardX: 0 };
                if (sceneAspect > 0.6) return { cameraZ: 8.2, cardY: 0.9, cardX: 0 };
                if (isIPad) return { cameraZ: 7.5, cardY: 0.7, cardX: 0 };
@@ -1622,6 +1628,7 @@
                 document.getElementById('active-ui').style.display = 'none'; 
                 document.getElementById('done-ui').style.display = 'flex'; 
                 updateDoneUI();
+                window.hidePreloader('waiting');
             }
 
             const raycaster = new THREE.Raycaster(), mouse = new THREE.Vector2(); let isDragging=false, touchStartX=0, touchStartY=0, isTap=false, targetRotX=0, targetRotY=0, baseRotationY=0;
@@ -1724,7 +1731,29 @@
                 updateHint('СОТРИТЕ СЛОЙ');
             });
 
-            function flipCard() { isFlipped=!isFlipped; const target=isFlipped?Math.PI:0; const el=document.getElementById('main-hint'); if (el) el.style.opacity = isFlipped?'0':'1'; new TWEEN.Tween({y:baseRotationY}).to({y:target},600).easing(TWEEN.Easing.Back.Out).onUpdate(o=>baseRotationY=o.y).start(); }
+            function flipCard() {
+                isFlipped = !isFlipped;
+                const target = isFlipped ? Math.PI : 0;
+                const el = document.getElementById('main-hint');
+                if (el) el.style.opacity = isFlipped ? '0' : '1';
+
+                if (justFinished) {
+                    const doneUi = document.getElementById('done-ui');
+                    const collectionHint = document.querySelector('.collection-hint');
+                    if (doneUi) doneUi.style.pointerEvents = isFlipped ? 'none' : 'auto';
+                    if (collectionHint) {
+                        collectionHint.style.opacity = isFlipped ? '0' : '1';
+                        collectionHint.style.visibility = isFlipped ? 'hidden' : 'visible';
+                        collectionHint.style.pointerEvents = isFlipped ? 'none' : 'auto';
+                    }
+                }
+
+                new TWEEN.Tween({ y: baseRotationY })
+                    .to({ y: target }, 600)
+                    .easing(TWEEN.Easing.Back.Out)
+                    .onUpdate((value) => { baseRotationY = value.y; })
+                    .start();
+            }
             function updateParallax(e) { const m=getMouse(e); if (!isNaN(m.x)&&window.innerWidth>=768) { targetRotX=m.y*0.15; targetRotY=m.x*0.15; } }
             function animate(t) { if (destroyed) return; rafId = requestAnimationFrame(animate); TWEEN.update(t); cardGroup.rotation.x+=(targetRotX-cardGroup.rotation.x)*0.1; cardGroup.rotation.y+=((targetRotY+baseRotationY)-cardGroup.rotation.y)*0.1; renderer.render(scene,camera); }
             function updateHint(text) { const el=document.getElementById('main-hint'); el.style.opacity=0; setTimeout(()=>{el.textContent=text; el.style.visibility='visible'; el.style.opacity=1;},200); }

@@ -11,7 +11,7 @@
   const URL_PARAMS = new URLSearchParams(window.location.search);
   const TELEGRAM_LAUNCH_PARAMS = new URLSearchParams(window.location.hash.replace(/^#/, ''));
   const NATIVE_TRENDS_MODE = URL_PARAMS.get('trends_native');
-  const NATIVE_TRENDS_ASSET_VERSION = '20260721-progress-card-15';
+  const NATIVE_TRENDS_ASSET_VERSION = '20260721-card-scroll-16';
   const APP_PLATFORM = platformAdapter.key;
   document.documentElement.dataset.mirofacturaPlatform = APP_PLATFORM;
   const USE_NATIVE_TRENDS = NATIVE_TRENDS_MODE !== '0';
@@ -2551,7 +2551,7 @@
       nativeHost.addEventListener('mirofactura:trend-ready', () => {
         window.clearInterval(loaderMessageTimer);
         nativeHost.classList.add('is-ready');
-        window.setTimeout(() => nativeHost.querySelector('.trends-native-loader')?.remove(), 300);
+        window.setTimeout(() => nativeHost.querySelector('.trends-native-loader')?.remove(), 180);
       }, { once: true });
       prepareNativeTrends(nativeHost);
       return;

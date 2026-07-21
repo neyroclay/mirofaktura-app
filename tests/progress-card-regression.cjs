@@ -135,13 +135,16 @@ function installProgressBackend(context, state) {
     const top = Math.min(...hitPoints.map((point) => point.y));
     const bottom = Math.max(...hitPoints.map((point) => point.y));
     const dailyCardWidth = right - left + 20;
-    assert(dailyCardWidth >= 190, `Daily card is unexpectedly small: ${dailyCardWidth}`);
+    assert(dailyCardWidth >= 215, `Daily card is unexpectedly small: ${dailyCardWidth}`);
 
     for (let row = 0; row < 10; row += 1) {
       for (let column = 0; column < 12; column += 1) {
         const x = left + ((right - left) * (column + 0.5)) / 12;
         const y = top + ((bottom - top) * (row + 0.5)) / 10;
-        await cardPage.mouse.click(x, y);
+        await cardPage.mouse.move(x, y);
+        await cardPage.mouse.down();
+        await cardPage.mouse.move(x + 16, y);
+        await cardPage.mouse.up();
       }
     }
     await cardPage.waitForSelector('.collection-hint', { state: 'visible', timeout: 10000 });
@@ -150,8 +153,21 @@ function installProgressBackend(context, state) {
     const centerY = (top + bottom) / 2;
     await cardPage.mouse.click(centerX, centerY);
     await cardPage.waitForTimeout(900);
-    await cardPage.mouse.click(centerX, centerY);
-    await cardPage.waitForSelector('#read-trend-modal.visible', { timeout: 3000 });
+    assert(await cardPage.locator('.collection-hint').evaluate((hint) => getComputedStyle(hint).visibility === 'hidden'), 'Saved-card notice still covers the open-text action');
+    const drawnButtonY = top + ((bottom - top) * 705) / 768;
+    const buttonProbe = await cardPage.evaluate(({ x, y }) => ({
+      point: { x, y },
+      stack: document.elementsFromPoint(x, y).slice(0, 6).map((element) => ({
+        tag: element.tagName,
+        id: element.id,
+        className: typeof element.className === 'string' ? element.className : ''
+      }))
+    }), { x: centerX, y: drawnButtonY });
+    await cardPage.screenshot({ path: require('path').join(process.env.MIROFAKTURA_ARTIFACT_DIR || '.', 'daily-card-back-button.png'), fullPage: true });
+    await cardPage.mouse.click(centerX, drawnButtonY);
+    await cardPage.waitForSelector('#read-trend-modal.visible', { timeout: 3000 }).catch((error) => {
+      throw new Error(`${error.message}\nButton probe: ${JSON.stringify(buttonProbe)}`);
+    });
     await cardDevice.close();
 
     console.log(JSON.stringify({ ok: true, restoredCards: 1, collectionCardWidth: cardWidth, dailyCardWidth, dailyCardAction: true }));

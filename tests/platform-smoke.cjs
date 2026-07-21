@@ -314,6 +314,7 @@ async function testMaxWaitingLayout(browser, viewport, suffix) {
       nav: { top: nav.top, bottom: nav.bottom },
       timer: { backgroundImage: `${timerStyle.backgroundImage} ${timerDigitsStyle.backgroundImage}`, height: timer.getBoundingClientRect().height },
       timerDigits: { clientWidth: timerDigits.clientWidth, scrollWidth: timerDigits.scrollWidth, boxShadow: timerDigitsStyle.boxShadow },
+      sheetBoxShadow: getComputedStyle(document.querySelector('.native-waiting-sheet')).boxShadow,
       inviteButton: { display: getComputedStyle(inviteButton).display, bottom: inviteButtonRect.bottom, height: inviteButtonRect.height },
       availableCenter,
       sheetCenter,
@@ -330,14 +331,21 @@ async function testMaxWaitingLayout(browser, viewport, suffix) {
     });
     assert(scrollTop > 0, `MAX waiting screen reports overflow but does not scroll: ${JSON.stringify(geometry)}`);
     await page.waitForTimeout(150);
+    const bottomGap = await page.evaluate(() => {
+      const sheet = document.querySelector('.native-waiting-sheet').getBoundingClientRect();
+      const nav = document.querySelector('.bottom-nav').getBoundingClientRect();
+      return nav.top - sheet.bottom;
+    });
+    assert(bottomGap >= 16, `MAX waiting panel cannot scroll clear of navigation: ${JSON.stringify({ bottomGap, geometry })}`);
     await page.screenshot({ path: path.join(artifacts, `max-waiting-${suffix}-scrolled.png`), fullPage: true });
   }
   if (!scrollable) {
-    assert(geometry.sheet.bottom <= geometry.nav.top - 8, `Waiting panel is clipped by navigation: ${JSON.stringify(geometry)}`);
+    assert(geometry.sheet.bottom <= geometry.nav.top - 16, `Waiting panel is clipped by navigation: ${JSON.stringify(geometry)}`);
   }
   assert(geometry.timer.backgroundImage.includes('trends-waiting-panel.webp'), `MAX waiting timer visual is missing: ${JSON.stringify(geometry)}`);
   assert(geometry.timerDigits.scrollWidth <= geometry.timerDigits.clientWidth + 1, `MAX timer digits are clipped: ${JSON.stringify(geometry)}`);
   assert(!geometry.timerDigits.boxShadow.includes('16px 30px'), `MAX waiting timer still has the detached lower shadow: ${JSON.stringify(geometry)}`);
+  assert(!geometry.sheetBoxShadow.includes('52px'), `MAX waiting panel still has the detached outer shadow: ${JSON.stringify(geometry)}`);
   assert(geometry.inviteButton.display !== 'none' && geometry.inviteButton.height >= 48, `MAX invite action is missing: ${JSON.stringify(geometry)}`);
   assert(geometry.inviteButton.bottom <= geometry.sheet.bottom + 1, `MAX invite action requires internal scrolling: ${JSON.stringify(geometry)}`);
   if (viewport.height >= 700 && !scrollable) {
@@ -347,11 +355,21 @@ async function testMaxWaitingLayout(browser, viewport, suffix) {
   return diagnostics;
 }
 
-async function testTelegramWaitingLayout(browser) {
-  const context = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1 });
+async function testTelegramWaitingLayout(browser, viewport = { width: 390, height: 844 }, suffix = 'phone-portrait', delayCardImage = false) {
+  const context = await browser.newContext({ viewport, deviceScaleFactor: 1 });
   const page = await context.newPage();
-  const diagnostics = collectDiagnostics(page, 'telegram-waiting');
+  const diagnostics = collectDiagnostics(page, `telegram-waiting-${suffix}`);
   await installTelegramStub(page);
+  if (delayCardImage) {
+    await page.route(/\/trends-v2\/.+\/front\.jpg(?:\?.*)?$/, async (route) => {
+      await new Promise((resolve) => setTimeout(resolve, 3500));
+      await route.fulfill({
+        status: 200,
+        contentType: 'image/png',
+        body: Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=', 'base64')
+      });
+    });
+  }
   await page.route('https://cb.multy.ai/**', (route) => route.fulfill({
     status: 200,
     contentType: 'application/json',
@@ -370,8 +388,13 @@ async function testTelegramWaitingLayout(browser) {
     }));
   });
   await page.reload({ waitUntil: 'domcontentloaded' });
+  const openStartedAt = Date.now();
   await page.click('[data-action="openTrends"]');
   await page.waitForSelector('#game-ui.waiting-for-next-card .native-waiting-sheet', { timeout: 15000 });
+  const readyElapsedMs = Date.now() - openStartedAt;
+  if (delayCardImage) {
+    assert(readyElapsedMs < 2500, `Telegram waiting loader remained over an already-ready timer: ${readyElapsedMs}ms`);
+  }
   await page.waitForTimeout(500);
   const geometry = await page.evaluate(() => {
     const sheet = document.querySelector('.native-waiting-sheet').getBoundingClientRect();
@@ -383,22 +406,40 @@ async function testTelegramWaitingLayout(browser) {
     const timer = document.querySelector('#daily-timer');
     const timerStyle = getComputedStyle(timer);
     const timerDigitsStyle = getComputedStyle(document.querySelector('.timer-digits'));
+    const gameUi = document.querySelector('#game-ui');
     return {
       sheet: { top: sheet.top, bottom: sheet.bottom },
       navTop: nav.top,
       offset: ((sheet.top + sheet.bottom) / 2) - ((tabs.bottom + nav.top) / 2),
       canvasVisibility: getComputedStyle(canvas).visibility,
       timer: { backgroundImage: `${timerStyle.backgroundImage} ${timerDigitsStyle.backgroundImage}`, height: timer.getBoundingClientRect().height },
+      sheetBoxShadow: getComputedStyle(document.querySelector('.native-waiting-sheet')).boxShadow,
+      scroll: { clientHeight: gameUi.clientHeight, scrollHeight: gameUi.scrollHeight, overflowY: getComputedStyle(gameUi).overflowY, touchAction: getComputedStyle(gameUi).touchAction },
       inviteButton: { display: getComputedStyle(inviteButton).display, top: inviteButtonRect.top, bottom: inviteButtonRect.bottom, height: inviteButtonRect.height }
     };
   });
-  await page.screenshot({ path: path.join(artifacts, 'telegram-waiting-phone-portrait.png'), fullPage: true });
+  await page.screenshot({ path: path.join(artifacts, `telegram-waiting-${suffix}.png`), fullPage: true });
   assert(geometry.canvasVisibility === 'hidden', `Telegram waiting screen still shows the daily card: ${JSON.stringify(geometry)}`);
   assert(geometry.timer.backgroundImage.includes('trends-waiting-panel.webp'), `Telegram waiting timer visual is missing: ${JSON.stringify(geometry)}`);
   assert(geometry.inviteButton.display !== 'none' && geometry.inviteButton.height >= 48, `Telegram invite action is missing: ${JSON.stringify(geometry)}`);
   assert(geometry.inviteButton.bottom <= geometry.sheet.bottom + 1, `Telegram invite action requires internal scrolling: ${JSON.stringify(geometry)}`);
-  assert(geometry.sheet.bottom <= geometry.navTop - 8, `Telegram waiting panel is clipped by navigation: ${JSON.stringify(geometry)}`);
-  assert(Math.abs(geometry.offset) <= 48, `Telegram waiting panel is not vertically centered: ${JSON.stringify(geometry)}`);
+  assert(!geometry.sheetBoxShadow.includes('52px'), `Telegram waiting panel still has the detached outer shadow: ${JSON.stringify(geometry)}`);
+  const scrollable = geometry.scroll.scrollHeight > geometry.scroll.clientHeight + 1;
+  assert(geometry.scroll.overflowY === 'auto' && geometry.scroll.touchAction === 'pan-y', `Telegram waiting screen cannot scroll: ${JSON.stringify(geometry)}`);
+  if (scrollable) {
+    await page.locator('#game-ui').evaluate((element) => { element.scrollTop = element.scrollHeight; });
+    await page.waitForTimeout(150);
+    const bottomGap = await page.evaluate(() => {
+      const sheet = document.querySelector('.native-waiting-sheet').getBoundingClientRect();
+      const nav = document.querySelector('.bottom-nav').getBoundingClientRect();
+      return nav.top - sheet.bottom;
+    });
+    assert(bottomGap >= 16, `Telegram waiting panel cannot scroll clear of navigation: ${JSON.stringify({ bottomGap, geometry })}`);
+    await page.screenshot({ path: path.join(artifacts, `telegram-waiting-${suffix}-scrolled.png`), fullPage: true });
+  } else {
+    assert(geometry.sheet.bottom <= geometry.navTop - 16, `Telegram waiting panel is clipped by navigation: ${JSON.stringify(geometry)}`);
+    assert(Math.abs(geometry.offset) <= 48, `Telegram waiting panel is not vertically centered: ${JSON.stringify(geometry)}`);
+  }
   await page.click('[data-trends-tab="collection"]');
   const telegramCollectionCard = page.locator('#lib-grid-content .lib-card-container').first();
   await telegramCollectionCard.waitFor();
@@ -507,6 +548,7 @@ async function testTelegramOnboardingLayout(browser) {
       results.push(await testMaxLoadingVisual(browser));
     } else if (process.env.MIROFAKTURA_SMOKE_FOCUS === 'waiting') {
       results.push(await testTelegramWaitingLayout(browser));
+      results.push(await testTelegramWaitingLayout(browser, { width: 579, height: 683 }, 'desktop-narrow', true));
       results.push(await testMaxWaitingLayout(browser, { width: 390, height: 844 }, 'phone-portrait'));
       results.push(await testMaxWaitingLayout(browser, { width: 480, height: 1218 }, 'phone-tall'));
       results.push(await testMaxWaitingLayout(browser, { width: 844, height: 390 }, 'phone-landscape'));
