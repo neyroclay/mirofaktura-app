@@ -168,6 +168,11 @@ async function testMaxLoadingVisual(browser) {
   const page = await context.newPage();
   const diagnostics = collectDiagnostics(page, 'max-loading-visual');
   await installMaxStub(page);
+  await page.route('https://cb.multy.ai/**', (route) => route.fulfill({
+    status: 200,
+    contentType: 'application/json',
+    body: JSON.stringify({ exists: false })
+  }));
   let releaseDeckScript;
   const deckScriptGate = new Promise((resolve) => { releaseDeckScript = resolve; });
   await page.route('**/trend-deck-native.js*', async (route) => {
@@ -224,6 +229,11 @@ async function testMaxPersistence(browser) {
   const page = await context.newPage();
   const diagnostics = collectDiagnostics(page, 'max-persistence');
   await installMaxStub(page);
+  await page.route('https://cb.multy.ai/**', (route) => route.fulfill({
+    status: 200,
+    contentType: 'application/json',
+    body: JSON.stringify({ exists: false })
+  }));
   await page.goto(`${BASE_URL}/max/`, { waitUntil: 'domcontentloaded' });
   await page.evaluate(() => {
     localStorage.setItem('oracle_10_trends_release_v23_max_777', JSON.stringify({
