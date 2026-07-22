@@ -346,8 +346,7 @@
         title: 'Классическая воронка',
         text: 'Последовательно знакомит человека с компанией и подводит к основному продукту.',
         fit: 'Когда есть один главный продукт и понятный путь к покупке.',
-        tags: ['one-main', 'launch', 'core-sale'],
-        template: ['lead', 'tripwire', 'core', 'upsell', 'downsell', 'refusal']
+        tags: ['one-main', 'launch', 'core-sale']
       },
       {
         id: 'development',
@@ -355,8 +354,7 @@
         title: 'Развитие клиента',
         text: 'Продукты выстраиваются по этапам: старт, следующий уровень, экспертность и новые задачи.',
         fit: 'Для долгой работы, B2B, обучения, спорта и помогающих практик.',
-        tags: ['long', 'stages', 'growth'],
-        template: ['lead', 'core', 'next']
+        tags: ['long', 'stages', 'growth']
       },
       {
         id: 'chaos',
@@ -364,8 +362,7 @@
         title: 'Управляемый хаос',
         text: 'Любой продукт может стать точкой входа, а дальше человеку нужны уместные рекомендации.',
         fit: 'Для каталогов, библиотек продуктов и частых новинок.',
-        tags: ['many', 'catalog', 'personal'],
-        template: ['lead', 'core', 'next', 'upsell']
+        tags: ['many', 'catalog', 'personal']
       },
       {
         id: 'impression',
@@ -373,8 +370,7 @@
         title: 'Впечатляющие продукты',
         text: 'Линейка держится на серии, коллекции, заданиях или закрытых предложениях.',
         fit: 'Когда важно желание собрать, пройти или открыть продолжение.',
-        tags: ['emotion', 'collection', 'community'],
-        template: ['lead', 'tripwire', 'core', 'next']
+        tags: ['emotion', 'collection', 'community']
       }
     ],
     modelDetails: [
@@ -1098,8 +1094,6 @@
     gateStatus: 'idle',
     productLineRepeat: '',
     productLineAnswers: {},
-    productLineStages: ['lead', 'core'],
-    productLineTemplate: '',
     salesChannelAnswers: {},
     salesChannelFocus: '',
     trafficAtlasAnswers: {},
@@ -1451,7 +1445,7 @@
       sales: state.salesChannelAnswers.current === 'none'
         ? 'Выберите один канал из трёх кандидатов. Заранее определите, что нужно подготовить, сколько времени или денег вы готовы вложить, сколько продлится тест и какой результат покажет, что канал стоит развивать.'
         : 'Сначала оцените канал, который уже приносит продажи. Если он работает нестабильно, разберите, где теряются заявки. Если он работает устойчиво, выберите один новый канал из трёх кандидатов и заранее определите срок и показатель теста.',
-      products: 'Проверьте в конструкторе три опорные точки: как человек знакомится с вами, что покупает как основное решение и что вы предлагаете после первого результата. Если одной из точек нет, начните с неё.'
+      products: 'Отдельно проверьте продуктовую воронку — последовательность продуктов, которые вы предлагаете на разных этапах продаж. Её состав зависит от аудитории, продукта и возможностей компании.'
     };
     return steps[key] || steps.traffic;
   }
@@ -1466,20 +1460,16 @@
       const recommendations = recommendedProductLineModels();
       const topScore = recommendations[0]?.score;
       const matchingModels = recommendations.filter((model) => model.score === topScore).slice(0, 2);
-      const stages = productLinesMaterial.stages
-        .filter(([id]) => state.productLineStages.includes(id))
-        .map(([, title]) => title);
       const repeat = productLinesMaterial.diagnostic.find((item) => item.id === state.productLineRepeat);
 
       return {
-        complete: productLineSelectorComplete() && stages.length > 0,
-        title: 'Черновик продуктовой линейки',
+        complete: Boolean(repeat) && productLineSelectorComplete(),
+        title: 'Подбор модели продуктовой линейки',
         lines: [
           repeat ? ['Текущая ситуация', repeat.title] : null,
           matchingModels.length
             ? ['Подходящая модель', matchingModels.map((model) => model.title).join(' или ')]
-            : null,
-          stages.length ? ['Цепочка', stages.join(' → ')] : null
+            : null
         ].filter(Boolean)
       };
     }
@@ -1847,15 +1837,12 @@
 
   function renderProductLinesMaterial() {
     const repeat = productLinesMaterial.diagnostic.find((item) => item.id === state.productLineRepeat);
-    const selectedStages = productLinesMaterial.stages.filter(([id]) => state.productLineStages.includes(id));
     const selectorComplete = productLineSelectorComplete();
     const recommendedModels = recommendedProductLineModels();
     const recommendedModel = recommendedModels[0] || productLinesMaterial.models[0];
     const tiedModel = selectorComplete && recommendedModels[1]?.score === recommendedModel.score
       ? recommendedModels[1]
       : null;
-    const templateModel = productLinesMaterial.models.find((model) => model.id === state.productLineTemplate);
-
     return screen(`
       <button class="back-link" type="button" data-page="library">← В кладовую</button>
 
@@ -1863,7 +1850,7 @@
         <div>
           <p class="brand-label">Линейки продуктов</p>
           <h1>Как связать продукты и увеличить повторные покупки</h1>
-          <p class="lead">Посмотрите, как сейчас устроены ваши продукты и как собрать из них понятную систему: что предложить для знакомства, что продавать как основное решение и что — после него. В конце вы выберете подходящую модель и соберёте черновик продуктовой линейки.</p>
+          <p class="lead">Посмотрите, как сейчас устроены ваши продукты, сравните четыре модели и получите рекомендацию для своей ситуации.</p>
         </div>
       </article>
 
@@ -1889,7 +1876,7 @@
       <section class="lead-section">
         <p class="brand-label">Подбор модели</p>
         <h2>Как устроены ваши продукты?</h2>
-        <p class="lead-section-copy">Ответьте на три вопроса. По ответам мы предложим модель и заполним пример цепочки.</p>
+        <p class="lead-section-copy">Ответьте на три вопроса. По ответам мы предложим модель линейки. Набор продуктов для воронки определяется отдельно — с учётом аудитории, продукта и возможностей компании.</p>
         <div class="selector-mini">
           ${productLinesMaterial.selectorQuestions.map((question, index) => `
             <article class="selector-question">
@@ -1914,8 +1901,7 @@
           ${tiedModel ? `<p class="recommendation-alternative"><strong>Также подходит «${tiedModel.title}».</strong> ${tiedModel.fit}</p>` : ''}
           ${selectorComplete ? `
             <div class="recommendation-actions">
-              <button class="soft-btn" type="button" data-action="applyProductLineTemplate" data-model="${recommendedModel.id}">Собрать «${recommendedModel.title}»</button>
-              ${tiedModel ? `<button class="soft-btn" type="button" data-action="applyProductLineTemplate" data-model="${tiedModel.id}">Собрать «${tiedModel.title}»</button>` : ''}
+              <button class="soft-btn" type="button" data-action="focusProductLineBuilder">Посмотреть продуктовую воронку</button>
             </div>
           ` : ''}
         </div>
@@ -1924,7 +1910,7 @@
       <section class="lead-section">
         <p class="brand-label">Четыре модели</p>
         <h2>Сравните варианты</h2>
-        <p class="lead-section-copy">Откройте модель, если хотите понять её логику или собрать пример цепочки.</p>
+        <p class="lead-section-copy">Откройте модель, чтобы понять её логику. Конкретные элементы линейки выбираются отдельно.</p>
         <div class="lead-detail-list">
           ${productLinesMaterial.modelDetails.map((detail, index) => `
             <details class="lead-detail" ${(selectorComplete ? detail.id === recommendedModel.id : index === 0) ? 'open' : ''}>
@@ -1936,31 +1922,25 @@
               <ul>
                 ${detail.points.map((point) => `<li>${point}</li>`).join('')}
               </ul>
-              <button class="model-template-btn" type="button" data-action="applyProductLineTemplate" data-model="${detail.id}">Собрать пример цепочки</button>
+              <button class="model-template-btn" type="button" data-action="focusProductLineBuilder">Посмотреть продуктовую воронку</button>
             </details>
           `).join('')}
         </div>
       </section>
 
       <section class="lead-section" id="product-line-builder">
-        <p class="brand-label">Черновик линейки</p>
-        <h2>Соберите свою цепочку</h2>
-        <p class="lead-section-copy">Выберите этапы, которые уже есть, и добавьте те, которые хотите проверить.</p>
-        ${templateModel ? `<p class="builder-template-note">Сейчас показан пример для модели «${templateModel.title}». Его можно менять вручную.</p>` : ''}
+        <p class="brand-label">Отдельный инструмент</p>
+        <h2>Продуктовая воронка</h2>
+        <p class="lead-section-copy">Продуктовая воронка — это последовательность продуктов, которые компания предлагает на разных этапах воронки продаж. Она не привязана к одной модели линейки.</p>
+        <p class="builder-template-note">Состав продуктовой воронки зависит от аудитории, продукта и возможностей компании. Необязательно использовать весь набор.</p>
         <div class="stage-picker">
-          ${productLinesMaterial.stages.map(([id, title, hint]) => `
-            <button class="${state.productLineStages.includes(id) ? 'selected' : ''}" type="button" data-action="toggleProductStage" data-stage="${id}">
+          ${productLinesMaterial.stages.map(([, title, hint]) => `
+            <article>
               <strong>${title}</strong>
               <span>${hint}</span>
-            </button>
+            </article>
           `).join('')}
         </div>
-        <div class="route-strip">
-          ${selectedStages.length ? selectedStages.map(([id, title], index) => `
-            <span>${String(index + 1).padStart(2, '0')} ${title}</span>
-          `).join('') : '<p>Выберите хотя бы один этап.</p>'}
-        </div>
-        <button class="soft-btn" type="button" data-action="resetProductStages">Начать с двух основных этапов</button>
       </section>
 
       <section class="lead-section">
@@ -3285,36 +3265,10 @@
       return;
     }
 
-    if (action === 'applyProductLineTemplate') {
-      const modelId = target.getAttribute('data-model');
-      const model = productLinesMaterial.models.find((item) => item.id === modelId);
-      if (!model) return;
-      state.productLineStages = [...model.template];
-      state.productLineTemplate = model.id;
-      render({ scroll: false });
+    if (action === 'focusProductLineBuilder') {
       window.setTimeout(() => {
         document.getElementById('product-line-builder')?.scrollIntoView({ block: 'start', behavior: 'smooth' });
-      }, 40);
-      return;
-    }
-
-    if (action === 'toggleProductStage') {
-      const stage = target.getAttribute('data-stage');
-      if (!stage) return;
-      if (state.productLineStages.includes(stage)) {
-        state.productLineStages = state.productLineStages.filter((item) => item !== stage);
-      } else {
-        state.productLineStages = [...state.productLineStages, stage];
-      }
-      state.productLineTemplate = '';
-      render({ scroll: false });
-      return;
-    }
-
-    if (action === 'resetProductStages') {
-      state.productLineStages = ['lead', 'core'];
-      state.productLineTemplate = '';
-      render({ scroll: false });
+      }, 0);
       return;
     }
 
