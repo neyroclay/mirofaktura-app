@@ -547,6 +547,68 @@ html.native-legal-open body {
   transform: scale(0.94);
 }
 
+/* MAX desktop WebViews leave the app navigation inside the visible viewport.
+   Reserve that space in the card-text dialog: the source and action button
+   stay above the navigation while only the main text scrolls. */
+.trends-native-screen #c37.trend-native-embedded.platform-max #read-trend-modal {
+  padding: 14px 14px calc(112px + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+}
+
+.trends-native-screen #c37.trend-native-embedded.platform-max #read-trend-modal .modal-content {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 360px;
+  max-height: 100%;
+  box-sizing: border-box;
+}
+
+.trends-native-screen #c37.trend-native-embedded.platform-max #read-trend-modal .read-scroll-area {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: none;
+}
+
+.trends-native-screen #c37.trend-native-embedded.platform-max #read-trend-source {
+  flex: 0 0 auto;
+}
+
+@media (orientation: landscape) {
+  .trends-native-screen #c37.trend-native-embedded.platform-max #read-trend-modal {
+    position: fixed;
+    top: 0;
+    left: 50%;
+    width: min(100%, 430px);
+    height: 100dvh;
+    padding: 10px 14px calc(100px + env(safe-area-inset-bottom));
+    transform: translateX(-50%);
+  }
+
+  .trends-native-screen #c37.trend-native-embedded.platform-max #read-trend-modal .modal-content {
+    padding: 18px;
+  }
+
+  .trends-native-screen #c37.trend-native-embedded.platform-max #read-trend-modal .read-trend-heading {
+    margin-bottom: 8px;
+  }
+
+  .trends-native-screen #c37.trend-native-embedded.platform-max #read-trend-title {
+    font-size: 20px !important;
+  }
+
+  .trends-native-screen #c37.trend-native-embedded.platform-max #read-trend-modal .read-scroll-area {
+    margin-top: 4px;
+    font-size: 14px;
+    line-height: 1.45;
+  }
+
+  .trends-native-screen #c37.trend-native-embedded.platform-max #read-trend-source {
+    margin-bottom: 8px !important;
+    padding-top: 8px !important;
+  }
+}
+
 /* The native deck uses the app navigation instead of its legacy footer. */
 .trends-native-screen #c37.trend-native-embedded #done-ui {
   position: static !important;

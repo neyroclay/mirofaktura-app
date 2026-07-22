@@ -1492,7 +1492,7 @@
                if (maxWaiting && window.innerWidth >= 560) return { cameraZ: 10.5, cardY: 2.5, cardX: 0 };
                if (maxWaiting && window.innerHeight <= 900) return { cameraZ: 12, cardY: 2.4, cardX: 0 };
                if (maxWaiting) return { cameraZ: 10.5, cardY: 1.5, cardX: 0 };
-               if (usesTallPortraitLayout()) return { cameraZ: 8.6, cardY: 1.0, cardX: 0 };
+               if (usesTallPortraitLayout()) return { cameraZ: 8.6, cardY: trendPlatform === 'max' ? 1.35 : 1.0, cardX: 0 };
                if (nativeMode && sceneWidth <= 620 && sceneHeight >= 440) return { cameraZ: 6.2, cardY: 0.45, cardX: 0 };
                if (nativeMode && sceneAspect > 0.6) return { cameraZ: 7.8, cardY: 0.8, cardX: 0 };
                if (sceneAspect > 0.6) return { cameraZ: 8.2, cardY: 0.9, cardX: 0 };
