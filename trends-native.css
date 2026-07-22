@@ -104,7 +104,13 @@
    the spacers collapse to zero, so the card stays top-aligned and scrollable. */
 .trends-native-screen #c37.trend-native-embedded #gameover-view {
   padding-top: 32px !important;
-  padding-bottom: calc(120px + max(12px, env(safe-area-inset-bottom))) !important;
+  padding-bottom: calc(176px + max(12px, env(safe-area-inset-bottom))) !important;
+  scroll-padding-bottom: calc(176px + max(12px, env(safe-area-inset-bottom)));
+}
+
+.trends-native-screen #c37.trend-native-embedded .fullscreen-view {
+  padding-bottom: calc(164px + max(12px, env(safe-area-inset-bottom))) !important;
+  scroll-padding-bottom: calc(164px + max(12px, env(safe-area-inset-bottom)));
 }
 
 .trends-native-screen #c37.trend-native-embedded #gameover-view::before,

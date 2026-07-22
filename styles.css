@@ -46,6 +46,8 @@
 
 html {
   min-height: 100%;
+  scroll-padding-bottom: calc(156px + env(safe-area-inset-bottom));
+  overscroll-behavior-y: none;
   background:
     radial-gradient(circle at 20% 0%, rgba(255, 216, 74, 0.16), transparent 34%),
     radial-gradient(circle at 82% 10%, rgba(122, 164, 132, 0.14), transparent 36%),
@@ -55,6 +57,7 @@ html {
 body {
   min-height: 100%;
   margin: 0;
+  overscroll-behavior-y: none;
   color: var(--ink);
   font-family: var(--font-ui);
   background: transparent;
@@ -2992,6 +2995,10 @@ h3 {
   transition: opacity 260ms ease, visibility 260ms ease;
 }
 
+.material-home-return {
+  margin-top: 18px;
+}
+
 .trends-native-loader__logo {
   display: block;
   width: clamp(220px, 68vw, 300px);
@@ -3346,10 +3353,11 @@ h3 {
 .bottom-nav {
   position: fixed;
   left: 50%;
-  bottom: max(12px, env(safe-area-inset-bottom));
+  bottom: max(8px, env(safe-area-inset-bottom));
   z-index: 20;
   width: min(calc(100% - (var(--page-pad) * 2)), calc(430px - (var(--page-pad) * 2)));
-  transform: translateX(-50%);
+  transform: translate3d(-50%, 0, 0);
+  backface-visibility: hidden;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 2px;
@@ -3363,7 +3371,7 @@ h3 {
 }
 
 .screen.has-bottom-nav {
-  padding-bottom: calc(116px + env(safe-area-inset-bottom));
+  padding-bottom: calc(156px + env(safe-area-inset-bottom));
 }
 
 .nav-item {

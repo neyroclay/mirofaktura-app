@@ -4,14 +4,14 @@
   const TELEGRAM_BOT_URL = 'https://t.me/mirofactura_bot';
   const ELIZAVETA_TELEGRAM_CHANNEL_URL = 'https://t.me/gameneurons';
   const ELENA_TELEGRAM_CHANNEL_URL = 'https://t.me/adviceperm';
-  const CONTACT_EMAIL = 'info@mirofactura.ru';
   const platformAdapter = window.MirofacturaPlatforms?.current?.();
   if (!platformAdapter) throw new Error('Mirofactura platform adapter is not loaded');
+  const ELENA_CONTACT_URL = platformAdapter.authorUrls?.elenaContact || '';
   const telegramWebApp = window.Telegram?.WebApp || null;
   const URL_PARAMS = new URLSearchParams(window.location.search);
   const TELEGRAM_LAUNCH_PARAMS = new URLSearchParams(window.location.hash.replace(/^#/, ''));
   const NATIVE_TRENDS_MODE = URL_PARAMS.get('trends_native');
-  const NATIVE_TRENDS_ASSET_VERSION = '20260722-max-card-clearance-25';
+  const NATIVE_TRENDS_ASSET_VERSION = '20260722-navigation-sales-34';
   const APP_PLATFORM = platformAdapter.key;
   document.documentElement.dataset.mirofacturaPlatform = APP_PLATFORM;
   const USE_NATIVE_TRENDS = NATIVE_TRENDS_MODE !== '0';
@@ -511,7 +511,7 @@
         options: [
           ['fast', 'Быстрее получить продажи'],
           ['repeat', 'Повторные покупки'],
-          ['brand', 'Стать заметнее'],
+          ['brand', 'Привлечь новых клиентов'],
           ['scale', 'Масштабироваться']
         ]
       },
@@ -1444,7 +1444,7 @@
       traffic: 'Выберите один канал из четырёх рекомендаций. Запишите, кому покажете предложение, сколько времени или денег выделите на тест, сколько дней он продлится и по какому результату вы решите, стоит ли продолжать.',
       sales: state.salesChannelAnswers.current === 'none'
         ? 'Выберите один канал из трёх кандидатов. Заранее определите, что нужно подготовить, сколько времени или денег вы готовы вложить, сколько продлится тест и какой результат покажет, что канал стоит развивать.'
-        : 'Сначала оцените канал, который уже приносит продажи. Если он работает нестабильно, разберите, где теряются заявки. Если он работает устойчиво, выберите один новый канал из трёх кандидатов и заранее определите срок и показатель теста.',
+        : 'Сначала оцените канал, который уже приносит продажи. Если он работает нестабильно, разберите, где теряются заявки. Если он работает устойчиво, выберите один новый канал из трёх кандидатов, определите срок теста и показатели, по которым будете оценивать результат.',
       products: 'Отдельно проверьте продуктовую воронку — последовательность продуктов, которые вы предлагаете на разных этапах продаж. Её состав зависит от аудитории, продукта и возможностей компании.'
     };
     return steps[key] || steps.traffic;
@@ -1608,6 +1608,14 @@
         <button class="soft-btn material-copy-btn" type="button" data-action="copyMaterialResult" data-material="${key}">Скопировать текст результата</button>
         <small>Текст можно вставить в заметки или отправить коллеге.</small>
       </section>
+    `;
+  }
+
+  function renderMaterialHomeReturn() {
+    return `
+      <div class="material-home-return">
+        <button class="soft-btn" type="button" data-page="home">Вернуться на главную</button>
+      </div>
     `;
   }
 
@@ -1961,8 +1969,10 @@
       <section class="lead-cta">
         <h2>Нужно разобрать ваши продукты?</h2>
         <p>Поможем собрать существующие продукты в линейку и определить, какой продукт стоит добавить.</p>
-        <button class="primary-btn accent-cta" type="button" data-action="openEmail" data-service="Продуктовая линейка">Написать нам</button>
+        <button class="primary-btn accent-cta" type="button" data-action="openElenaContact">Написать нам</button>
       </section>
+
+      ${renderMaterialHomeReturn()}
     `, 'material-screen product-lines-screen');
   }
 
@@ -2140,8 +2150,10 @@
       <section class="lead-cta">
         <h2>Нужна помощь с выбором канала?</h2>
         <p>Разберём продукт, аудиторию и доступный ресурс, а затем выберем один канал для первого теста.</p>
-        <button class="primary-btn accent-cta" type="button" data-action="openEmail" data-service="Выбор канала продвижения">Написать нам</button>
+        <button class="primary-btn accent-cta" type="button" data-action="openElenaContact">Написать нам</button>
       </section>
+
+      ${renderMaterialHomeReturn()}
     `, 'material-screen product-lines-screen traffic-atlas-screen');
   }
 
@@ -2155,14 +2167,14 @@
     return Math.max(2, 10 - position);
   }
 
-  function salesCurrentChannelPenalty(channelId, current) {
+  function salesCurrentChannelIds(current) {
     const currentGroups = {
       online: ['online'],
       offline: ['offline', 'events', 'mobile', 'vending', 'retail'],
       direct: ['sales-team', 'remote'],
       partners: ['partners', 'competitors', 'everyone', 'network']
     };
-    return currentGroups[current]?.includes(channelId) ? 6 : 0;
+    return currentGroups[current] || [];
   }
 
   function salesTagBonus(channel, answers) {
@@ -2178,7 +2190,9 @@
   }
 
   function recommendedSalesChannels(answers = state.salesChannelAnswers) {
+    const currentChannelIds = new Set(salesCurrentChannelIds(answers.current));
     return salesChannelsMaterial.channels
+      .filter((channel) => !currentChannelIds.has(channel.id))
       .map((channel) => {
         const score = Object.entries(answers).reduce((sum, [question, answer]) => {
           const rankedIds = salesChannelsMaterial.rules[question]?.[answer] || [];
@@ -2186,9 +2200,7 @@
         }, 0);
         return {
           ...channel,
-          score: score
-            + salesTagBonus(channel, answers)
-            - salesCurrentChannelPenalty(channel.id, answers.current)
+          score: score + salesTagBonus(channel, answers)
         };
       })
       .sort((a, b) => b.score - a.score || Number(a.number) - Number(b.number))
@@ -2284,7 +2296,7 @@
           <p class="lead-section-copy">${focus.short}</p>
           <article class="lead-model sales-focus-card">
             <b>${focus.number}</b>
-            <h3>${focus.zone}</h3>
+            <h3>${focus.title}</h3>
             <p>${focus.text}</p>
           </article>
         </section>
@@ -2316,8 +2328,10 @@
       <section class="lead-cta">
         <h2>Нужна помощь с выбором канала?</h2>
         <p>Разберём текущие продажи, найдём слабое место и выберем один канал для проверки.</p>
-        <button class="primary-btn accent-cta" type="button" data-action="openEmail" data-service="Выбор канала продаж">Написать нам</button>
+        <button class="primary-btn accent-cta" type="button" data-action="openElenaContact">Написать нам</button>
       </section>
+
+      ${renderMaterialHomeReturn()}
     `, 'material-screen product-lines-screen sales-channels-screen');
   }
 
@@ -2352,8 +2366,7 @@
         <h1>Сначала стратегия. Потом — цифровой мир</h1>
         <p class="lead">Соединяем маркетинг, технологии и геймдизайн. Цифровой мир для нас — не просто сайт или приложение. Это вся система вокруг продукта: как человек узнаёт о нём, что понимает перед покупкой, где выбирает подходящий вариант, что получает после покупки и что можно предложить ему дальше. Каждая часть этой системы помогает бизнесу получить конкретный результат: заявку, продажу или повторное обращение.</p>
         <div class="contacts-hero-actions">
-          <button class="primary-btn" type="button" data-action="focusContactMap">Посмотреть возможности</button>
-          <button class="primary-btn accent-cta" type="button" data-action="openEmail">Написать нам</button>
+          <button class="primary-btn accent-cta" type="button" data-action="openElenaContact">Написать нам</button>
         </div>
       </section>
 
@@ -2430,7 +2443,7 @@
         <p class="brand-label">Обсудить проект</p>
         <h2>Расскажите о задаче</h2>
         <p>Напишите, что вы предлагаете и какой результат хотите получить: понятно описать продукт, получить больше заявок, запустить новое направление, увеличить повторные продажи или сократить ручную работу. Мы посмотрим на задачу и предложим подходящий формат работы.</p>
-        <button class="primary-btn accent-cta" type="button" data-action="openEmail">Написать нам</button>
+        <button class="primary-btn accent-cta" type="button" data-action="openElenaContact">Написать нам</button>
       </section>
 
       ${nativeDocumentsLink}
@@ -3206,11 +3219,8 @@
       return;
     }
 
-    if (action === 'openEmail') {
-      const service = target.getAttribute('data-service') || '';
-      const subject = encodeURIComponent(service ? `Задача для Мирофактуры: ${service}` : 'Задача для Мирофактуры');
-      const body = encodeURIComponent(`Здравствуйте!\n\nЧто у нас есть сейчас:\n\nЧто хотим изменить:\n\nСсылки и материалы, если есть:\n${service ? `\nРезультат квиза: ${service}` : ''}`);
-      window.location.href = `mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`;
+    if (action === 'openElenaContact') {
+      openExternalUrl(ELENA_CONTACT_URL);
       return;
     }
 
