@@ -229,21 +229,18 @@
       tag: 'Новая аудитория',
       title: 'Атлас трафика 2026',
       text: 'Карта каналов привлечения: что можно быстро проверить, а что потребует больше времени, денег или подготовки.',
-      service: 'Вовлечение и маркетинговое сопровождение',
       tone: ''
     },
     sales: {
       tag: 'Каналы продаж',
       title: 'Карта каналов продаж',
       text: 'Список из 16 каналов продаж и навигатор, который поможет выбрать один канал для следующего теста.',
-      service: 'Стратегия, продажи и продукт-мир',
       tone: 'warm'
     },
     products: {
       tag: 'Повторные покупки',
       title: 'Линейки продуктов',
       text: 'Четыре модели продуктовых линеек и конструктор цепочки: от первого знакомства до следующей покупки.',
-      service: 'Продуктовая система и экосистема',
       tone: 'deep'
     }
   };
@@ -259,7 +256,7 @@
     },
     {
       id: 'content',
-      label: 'Понятно объяснить продукт',
+      label: 'Понятно описать продукт',
       title: 'Подача продукта, контент и маскоты',
       text: 'Показываем, для кого создан продукт, какую задачу он решает, что получает клиент и чем один вариант отличается от другого. На этой основе готовим тексты, страницы, презентации и контент. Если бренду нужен узнаваемый герой, разрабатываем маскота с внешностью, характером и своей ролью в общении с аудиторией.',
       example: 'Маскот объясняет сложную тему в постах, появляется в игре и мини-приложении и помогает людям узнавать бренд на разных площадках.',
@@ -1347,7 +1344,7 @@
 
         <div class="home-links">
           <button class="home-link" type="button" data-action="openContacts">
-            <span><strong>Что мы делаем</strong><span>Помогаем объяснить продукт, получить заявки, запустить новое направление и вернуть клиентов за следующей покупкой.</span></span>
+            <span><strong>Что мы делаем</strong><span>Помогаем понятно описать продукт, получить заявки, запустить новое направление и вернуть клиентов за следующей покупкой.</span></span>
           </button>
           <button class="home-link" type="button" data-action="openLibrary">
             <span><strong>Кладовая Мирофактуры</strong><span>Небольшие интерактивные инструменты для первого разбора задачи.</span></span>
@@ -1454,7 +1451,7 @@
       sales: state.salesChannelAnswers.current === 'none'
         ? 'Выберите один канал из трёх кандидатов. Заранее определите, что нужно подготовить, сколько времени или денег вы готовы вложить, сколько продлится тест и какой результат покажет, что канал стоит развивать.'
         : 'Сначала оцените канал, который уже приносит продажи. Если он работает нестабильно, разберите, где теряются заявки. Если он работает устойчиво, выберите один новый канал из трёх кандидатов и заранее определите срок и показатель теста.',
-      products: 'Проверьте в конструкторе три опорные точки: чем человек знакомится с вами, что покупает как основное решение и что вы предлагаете после первого результата. Если одной из точек нет, начните с неё.'
+      products: 'Проверьте в конструкторе три опорные точки: как человек знакомится с вами, что покупает как основное решение и что вы предлагаете после первого результата. Если одной из точек нет, начните с неё.'
     };
     return steps[key] || steps.traffic;
   }
@@ -1567,11 +1564,11 @@
         </div>
         <div class="story-result-actions">
           <button class="primary-btn" type="button" data-action="shareStoryCard" data-material="${key}">${APP_PLATFORM === 'telegram' ? 'Добавить в сториз' : 'Поделиться советом'}</button>
-          <button class="soft-btn" type="button" data-action="saveStoryCard" data-material="${key}">Скачать картинку</button>
+          <button class="soft-btn" type="button" data-action="saveStoryCard" data-material="${key}">${APP_PLATFORM === 'max' ? 'Сохранить картинку' : 'Скачать картинку'}</button>
         </div>
         <p class="story-action-hint">${APP_PLATFORM === 'telegram'
           ? 'Первая кнопка откроет редактор сториз. Вторая скачает PNG в «Загрузки» или «Файлы».'
-          : 'Первая кнопка откроет меню отправки. Вторая скачает картинку.'}</p>
+          : 'Первая кнопка откроет меню отправки. Чтобы сохранить картинку, нажмите вторую и выберите «Сохранить изображение».'}</p>
         <p class="story-link-hint">Для сториз: <button type="button" data-action="copyStoryLink">скопируйте ссылку</button> и добавьте её через стикер «Ссылка».</p>
       </section>
     `;
@@ -1815,7 +1812,6 @@
             <small>${item.tag}</small>
             <h2>${item.title}</h2>
             <p>${item.text}</p>
-            <span class="material-service">Подходит для: ${item.service}</span>
             <span class="primary-btn material-card-action" aria-hidden="true">Открыть</span>
           </article>
         `).join('')}
@@ -2453,7 +2449,7 @@
       <section class="contacts-cta">
         <p class="brand-label">Обсудить проект</p>
         <h2>Расскажите о задаче</h2>
-        <p>Напишите, что вы предлагаете и какой результат хотите получить: понятнее объяснить продукт, получить больше заявок, запустить новое направление, увеличить повторные продажи или сократить ручную работу. Мы посмотрим на задачу и предложим подходящий формат работы.</p>
+        <p>Напишите, что вы предлагаете и какой результат хотите получить: понятно описать продукт, получить больше заявок, запустить новое направление, увеличить повторные продажи или сократить ручную работу. Мы посмотрим на задачу и предложим подходящий формат работы.</p>
         <button class="primary-btn accent-cta" type="button" data-action="openEmail">Написать нам</button>
       </section>
 
@@ -3020,6 +3016,25 @@
     window.setTimeout(() => URL.revokeObjectURL(url), 60000);
   }
 
+  async function saveStoryCardInMax(result) {
+    if (
+      APP_PLATFORM === 'max'
+      && result.file
+      && navigator.share
+      && (!navigator.canShare || navigator.canShare({ files: [result.file] }))
+    ) {
+      try {
+        await navigator.share({ files: [result.file] });
+        return 'menu';
+      } catch (error) {
+        if (error?.name === 'AbortError') return 'cancelled';
+      }
+    }
+
+    downloadStoryCard(result.blob, result.story.filename);
+    return 'download';
+  }
+
   function telegramStoryCardUrl(key) {
     const asset = TELEGRAM_STORY_CARD_ASSETS[key];
     if (!asset) return '';
@@ -3392,8 +3407,9 @@
             return;
           }
           const result = await createStoryCardFile(key);
-          downloadStoryCard(result.blob, result.story.filename);
-          showToast('Загрузка началась');
+          const saveStatus = await saveStoryCardInMax(result);
+          if (saveStatus === 'menu') showToast('Выберите «Сохранить изображение»');
+          if (saveStatus === 'download') showToast('Загрузка началась');
         } else {
           if (shareStoryCardToTelegram(key)) {
             showToast('Открываем редактор сториз');
@@ -3438,7 +3454,7 @@
         return;
       }
 
-      const text = 'Мирофактура соединяет маркетинг, технологии и геймдизайн. Помогаем объяснить продукт, получить заявки, запустить новое направление, увеличить повторные продажи и сократить ручную работу. Создаём стратегии, контент, маскотов, игры, ботов и мини-приложения.';
+      const text = 'Мирофактура соединяет маркетинг, технологии и геймдизайн. Помогаем понятно описать продукт, получить заявки, запустить новое направление, увеличить повторные продажи и сократить ручную работу. Создаём стратегии, контент, маскотов, игры, ботов и мини-приложения.';
       const shareUrl = APP_PLATFORM === 'max'
         ? platformAdapter.getReferralLink(getPlatformUserId())
         : PLATFORM.entryUrl;
