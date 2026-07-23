@@ -99,6 +99,15 @@
   filter: drop-shadow(0 8px 16px rgba(7, 57, 54, 0.08));
 }
 
+/* The embedded deck may explicitly make its hint visible while card textures
+   are still loading. Hide the whole scene layers until the ready event so no
+   scratch prompt or unfinished 3D content can show through the loader. */
+.trends-native-screen .trends-native-host:not(.is-ready) > .ui-layer,
+.trends-native-screen .trends-native-host:not(.is-ready) > #canvas-container {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
 /* When the completed-collection card fits, keep it visually centered in the
    free space between the top tabs and the app navigation. On shorter screens
    the spacers collapse to zero, so the card stays top-aligned and scrollable. */
@@ -553,35 +562,46 @@ html.native-legal-open body {
   transform: scale(0.94);
 }
 
-/* MAX desktop WebViews leave the app navigation inside the visible viewport.
-   Reserve that space in the card-text dialog: the source and action button
-   stay above the navigation while only the main text scrolls. */
-.trends-native-screen #c37.trend-native-embedded.platform-max #read-trend-modal {
+/* Desktop and mobile WebViews leave the app navigation inside the visible
+   viewport. Reserve that space in the card-text dialog on both platforms:
+   the source and action button stay visible while only the main text scrolls. */
+.trends-native-screen #c37.trend-native-embedded #read-trend-modal {
   padding: 14px 14px calc(112px + env(safe-area-inset-bottom));
   box-sizing: border-box;
+  background:
+    radial-gradient(circle at 12% 6%, rgba(249, 236, 159, 0.34), transparent 32%),
+    radial-gradient(circle at 90% 10%, rgba(80, 226, 219, 0.2), transparent 34%),
+    linear-gradient(180deg, #e8faf6 0%, #fff9e9 100%);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
-.trends-native-screen #c37.trend-native-embedded.platform-max #read-trend-modal .modal-content {
+.trends-native-screen #c37.trend-native-embedded #read-trend-modal .modal-content {
   display: flex;
   flex-direction: column;
   width: 100%;
+  height: 100%;
   max-width: 360px;
   max-height: 100%;
   box-sizing: border-box;
 }
 
-.trends-native-screen #c37.trend-native-embedded.platform-max #read-trend-modal .read-scroll-area {
+.trends-native-screen #c37.trend-native-embedded #read-trend-modal .read-scroll-area {
   flex: 1 1 auto;
   min-height: 0;
   max-height: none;
 }
 
-.trends-native-screen #c37.trend-native-embedded.platform-max #read-trend-source {
+.trends-native-screen #c37.trend-native-embedded #read-trend-source {
   flex: 0 0 auto;
 }
 
 @media (orientation: landscape) {
-  .trends-native-screen #c37.trend-native-embedded.platform-max #read-trend-modal {
+  .trends-native-screen .trends-native-host.read-modal-open {
+    z-index: 30;
+  }
+
+  .trends-native-screen #c37.trend-native-embedded #read-trend-modal {
     position: fixed;
     top: 0;
     left: 50%;
@@ -591,25 +611,25 @@ html.native-legal-open body {
     transform: translateX(-50%);
   }
 
-  .trends-native-screen #c37.trend-native-embedded.platform-max #read-trend-modal .modal-content {
+  .trends-native-screen #c37.trend-native-embedded #read-trend-modal .modal-content {
     padding: 18px;
   }
 
-  .trends-native-screen #c37.trend-native-embedded.platform-max #read-trend-modal .read-trend-heading {
+  .trends-native-screen #c37.trend-native-embedded #read-trend-modal .read-trend-heading {
     margin-bottom: 8px;
   }
 
-  .trends-native-screen #c37.trend-native-embedded.platform-max #read-trend-title {
+  .trends-native-screen #c37.trend-native-embedded #read-trend-title {
     font-size: 20px !important;
   }
 
-  .trends-native-screen #c37.trend-native-embedded.platform-max #read-trend-modal .read-scroll-area {
+  .trends-native-screen #c37.trend-native-embedded #read-trend-modal .read-scroll-area {
     margin-top: 4px;
     font-size: 14px;
     line-height: 1.45;
   }
 
-  .trends-native-screen #c37.trend-native-embedded.platform-max #read-trend-source {
+  .trends-native-screen #c37.trend-native-embedded #read-trend-source {
     margin-bottom: 8px !important;
     padding-top: 8px !important;
   }

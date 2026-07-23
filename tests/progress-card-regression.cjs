@@ -168,9 +168,35 @@ function installProgressBackend(context, state) {
     await cardPage.waitForSelector('#read-trend-modal.visible', { timeout: 3000 }).catch((error) => {
       throw new Error(`${error.message}\nButton probe: ${JSON.stringify(buttonProbe)}`);
     });
+    const modalGeometry = await cardPage.evaluate(() => {
+      const modal = document.getElementById('read-trend-modal').getBoundingClientRect();
+      const content = document.querySelector('#read-trend-modal .modal-content').getBoundingClientRect();
+      const title = document.getElementById('read-trend-title').getBoundingClientRect();
+      const text = document.getElementById('read-trend-text');
+      const source = document.getElementById('read-trend-source').getBoundingClientRect();
+      const action = document.getElementById('btn-read-apply').getBoundingClientRect();
+      const nav = document.querySelector('.bottom-nav').getBoundingClientRect();
+      return {
+        modal: { top: modal.top, bottom: modal.bottom },
+        content: { top: content.top, bottom: content.bottom },
+        title: { top: title.top, bottom: title.bottom },
+        text: { clientHeight: text.clientHeight, scrollHeight: text.scrollHeight, overflowY: getComputedStyle(text).overflowY },
+        source: { top: source.top, bottom: source.bottom, display: getComputedStyle(document.getElementById('read-trend-source')).display },
+        action: { top: action.top, bottom: action.bottom },
+        nav: { top: nav.top, bottom: nav.bottom }
+      };
+    });
+    assert(modalGeometry.content.top >= modalGeometry.modal.top - 1, `Telegram trend title escapes above the dialog: ${JSON.stringify(modalGeometry)}`);
+    assert(modalGeometry.title.top >= modalGeometry.content.top + 8, `Telegram trend title is clipped: ${JSON.stringify(modalGeometry)}`);
+    assert(modalGeometry.content.bottom <= modalGeometry.nav.top - 8, `Telegram dialog is covered by navigation: ${JSON.stringify(modalGeometry)}`);
+    assert(modalGeometry.source.display !== 'none' && modalGeometry.source.bottom <= modalGeometry.nav.top - 8, `Telegram trend source is hidden by navigation: ${JSON.stringify(modalGeometry)}`);
+    assert(modalGeometry.action.bottom <= modalGeometry.nav.top - 8, `Telegram trend action is hidden by navigation: ${JSON.stringify(modalGeometry)}`);
+    assert(modalGeometry.text.clientHeight >= 48 && modalGeometry.text.overflowY === 'auto', `Telegram trend text has no usable scroll area: ${JSON.stringify(modalGeometry)}`);
+    await cardPage.locator('#read-trend-text').evaluate((element) => { element.scrollTop = element.scrollHeight; });
+    await cardPage.screenshot({ path: require('path').join(process.env.MIROFAKTURA_ARTIFACT_DIR || '.', 'telegram-read-modal.png'), fullPage: true });
     await cardDevice.close();
 
-    console.log(JSON.stringify({ ok: true, restoredCards: 1, collectionCardWidth: cardWidth, dailyCardWidth, dailyCardAction: true }));
+    console.log(JSON.stringify({ ok: true, restoredCards: 1, collectionCardWidth: cardWidth, dailyCardWidth, dailyCardAction: true, modalGeometry }));
   } finally {
     await browser.close();
   }

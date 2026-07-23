@@ -7,9 +7,106 @@ const artifacts = process.env.MIROFAKTURA_ARTIFACT_DIR
   ? path.resolve(process.env.MIROFAKTURA_ARTIFACT_DIR)
   : path.join(__dirname, '..', 'test-artifacts');
 fs.mkdirSync(artifacts, { recursive: true });
+const screenshotArtifacts = process.argv[2] ? path.resolve(process.argv[2]) : artifacts;
+fs.mkdirSync(screenshotArtifacts, { recursive: true });
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
+}
+
+async function assertReadModalClearance(page, name) {
+  const geometry = await page.evaluate(() => {
+    const modal = document.getElementById('read-trend-modal');
+    const content = modal.querySelector('.modal-content');
+    const title = document.getElementById('read-trend-title');
+    const text = document.getElementById('read-trend-text');
+    const source = document.getElementById('read-trend-source');
+    const action = document.getElementById('btn-read-apply');
+    const tabs = document.querySelector('.trends-native-tabs');
+    const nav = document.querySelector('.bottom-nav');
+    const rect = (element) => {
+      const value = element.getBoundingClientRect();
+      return { top: value.top, right: value.right, bottom: value.bottom, left: value.left, width: value.width, height: value.height };
+    };
+    return {
+      modal: rect(modal),
+      content: rect(content),
+      title: rect(title),
+      text: { ...rect(text), clientHeight: text.clientHeight, scrollHeight: text.scrollHeight, overflowY: getComputedStyle(text).overflowY },
+      source: rect(source),
+      action: rect(action),
+      tabs: rect(tabs),
+      nav: rect(nav),
+      tabsObscureDialog: (() => {
+        const overlapTop = Math.max(content.getBoundingClientRect().top, tabs.getBoundingClientRect().top);
+        const overlapBottom = Math.min(content.getBoundingClientRect().bottom, tabs.getBoundingClientRect().bottom);
+        if (overlapBottom <= overlapTop) return false;
+        const topElement = document.elementFromPoint((tabs.getBoundingClientRect().left + tabs.getBoundingClientRect().right) / 2, (overlapTop + overlapBottom) / 2);
+        return Boolean(topElement && tabs.contains(topElement));
+      })(),
+      sourceVisible: getComputedStyle(source).display !== 'none',
+      actionVisible: getComputedStyle(action).visibility !== 'hidden' && getComputedStyle(action).display !== 'none'
+    };
+  });
+  assert(geometry.content.top >= geometry.modal.top - 1, `${name}: trend title escapes above the dialog: ${JSON.stringify(geometry)}`);
+  assert(geometry.title.top >= geometry.content.top + 8, `${name}: trend title is clipped: ${JSON.stringify(geometry)}`);
+  assert(geometry.content.bottom <= geometry.nav.top - 8, `${name}: dialog is covered by navigation: ${JSON.stringify(geometry)}`);
+  assert(geometry.sourceVisible && geometry.source.bottom <= geometry.nav.top - 8, `${name}: trend source is hidden by navigation: ${JSON.stringify(geometry)}`);
+  assert(geometry.actionVisible && geometry.action.bottom <= geometry.nav.top - 8, `${name}: trend action is hidden by navigation: ${JSON.stringify(geometry)}`);
+  assert(geometry.text.clientHeight >= 48 && geometry.text.overflowY === 'auto', `${name}: trend text has no usable scroll area: ${JSON.stringify(geometry)}`);
+  assert(!geometry.tabsObscureDialog, `${name}: top tabs cover the trend dialog: ${JSON.stringify(geometry)}`);
+  await page.locator('#read-trend-text').evaluate((element) => { element.scrollTop = element.scrollHeight; });
+  const fixedFooter = await page.evaluate(() => {
+    const source = document.getElementById('read-trend-source').getBoundingClientRect();
+    const action = document.getElementById('btn-read-apply').getBoundingClientRect();
+    const nav = document.querySelector('.bottom-nav').getBoundingClientRect();
+    return { sourceBottom: source.bottom, actionBottom: action.bottom, navTop: nav.top };
+  });
+  assert(fixedFooter.sourceBottom <= fixedFooter.navTop - 8 && fixedFooter.actionBottom <= fixedFooter.navTop - 8, `${name}: source or action moves under navigation after scrolling: ${JSON.stringify(fixedFooter)}`);
+  await page.screenshot({ path: path.join(screenshotArtifacts, `${name}.png`), fullPage: true });
+  return geometry;
+}
+
+async function assertPageBottomClearance(page, name) {
+  const geometry = await page.evaluate(() => {
+    window.scrollTo(0, document.documentElement.scrollHeight);
+    const nav = document.querySelector('.bottom-nav');
+    const content = nav?.previousElementSibling;
+    if (!nav || !content) return null;
+    const navRect = nav.getBoundingClientRect();
+    const contentRect = content.getBoundingClientRect();
+    return {
+      gap: navRect.top - contentRect.bottom,
+      navTop: navRect.top,
+      contentBottom: contentRect.bottom,
+      scrollY: window.scrollY,
+      scrollHeight: document.documentElement.scrollHeight,
+      viewportHeight: window.innerHeight
+    };
+  });
+  assert(geometry && geometry.gap >= 12, `${name}: page content is covered by navigation: ${JSON.stringify(geometry)}`);
+  await page.evaluate(() => window.scrollTo(0, 0));
+}
+
+async function assertInternalViewBottomClearance(page, viewSelector, contentSelector, name) {
+  const geometry = await page.evaluate(({ viewSelector, contentSelector }) => {
+    const view = document.querySelector(viewSelector);
+    const content = document.querySelector(contentSelector);
+    const nav = document.querySelector('.bottom-nav');
+    if (!view || !content || !nav) return null;
+    view.scrollTop = view.scrollHeight;
+    const contentRect = content.getBoundingClientRect();
+    const navRect = nav.getBoundingClientRect();
+    return {
+      gap: navRect.top - contentRect.bottom,
+      contentBottom: contentRect.bottom,
+      navTop: navRect.top,
+      clientHeight: view.clientHeight,
+      scrollHeight: view.scrollHeight,
+      scrollTop: view.scrollTop
+    };
+  }, { viewSelector, contentSelector });
+  assert(geometry && geometry.gap >= 12, `${name}: internal scroll content is covered by navigation: ${JSON.stringify(geometry)}`);
 }
 
 async function installMaxStub(page) {
@@ -87,6 +184,7 @@ async function testMax(browser, viewport, suffix) {
   await installMaxStub(page);
   await page.goto(`${BASE_URL}/max/`, { waitUntil: 'domcontentloaded' });
   await page.waitForSelector('.hero');
+  await assertPageBottomClearance(page, `max-${suffix}-home`);
 
   assert(await page.evaluate(() => document.documentElement.dataset.mirofacturaPlatform) === 'max', 'MAX entry did not select MAX adapter');
   await page.click('.share-btn');
@@ -115,6 +213,7 @@ async function testMax(browser, viewport, suffix) {
     await page.click(selector);
     await page.waitForTimeout(40);
     assert(await page.locator('.screen').count(), `Screen ${target} did not render`);
+    await assertPageBottomClearance(page, `max-${suffix}-${target}`);
   }
 
   await page.click('[data-action="openTrends"]');
@@ -130,6 +229,7 @@ async function testMax(browser, viewport, suffix) {
   await page.click('[data-trends-tab="authors"]');
   await page.waitForTimeout(80);
   assert(await page.locator('#authors-view.visible').count() === 1, 'Authors tab did not open');
+  await assertInternalViewBottomClearance(page, '#authors-view', '#authors-view .authors-container', `max-${suffix}-authors`);
   const backHandled = await page.evaluate(() => {
     const callback = window.WebApp.BackButton.callback;
     if (!callback) return false;
@@ -141,6 +241,7 @@ async function testMax(browser, viewport, suffix) {
   await page.click('[data-trends-tab="collection"]');
   await page.waitForTimeout(80);
   assert(await page.locator('#library-view.visible').count() === 1, 'Collection tab did not open');
+  await assertInternalViewBottomClearance(page, '#library-view', '#lib-grid-content', `max-${suffix}-collection`);
   await page.click('[data-trends-tab="daily"]');
 
   const sharesBeforeDeck = await page.evaluate(() => window.__maxCalls.filter(([name]) => name === 'shareMaxContent').length);
@@ -158,7 +259,7 @@ async function testMax(browser, viewport, suffix) {
   assert(geometry.bodyWidth <= geometry.viewportWidth + 1, `Horizontal overflow: ${geometry.bodyWidth}/${geometry.viewportWidth}`);
   assert(geometry.bottomNav, 'Bottom navigation is missing');
 
-  await page.screenshot({ path: path.join(artifacts, `max-${suffix}.png`), fullPage: true });
+  await page.screenshot({ path: path.join(screenshotArtifacts, `max-${suffix}.png`), fullPage: true });
   await context.close();
   return diagnostics;
 }
@@ -190,7 +291,9 @@ async function testMaxLoadingVisual(browser) {
   await page.locator('.trends-native-host').evaluate((host) => {
     const probe = document.createElement('div');
     probe.id = 'loader-leak-probe';
+    probe.className = 'ui-layer';
     probe.style.cssText = 'width:160px;height:3px;background:#fff';
+    probe.innerHTML = '<span id="loader-nested-leak-probe" style="visibility:visible;opacity:1">СОТРИТЕ СЛОЙ</span>';
     host.appendChild(probe);
   });
   await page.waitForTimeout(120);
@@ -203,6 +306,10 @@ async function testMaxLoadingVisual(browser) {
       logoVisible: Boolean(logo && logo.complete && logo.naturalWidth > 0 && logo.getBoundingClientRect().width >= 220),
       logoSource: logo?.getAttribute('src') || '',
       text: element.querySelector('.trends-native-loader__text')?.textContent || '',
+      nestedLeakVisible: document.getElementById('loader-nested-leak-probe')?.checkVisibility({
+        checkOpacity: true,
+        checkVisibilityCSS: true
+      }) === true,
       leakedContent: [...element.parentElement.children].some((child) => {
         if (child === element) return false;
         const rect = child.getBoundingClientRect();
@@ -215,8 +322,9 @@ async function testMaxLoadingVisual(browser) {
   assert(loader.logoVisible, `MAX loader logo is missing or too small: ${JSON.stringify(loader)}`);
   assert(loader.logoSource.includes('logo-black-aqua.webp'), `MAX loader does not use the aqua logo: ${JSON.stringify(loader)}`);
   assert(loader.text === 'Раскладываем карты…', `MAX loader initial message is unexpected: ${JSON.stringify(loader)}`);
+  assert(!loader.nestedLeakVisible, `MAX loader reveals a nested scratch prompt: ${JSON.stringify(loader)}`);
   assert(!loader.leakedContent, `MAX loader reveals the unfinished deck underneath: ${JSON.stringify(loader)}`);
-  await page.screenshot({ path: path.join(artifacts, 'max-loading-visual.png'), fullPage: true });
+  await page.screenshot({ path: path.join(screenshotArtifacts, 'max-loading-visual.png'), fullPage: true });
   await page.evaluate(() => document.getElementById('loader-leak-probe')?.remove());
   releaseDeckScript();
   await page.waitForFunction(() => window.MirofacturaTrendDeck?.isReady?.() === true, null, { timeout: 15000 });
@@ -258,6 +366,48 @@ async function testMaxPersistence(browser) {
   await page.waitForTimeout(700);
   assert(await maxCollectionCard.evaluate((card) => card.classList.contains('flipped')), 'Saved MAX collection card did not flip');
   assert(await maxCollectionCard.locator('.lib-card-inner').evaluate((inner) => getComputedStyle(inner).transform !== 'none'), 'Saved MAX collection card has no flip transform');
+  await maxCollectionCard.locator('.lib-read-btn').click();
+  await page.waitForSelector('#read-trend-modal.visible');
+  await assertReadModalClearance(page, 'max-read-modal');
+  await context.close();
+  return diagnostics;
+}
+
+async function testReadModalLandscape(browser, platform) {
+  const context = await browser.newContext({ viewport: { width: 844, height: 390 }, deviceScaleFactor: 1 });
+  const page = await context.newPage();
+  const diagnostics = collectDiagnostics(page, `${platform}-read-modal-landscape`);
+  if (platform === 'max') await installMaxStub(page);
+  else await installTelegramStub(page);
+  await page.route('https://cb.multy.ai/**', (route) => route.fulfill({
+    status: 200,
+    contentType: 'application/json',
+    body: JSON.stringify({ exists: false })
+  }));
+  const userId = platform === 'max' ? 777 : 555;
+  await page.goto(`${BASE_URL}${platform === 'max' ? '/max/' : '/index.html'}`, { waitUntil: 'domcontentloaded' });
+  await page.evaluate(({ platform, userId }) => {
+    localStorage.setItem(`oracle_10_trends_release_v23_${platform}_${userId}`, JSON.stringify({
+      lastDate: new Date().toDateString(),
+      collected: [1],
+      onboardingSeen: true,
+      timerSeen: true,
+      firstLaunchTime: String(Date.now()),
+      bonusCards: 0,
+      invitedFriends: 0
+    }));
+  }, { platform, userId });
+  await page.reload({ waitUntil: 'domcontentloaded', timeout: 60000 });
+  await page.click('[data-action="openTrends"]');
+  await page.waitForFunction(() => window.MirofacturaTrendDeck?.isReady?.() === true, null, { timeout: 15000 });
+  await page.click('[data-trends-tab="collection"]');
+  const card = page.locator('#lib-grid-content .lib-card-container').first();
+  await card.waitFor();
+  await card.click();
+  await page.waitForTimeout(700);
+  await card.locator('.lib-read-btn').click();
+  await page.waitForSelector('#read-trend-modal.visible');
+  await assertReadModalClearance(page, `${platform}-read-modal-landscape`);
   await context.close();
   return diagnostics;
 }
@@ -331,7 +481,7 @@ async function testMaxWaitingLayout(browser, viewport, suffix) {
       offset: sheetCenter - availableCenter
     };
   });
-  await page.screenshot({ path: path.join(artifacts, `max-waiting-${suffix}.png`), fullPage: true });
+  await page.screenshot({ path: path.join(screenshotArtifacts, `max-waiting-${suffix}.png`), fullPage: true });
   const scrollable = geometry.scroll.scrollHeight > geometry.scroll.clientHeight + 1;
   assert(geometry.scroll.overflowY === 'auto' && geometry.scroll.touchAction === 'pan-y', `MAX waiting screen cannot scroll: ${JSON.stringify(geometry)}`);
   if (scrollable) {
@@ -347,7 +497,7 @@ async function testMaxWaitingLayout(browser, viewport, suffix) {
       return nav.top - sheet.bottom;
     });
     assert(bottomGap >= 16, `MAX waiting panel cannot scroll clear of navigation: ${JSON.stringify({ bottomGap, geometry })}`);
-    await page.screenshot({ path: path.join(artifacts, `max-waiting-${suffix}-scrolled.png`), fullPage: true });
+    await page.screenshot({ path: path.join(screenshotArtifacts, `max-waiting-${suffix}-scrolled.png`), fullPage: true });
   }
   if (!scrollable) {
     assert(geometry.sheet.bottom <= geometry.nav.top - 16, `Waiting panel is clipped by navigation: ${JSON.stringify(geometry)}`);
@@ -430,7 +580,7 @@ async function testTelegramWaitingLayout(browser, viewport = { width: 390, heigh
       inviteButton: { display: getComputedStyle(inviteButton).display, top: inviteButtonRect.top, bottom: inviteButtonRect.bottom, height: inviteButtonRect.height }
     };
   });
-  await page.screenshot({ path: path.join(artifacts, `telegram-waiting-${suffix}.png`), fullPage: true });
+  await page.screenshot({ path: path.join(screenshotArtifacts, `telegram-waiting-${suffix}.png`), fullPage: true });
   assert(geometry.canvasVisibility === 'hidden', `Telegram waiting screen still shows the daily card: ${JSON.stringify(geometry)}`);
   assert(geometry.timer.backgroundImage.includes('trends-waiting-panel.webp'), `Telegram waiting timer visual is missing: ${JSON.stringify(geometry)}`);
   assert(geometry.inviteButton.display !== 'none' && geometry.inviteButton.height >= 48, `Telegram invite action is missing: ${JSON.stringify(geometry)}`);
@@ -447,7 +597,7 @@ async function testTelegramWaitingLayout(browser, viewport = { width: 390, heigh
       return nav.top - sheet.bottom;
     });
     assert(bottomGap >= 16, `Telegram waiting panel cannot scroll clear of navigation: ${JSON.stringify({ bottomGap, geometry })}`);
-    await page.screenshot({ path: path.join(artifacts, `telegram-waiting-${suffix}-scrolled.png`), fullPage: true });
+    await page.screenshot({ path: path.join(screenshotArtifacts, `telegram-waiting-${suffix}-scrolled.png`), fullPage: true });
   } else {
     assert(geometry.sheet.bottom <= geometry.navTop - 16, `Telegram waiting panel is clipped by navigation: ${JSON.stringify(geometry)}`);
     assert(Math.abs(geometry.offset) <= 48, `Telegram waiting panel is not vertically centered: ${JSON.stringify(geometry)}`);
@@ -518,7 +668,7 @@ async function testTelegram(browser) {
   await page.waitForSelector('.trends-native-host');
   assert(progressLoadRequests.length === 1, 'Opening Telegram trends ignored the prefetched progress response');
   assert(maxBridgeRequests.length === 0, 'Telegram version loaded MAX Bridge');
-  await page.screenshot({ path: path.join(artifacts, 'telegram-main.png'), fullPage: true });
+  await page.screenshot({ path: path.join(screenshotArtifacts, 'telegram-main.png'), fullPage: true });
   await context.close();
   return diagnostics;
 }
@@ -546,7 +696,7 @@ async function testTelegramOnboardingLayout(browser) {
     return { availableCenter, cardCenter, offset: cardCenter - availableCenter };
   });
   assert(Math.abs(geometry.offset) <= 48, `Telegram onboarding is not vertically centered: ${JSON.stringify(geometry)}`);
-  await page.screenshot({ path: path.join(artifacts, 'telegram-onboarding-tall.png'), fullPage: true });
+  await page.screenshot({ path: path.join(screenshotArtifacts, 'telegram-onboarding-tall.png'), fullPage: true });
   await context.close();
   return diagnostics;
 }
@@ -574,6 +724,8 @@ async function testTelegramOnboardingLayout(browser) {
     results.push(await testMax(browser, { width: 1024, height: 768 }, 'tablet-landscape'));
     results.push(await testMaxLoadingVisual(browser));
     results.push(await testMaxPersistence(browser));
+    results.push(await testReadModalLandscape(browser, 'telegram'));
+    results.push(await testReadModalLandscape(browser, 'max'));
     results.push(await testMaxWaitingLayout(browser, { width: 390, height: 844 }, 'phone-portrait'));
     results.push(await testMaxWaitingLayout(browser, { width: 480, height: 1218 }, 'phone-tall'));
     results.push(await testMaxWaitingLayout(browser, { width: 844, height: 390 }, 'phone-landscape'));

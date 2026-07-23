@@ -1386,11 +1386,18 @@
             }
         }
 
+        const closeReadTrendModal = () => {
+            document.getElementById('read-trend-modal').classList.remove('visible');
+            container.classList.remove('read-modal-open');
+        };
+
         window.app_openReadModal = (cardId) => {
             const card = CARDS_DB.find(c => c.id === cardId); if (!card) return;
             document.getElementById('read-trend-title').textContent = card.title; document.getElementById('read-trend-text').innerHTML = card.description || 'Описание недоступно.';
             const srcEl = document.getElementById('read-trend-source'); if (card.source) { srcEl.textContent = card.source; srcEl.style.display = 'block'; } else { srcEl.style.display = 'none'; }
-            document.getElementById('btn-read-apply').onclick = (e) => { e.stopPropagation(); document.getElementById('read-trend-modal').classList.remove('visible'); document.getElementById('btn-tab-authors').click(); };
+            document.getElementById('read-trend-text').scrollTop = 0;
+            document.getElementById('btn-read-apply').onclick = (e) => { e.stopPropagation(); closeReadTrendModal(); document.getElementById('btn-tab-authors').click(); };
+            container.classList.add('read-modal-open');
             document.getElementById('read-trend-modal').classList.add('visible');
         };
 
@@ -1806,7 +1813,7 @@
                 d.classList.add('visible');
             }
 
-            document.getElementById('btn-close-read').addEventListener('click', () => { document.getElementById('read-trend-modal').classList.remove('visible'); });
+            document.getElementById('btn-close-read').addEventListener('click', closeReadTrendModal);
 
             // Закрытие модалки консультации
             document.getElementById('btn-close-consult').addEventListener('click', () => { 
@@ -1973,6 +1980,7 @@
                     const overlay = document.getElementById(id);
                     if (overlay?.classList.contains('visible')) {
                         overlay.classList.remove('visible');
+                        if (id === 'read-trend-modal') container.classList.remove('read-modal-open');
                         return true;
                     }
                 }
