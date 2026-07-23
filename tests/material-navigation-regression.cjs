@@ -114,6 +114,33 @@ async function assertMaterialFooter(page, material) {
     await openMaterial(page, 'products');
     await assertMaterialFooter(page, 'products');
 
+    await openMaterial(page, 'content-plan');
+    assert(await page.locator('.content-platform-guides:not(.content-reference-guides) .content-platform-guide').count() === 4, 'Content platform guide is incomplete');
+    const contentAnswers = {
+      goal: 'sales',
+      platform: 'max',
+      resource: 'visual',
+      bottleneck: 'response'
+    };
+    for (const [question, value] of Object.entries(contentAnswers)) {
+      await page.click(`[data-action="chooseContentNavigatorAnswer"][data-question="${question}"][data-value="${value}"]`);
+    }
+    assert(await page.locator('.material-outcome:not(.muted)').count() === 1, 'Content navigator result was not built');
+    assert((await page.locator('.material-outcome').textContent()).includes('Три рубрики'), 'Content navigator rubrics are missing');
+    await page.click('[data-action="toggleContentChecklist"][data-check="0"]');
+    assert(await page.locator('[data-action="toggleContentChecklist"][data-check="0"]').getAttribute('aria-pressed') === 'true', 'Content checklist does not retain a checked item');
+    await assertMaterialFooter(page, 'content-plan');
+
+    await page.click('[data-action="startQuiz"]');
+    for (const answer of ['one', 'content', 'content-plan', 'draft']) {
+      await page.click(`[data-answer="${answer}"]`);
+      await page.click('[data-action="nextQuestion"]');
+    }
+    assert(await page.locator('[data-action="openMaterial"][data-material="content-plan"]').count() === 1, 'Quiz does not recommend the content navigator');
+    await page.click('[data-action="openMaterial"][data-material="content-plan"]');
+    assert(await page.locator('.content-navigator-screen').count() === 1, 'Quiz result does not open the content navigator');
+    await page.click('[data-page="home"]');
+
     await page.click('[data-page="contacts"]');
     assert(await page.locator('[data-action="focusContactMap"]').count() === 0, 'Redundant possibilities button is still visible');
     const maxContactButtons = page.locator('[data-action="openElenaContact"]');
@@ -143,7 +170,7 @@ async function assertMaterialFooter(page, material) {
     );
     await telegramContext.close();
 
-    console.log(JSON.stringify({ ok: true, materials: ['sales', 'traffic', 'products'] }));
+    console.log(JSON.stringify({ ok: true, materials: ['sales', 'traffic', 'products', 'content-plan'] }));
   } finally {
     await browser.close();
   }
