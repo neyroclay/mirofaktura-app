@@ -192,7 +192,7 @@ async function testMax(browser, viewport, suffix) {
   const calls = await page.evaluate(() => window.__maxCalls);
   const shareCall = calls.find(([name]) => name === 'shareMaxContent');
   assert(shareCall, 'MAX shareMaxContent was not called');
-  assert(String(shareCall[1].link).includes('startapp=ref_777'), 'MAX referral share link is invalid');
+  assert(shareCall[1].link === 'https://max.ru/id590417093305_bot?startapp', 'MAX share outside Trends unexpectedly became a referral link');
 
   if (suffix === 'phone-portrait') {
     await page.click('[data-action="startQuiz"]');
@@ -249,6 +249,8 @@ async function testMax(browser, viewport, suffix) {
   await page.waitForTimeout(50);
   const sharesAfterDeck = await page.evaluate(() => window.__maxCalls.filter(([name]) => name === 'shareMaxContent').length);
   assert(sharesAfterDeck === sharesBeforeDeck + 1, 'Invite friend did not use MAX native sharing');
+  const deckShareWithoutProgress = await page.evaluate(() => window.__maxCalls.filter(([name]) => name === 'shareMaxContent').at(-1));
+  assert(deckShareWithoutProgress[1].link === 'https://max.ru/id590417093305_bot?startapp', 'MAX Trends share became referral before the first opened card');
 
   const geometry = await page.evaluate(() => ({
     bodyWidth: document.body.scrollWidth,
@@ -361,6 +363,10 @@ async function testMaxPersistence(browser) {
   await page.click('[data-trends-tab="collection"]');
   await page.waitForTimeout(100);
   assert(await page.locator('#lib-grid-content .lib-card-container').count() >= 1, 'Saved card was not restored in the collection');
+  await page.click('.share-btn');
+  await page.waitForTimeout(50);
+  const referralShare = await page.evaluate(() => window.__maxCalls.filter(([name]) => name === 'shareMaxContent').at(-1));
+  assert(referralShare[1].link === 'https://max.ru/id590417093305_bot?start=777', 'MAX Trends share did not become referral after an opened card');
   const maxCollectionCard = page.locator('#lib-grid-content .lib-card-container').first();
   await maxCollectionCard.click();
   await page.waitForTimeout(700);

@@ -10,6 +10,7 @@
 - `04-telegram-welcome.template.json` — отдельный блок приветствия для ручного использования.
 - `05-telegram-referral.template.json` — основной сценарий `/start`: реферальная логика, возврат к новому пользователю и приветствие.
 - `06-telegram-trend-followup.template.json` — сообщения после первого запуска колоды и предложение полной версии.
+- `07-telegram-referral-opened-card.template.json` — актуальная Telegram-рефералка: бонус выдаётся только после открытия хотя бы одной карты; фильтр Baserow использует `messenger=Telegram`.
 
 Актуальные сценарии MAX:
 

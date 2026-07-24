@@ -11,7 +11,7 @@
   const URL_PARAMS = new URLSearchParams(window.location.search);
   const TELEGRAM_LAUNCH_PARAMS = new URLSearchParams(window.location.hash.replace(/^#/, ''));
   const NATIVE_TRENDS_MODE = URL_PARAMS.get('trends_native');
-  const NATIVE_TRENDS_ASSET_VERSION = '20260724-card-tap-40';
+  const NATIVE_TRENDS_ASSET_VERSION = '20260724-referral-share-42';
   const APP_PLATFORM = platformAdapter.key;
   document.documentElement.dataset.mirofacturaPlatform = APP_PLATFORM;
   const USE_NATIVE_TRENDS = NATIVE_TRENDS_MODE !== '0';
@@ -3939,9 +3939,7 @@
       }
 
       const text = 'Мирофактура соединяет маркетинг, технологии и геймдизайн. Помогаем понятно описать продукт, получить заявки, запустить новое направление, увеличить повторные продажи и сократить ручную работу. Создаём стратегии, контент, маскотов, игры, ботов и мини-приложения.';
-      const shareUrl = APP_PLATFORM === 'max'
-        ? platformAdapter.getReferralLink(getPlatformUserId())
-        : PLATFORM.entryUrl;
+      const shareUrl = PLATFORM.entryUrl;
       try {
         const shared = await platformAdapter.share({ title: 'Мирофактура', text, url: shareUrl });
         if (!shared) showToast('Не удалось открыть меню отправки');

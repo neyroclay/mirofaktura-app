@@ -483,7 +483,7 @@
               "vpn": false,
               "save_result": true,
               "result_var": "baserow_ref",
-              "url": "https://api.baserow.io/api/database/rows/table/893270/?user_field_names=true&filter__user_id__equal={var:object.ref}&filter_type=AND&filter__messenger__equal=TELEGRAM",
+              "url": "https://api.baserow.io/api/database/rows/table/893270/?user_field_names=true&filter__user_id__equal={var:object.ref}&filter_type=AND&filter__messenger__equal=Telegram",
               "headers": [
                 {
                   "name": "Authorization",

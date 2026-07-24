@@ -1862,8 +1862,13 @@
                     pendingShareRequested = true;
                     return;
                 }
-                const shareUrl = platformAdapter.getReferralLink(userId);
-                const text = `Мне выпал стратегический тренд 2026: ${currentCardData.title}\n\nЗагляни в будущее и собери свою коллекцию инсайтов 👇`;
+                const canEarnReferralBonus = Boolean(userId && appData.collected.length > 0);
+                const shareUrl = canEarnReferralBonus
+                    ? platformAdapter.getReferralLink(userId)
+                    : platformAdapter.entryUrl;
+                const text = canEarnReferralBonus
+                    ? `Мне выпал стратегический тренд 2026: ${currentCardData.title}\n\nЗагляни в будущее и собери свою коллекцию инсайтов 👇`
+                    : 'Загляни в будущее и собери свою коллекцию стратегических трендов 2026 👇';
                 const fullText = text + '\n' + shareUrl;
 
                 if (typeof platformAdapter.share === 'function') {

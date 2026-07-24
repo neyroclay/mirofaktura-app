@@ -13,7 +13,7 @@
 Используется таблица `893270`. Текущих полей достаточно:
 
 - `user_id` — ID пользователя;
-- `messenger` — `TELEGRAM` или `MAX`;
+- `messenger` — `Telegram` или `MAX`;
 - `first_name`, `last_name`;
 - `first_launch_time`, `last_date`;
 - `collected_cards`;
@@ -33,7 +33,10 @@
 
 1. `01-shared-load-progress.json` — загрузка прогресса для обоих мессенджеров.
 2. `02-shared-save-progress.json` — сохранение прогресса для обоих мессенджеров.
-3. `03-max-referral.json` — текущая реферальная логика MAX с фильтром по `messenger`.
+3. `07-telegram-referral-opened-card.template.json` — Telegram-рефералка с проверкой открытой карты.
+4. `08-max-start-app-and-referral.template.json` — старт, Политика и рефералка MAX.
+
+В действующем Telegram-сценарии запрос `Найти пригласившего в Baserow` должен содержать фильтр `messenger=Telegram`. Регистр должен совпадать со значением, которое приложение сохраняет в таблицу.
 
 После импорта Multy выдаст новые адреса двух вебхуков. Их нужно передать в приложение перед публикацией.
 

@@ -62,8 +62,8 @@
     },
     getReferralLink(userId) {
       if (!userId) return BOT_URL;
-      const payload = String(userId).replace(/[^A-Za-z0-9_-]/g, '');
-      return `${BOT_URL}?startapp=${encodeURIComponent(`ref_${payload}`)}`;
+      const payload = String(userId).replace(/\D/g, '');
+      return payload ? `${BOT_URL}?start=${encodeURIComponent(payload)}` : BOT_URL;
     },
     openUrl(rawUrl) {
       const url = new URL(rawUrl);

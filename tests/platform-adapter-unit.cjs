@@ -51,7 +51,8 @@ function createContext(platform, extraWindow = {}) {
   assert.equal(adapter.key, 'max');
   assert.equal(adapter.messenger, 'MAX');
   assert.equal(adapter.entryUrl, 'https://max.ru/id590417093305_bot?startapp');
-  assert.equal(adapter.getReferralLink('12345'), 'https://max.ru/id590417093305_bot?startapp=ref_12345');
+  assert.equal(adapter.getReferralLink('12345'), 'https://max.ru/id590417093305_bot?start=12345');
+  assert.equal(adapter.getReferralLink('ref_12345'), 'https://max.ru/id590417093305_bot?start=12345');
   assert.equal(adapter.getReferralLink(''), 'https://max.ru/id590417093305_bot');
   assert.equal(adapter.progress.loadItem, 'trend_deck_load_v2');
   assert.equal(adapter.progress.saveItem, 'trend_deck_save_v2');
