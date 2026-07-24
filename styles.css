@@ -3183,6 +3183,47 @@ h3 {
   background: rgba(226, 255, 250, 0.74);
 }
 
+.content-checklist-setup {
+  display: grid;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.content-checklist-options {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.content-checklist-groups {
+  display: grid;
+  gap: 18px;
+  margin-top: 18px;
+}
+
+.content-checklist-group {
+  display: grid;
+  gap: 10px;
+}
+
+.content-checklist-group h3 {
+  margin: 0;
+  color: #087d78;
+  font-size: 13px;
+  line-height: 1.3;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.content-checklist-empty {
+  margin: 14px 0 0;
+  padding: 15px 16px;
+  border-radius: 18px;
+  color: rgba(9, 38, 35, 0.68);
+  background: rgba(255, 255, 249, 0.64);
+  font-size: 14px;
+  line-height: 1.45;
+  font-weight: 650;
+}
+
 .content-checklist-status span {
   color: rgba(9, 38, 35, 0.62);
   text-align: right;
@@ -3193,7 +3234,12 @@ h3 {
 .content-checklist-list {
   display: grid;
   gap: 9px;
-  margin-top: 12px;
+}
+
+@media (max-width: 430px) {
+  .content-checklist-options {
+    grid-template-columns: 1fr;
+  }
 }
 
 .content-checklist-item {

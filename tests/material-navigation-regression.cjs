@@ -121,6 +121,15 @@ async function assertMaterialFooter(page, material) {
     await page.waitForTimeout(1500);
     const checklistAnchorTop = await page.locator('#content-checklist').evaluate((element) => element.getBoundingClientRect().top);
     assert(checklistAnchorTop >= 0 && checklistAnchorTop <= 80, `Content checklist quick action misses its target: ${checklistAnchorTop}`);
+    assert(await page.locator('[data-action="toggleContentChecklist"]').count() === 0, 'Checklist is shown before platform and format are selected');
+    await page.click('[data-action="chooseContentChecklistPlatform"][data-value="telegram"]');
+    await page.click('[data-action="chooseContentChecklistFormat"][data-value="stories"]');
+    assert(await page.locator('[data-check="telegram-links"]').count() === 1, 'Telegram checklist rules are missing');
+    assert(await page.locator('[data-check="stories-format"]').count() === 1, 'Stories checklist rules are missing');
+    assert(await page.locator('[data-check="vk-links"]').count() === 0, 'VK rules leak into the Telegram checklist');
+    await page.click('[data-action="chooseContentChecklistPlatform"][data-value="dzen"]');
+    assert(await page.locator('[data-action="chooseContentChecklistFormat"][data-value="stories"]').count() === 0, 'Stories are offered for Dzen');
+    assert(await page.locator('[data-action="toggleContentChecklist"]').count() === 0, 'Checklist format is not reset after changing to an incompatible platform');
     const contentAnswers = {
       goal: 'sales',
       platform: 'max',
@@ -142,13 +151,17 @@ async function assertMaterialFooter(page, material) {
     const afterAnswerRevision = await page.evaluate(() => window.scrollY);
     assert(Math.abs(afterAnswerRevision - beforeAnswerRevision) <= 24, `Changing a completed content route moves the page: ${beforeAnswerRevision} -> ${afterAnswerRevision}`);
 
-    const deepChecklistItem = page.locator('[data-action="toggleContentChecklist"][data-check="11"]');
+    await page.click('[data-action="chooseContentChecklistPlatform"][data-value="max"]');
+    await page.click('[data-action="chooseContentChecklistFormat"][data-value="visual"]');
+    assert(await page.locator('[data-check="max-carousel"]').count() === 1, 'MAX carousel check is missing');
+    assert(await page.locator('[data-check="telegram-links"]').count() === 0, 'Telegram rules leak into the MAX checklist');
+    const deepChecklistItem = page.locator('[data-action="toggleContentChecklist"][data-check="spacing"]');
     await deepChecklistItem.evaluate((element) => window.scrollTo(0, element.getBoundingClientRect().top + window.scrollY - 180));
     const beforeChecklistToggle = await page.evaluate(() => window.scrollY);
     await deepChecklistItem.click();
     const afterChecklistToggle = await page.evaluate(() => window.scrollY);
     assert(Math.abs(afterChecklistToggle - beforeChecklistToggle) <= 24, `Content checklist jumps after a choice: ${beforeChecklistToggle} -> ${afterChecklistToggle}`);
-    assert(await page.locator('[data-action="toggleContentChecklist"][data-check="11"]').getAttribute('aria-pressed') === 'true', 'Content checklist does not retain a checked item');
+    assert(await page.locator('[data-action="toggleContentChecklist"][data-check="spacing"]').getAttribute('aria-pressed') === 'true', 'Content checklist does not retain a checked item');
     assert((await page.locator('.story-result-copy h3').textContent()).trim() === 'Сохраните совет Потапа', 'Potap name is not declined in the content result');
     await assertMaterialFooter(page, 'content-plan');
 

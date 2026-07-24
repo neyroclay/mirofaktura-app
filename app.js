@@ -467,33 +467,78 @@
       response: 'В каждой публикации покажите связь с продуктом: какую часть задачи решает сам материал, а для какого результата нужна ваша работа.',
       proof: 'Добавьте конкретный пример: фрагмент процесса, решение, цифру, отзыв или сравнение до и после. Не заменяйте доказательство общими обещаниями.'
     },
-    checklist: [
-      'Цель: пост решает задачу (продажа, вовлечение, обучение или новость)?',
-      'Аудитория: текст понятен и интересен целевому сегменту?',
-      'Tone of Voice: стиль изложения соответствует бренду (дружелюбный, экспертный, строгий)?',
-      'Заголовок: есть «крючок», который заставляет прочитать дальше?',
-      'Грамотность: текст проверен на ошибки и опечатки?',
-      'CTA: есть один понятный призыв к действию (купить, подписаться, ответить)?',
-      'Качество: изображение или видео высокого разрешения?',
-      'Стиль: использованы фирменные элементы (цвета, лого)?',
-      'Прямая загрузка: видео загружено файлом, а не ссылкой на YouTube/RuTube?',
-      'Таймкоды: добавлены для видео длительностью более 5 минут?',
-      '«Воздух»: текст разбит на короткие абзацы (3-5 строк) с пустыми строками между ними?',
-      'Акценты: жирным шрифтом выделены только ключевые тезисы и CTA? (Не более 10% текста).',
-      'Списки: все перечисления оформлены маркированными или нумерованными списками?',
-      'Эмодзи: используются умеренно (не более 3-4 на пост) и только для структурирования или передачи тона? (ВК: нет эмодзи в постах для продвижения).',
-      'ВКонтакте: ссылка в первом комментарии? (В тексте поста ссылок НЕТ).',
-      'Telegram: ссылки оформлены гиперссылками? (Используйте все возможности форматирования).',
-      'Дзен: пост оформлен как Статья? Проставлены теги и ключевые слова? (Используйте заголовки H2, H3).',
-      'Формат: вертикальный (9:16)?',
-      'Интерактив: есть стикер (опрос, вопрос, ползунок)?',
-      'Серийность: понятно ли, о чем была предыдущая и будет следующая сториз? (Ведет ли серия к призыву?)',
-      'Цель: определена ли цель хэштега (навигация или глобальный поиск)?',
-      'Количество: соблюдены ли рекомендованные лимиты для платформы (ТГ: 2-3, ВК: 5-7)?',
-      'Релевантность: хэштеги точно соответствуют содержанию поста?',
-      'Навигация: есть ли в посте хэштег для внутренней навигации по рубрике?',
-      'Расположение: хэштеги отделены от основного текста (перенесены вниз или в комментарий)?'
-    ]
+    checklist: {
+      formats: [
+        ['post', 'Пост или статья', 'Текст с изображением или без него.', ['telegram', 'max', 'vk', 'dzen']],
+        ['visual', 'Карточки или изображения', 'Карусель, подборка, схема или другой визуальный материал.', ['telegram', 'max', 'vk', 'dzen']],
+        ['video', 'Видео', 'Короткое или длинное видео, загруженное на площадку.', ['telegram', 'max', 'vk', 'dzen']],
+        ['stories', 'Истории', 'Одна история или связанная серия.', ['telegram', 'vk']]
+      ],
+      common: [
+        ['goal', 'Смысловой блок', 'Цель: пост решает задачу (продажа, вовлечение, обучение или новость)?'],
+        ['audience', 'Смысловой блок', 'Аудитория: текст понятен и интересен целевому сегменту?'],
+        ['tone', 'Смысловой блок', 'Tone of Voice: стиль изложения соответствует бренду (дружелюбный, экспертный, строгий)?'],
+        ['headline', 'Текст и структура', 'Заголовок: есть «крючок», который заставляет прочитать дальше?'],
+        ['grammar', 'Текст и структура', 'Грамотность: текст проверен на ошибки и опечатки?'],
+        ['cta', 'Текст и структура', 'CTA: есть один понятный призыв к действию (купить, подписаться, ответить)?'],
+        ['spacing', 'Форматирование и вёрстка', '«Воздух»: текст разбит на короткие абзацы (3–5 строк) с пустыми строками между ними?'],
+        ['accents', 'Форматирование и вёрстка', 'Акценты: жирным шрифтом выделены только ключевые тезисы и CTA? (Не более 10% текста).'],
+        ['lists', 'Форматирование и вёрстка', 'Списки: все перечисления оформлены маркированными или нумерованными списками?'],
+        ['emoji', 'Форматирование и вёрстка', 'Эмодзи: используются умеренно (не более 3–4 на пост) и только для структурирования или передачи тона?']
+      ],
+      media: [
+        ['media-quality', 'Визуал и медиа', 'Качество: изображение или видео высокого разрешения?'],
+        ['media-style', 'Визуал и медиа', 'Стиль: использованы фирменные элементы (цвета, лого)?']
+      ],
+      video: [
+        ['video-upload', 'Визуал и медиа', 'Прямая загрузка: видео загружено файлом, а не ссылкой на YouTube/RuTube?'],
+        ['video-timecodes', 'Визуал и медиа', 'Таймкоды: добавлены для видео длительностью более 5 минут?']
+      ],
+      stories: [
+        ['stories-format', 'Для историй', 'Формат: вертикальный (9:16)?'],
+        ['stories-interactive', 'Для историй', 'Интерактив: есть стикер (опрос, вопрос, ползунок)?'],
+        ['stories-series', 'Для историй', 'Серийность: понятно ли, о чём была предыдущая и будет следующая история? Ведёт ли серия к призыву?']
+      ],
+      platforms: {
+        telegram: [
+          ['telegram-links', 'Проверка для Telegram', 'Ссылки оформлены гиперссылками? Использованы возможности форматирования Telegram?']
+        ],
+        max: [
+          ['max-focus', 'Проверка для MAX', 'В публикации одна главная мысль, которую можно быстро понять?'],
+          ['max-proofread', 'Проверка для MAX', 'Текст тщательно проверен до отправки с учётом ограничения на редактирование?']
+        ],
+        vk: [
+          ['vk-links', 'Проверка для ВКонтакте', 'Ссылка размещена в первом комментарии, а не в тексте поста?'],
+          ['vk-emoji', 'Проверка для ВКонтакте', 'Если пост планируется продвигать, в нём нет эмодзи?']
+        ],
+        dzen: [
+          ['dzen-article', 'Проверка для Дзена', 'Публикация оформлена как статья, проставлены теги и ключевые слова, использованы заголовки H2 и H3?']
+        ]
+      },
+      hashtags: {
+        telegram: [
+          ['telegram-hashtag-goal', 'Хэштеги', 'Цель: определена цель хэштега — внутренняя навигация или глобальный поиск?'],
+          ['telegram-hashtag-count', 'Хэштеги', 'Количество: использовано не более 2–3 хэштегов?'],
+          ['telegram-hashtag-relevance', 'Хэштеги', 'Релевантность: хэштеги точно соответствуют содержанию поста?'],
+          ['telegram-hashtag-navigation', 'Хэштеги', 'Навигация: есть хэштег для внутренней навигации по рубрике?'],
+          ['telegram-hashtag-placement', 'Хэштеги', 'Расположение: хэштеги отделены от основного текста и перенесены вниз?']
+        ],
+        vk: [
+          ['vk-hashtag-goal', 'Хэштеги', 'Цель: определена цель хэштега — навигация или тематический поиск?'],
+          ['vk-hashtag-count', 'Хэштеги', 'Количество: использовано 5–7 хэштегов?'],
+          ['vk-hashtag-relevance', 'Хэштеги', 'Релевантность: хэштеги точно соответствуют содержанию поста?'],
+          ['vk-hashtag-navigation', 'Хэштеги', 'Навигация: есть хэштег для внутренней навигации по рубрике?'],
+          ['vk-hashtag-placement', 'Хэштеги', 'Расположение: хэштеги перенесены в конец публикации или в первый комментарий?']
+        ],
+        dzen: [
+          ['dzen-tag-goal', 'Теги', 'Цель: теги помогают площадке определить тему публикации?'],
+          ['dzen-tag-count', 'Теги', 'Количество: выбрано 3–5 тегов?'],
+          ['dzen-tag-relevance', 'Теги', 'Релевантность: теги точно соответствуют содержанию статьи?'],
+          ['dzen-tag-keywords', 'Теги', 'Ключевые слова: в заголовке и тексте есть запросы, по которым материал могут искать?']
+        ],
+        max: []
+      }
+    }
   };
 
   const marketingTasks = [
@@ -1366,6 +1411,8 @@
     trafficAtlasAnswers: {},
     trafficAtlasFocus: '',
     contentNavigatorAnswers: {},
+    contentChecklistPlatform: '',
+    contentChecklistFormat: '',
     contentChecklist: {},
     toast: ''
   };
@@ -2661,10 +2708,62 @@
     return contentNavigatorMaterial.questions.every((question) => answers[question.id]);
   }
 
+  function contentChecklistPlatform() {
+    return state.contentChecklistPlatform || state.contentNavigatorAnswers.platform || '';
+  }
+
+  function contentChecklistFormats(platform = contentChecklistPlatform()) {
+    return contentNavigatorMaterial.checklist.formats.filter(([, , , platforms]) => platforms.includes(platform));
+  }
+
+  function contentChecklistFormat(platform = contentChecklistPlatform()) {
+    const allowedFormats = contentChecklistFormats(platform).map(([id]) => id);
+    return allowedFormats.includes(state.contentChecklistFormat) ? state.contentChecklistFormat : '';
+  }
+
+  function contentChecklistGroups(platform = contentChecklistPlatform(), format = contentChecklistFormat(platform)) {
+    if (!platform || !format) return [];
+
+    const checklist = contentNavigatorMaterial.checklist;
+    const items = [...checklist.common];
+    const usesMedia = ['post', 'visual', 'video', 'stories'].includes(format);
+
+    if (usesMedia) items.push(...checklist.media);
+    if (format === 'video') items.push(...checklist.video);
+    if (format === 'stories') items.push(...checklist.stories);
+    items.push(...(checklist.platforms[platform] || []));
+
+    if (platform === 'max' && format === 'visual') {
+      items.push(['max-carousel', 'Проверка для MAX', 'Карусель содержит 3–6 слайдов и раскрывает одну последовательную мысль?']);
+    }
+
+    items.push(...(checklist.hashtags[platform] || []));
+
+    const groups = [];
+    items.forEach(([id, section, text]) => {
+      let group = groups.find((item) => item.title === section);
+      if (!group) {
+        group = { title: section, items: [] };
+        groups.push(group);
+      }
+      group.items.push({ id, text });
+    });
+    return groups;
+  }
+
+  function contentChecklistItems(platform = contentChecklistPlatform(), format = contentChecklistFormat(platform)) {
+    return contentChecklistGroups(platform, format).flatMap((group) => group.items);
+  }
+
   function renderContentNavigatorMaterial() {
     const complete = contentNavigatorComplete();
     const answeredCount = contentNavigatorMaterial.questions.filter((question) => state.contentNavigatorAnswers[question.id]).length;
-    const checkedCount = contentNavigatorMaterial.checklist.filter((_, index) => state.contentChecklist[index]).length;
+    const checklistPlatform = contentChecklistPlatform();
+    const checklistFormat = contentChecklistFormat(checklistPlatform);
+    const checklistFormats = contentChecklistFormats(checklistPlatform);
+    const checklistGroups = contentChecklistGroups(checklistPlatform, checklistFormat);
+    const checklistItems = contentChecklistItems(checklistPlatform, checklistFormat);
+    const checkedCount = checklistItems.filter((item) => state.contentChecklist[item.id]).length;
 
     return screen(`
       <button class="back-link" type="button" data-page="library">← В кладовую</button>
@@ -2790,19 +2889,63 @@
       <section class="lead-section content-checklist" id="content-checklist">
         <p class="brand-label">Перед публикацией</p>
         <h2>Проверьте пост за две минуты</h2>
-        <p class="lead-section-copy">Распечатайте этот список или используйте его в цифровом виде перед каждой публикацией. Проверка по этому списку занимает 2 минуты, но экономит часы на исправление ошибок и повышает эффективность каждой публикации.</p>
-        <div class="content-checklist-status" aria-live="polite">
-          <strong>${checkedCount} из ${contentNavigatorMaterial.checklist.length}</strong>
-          <span>${checkedCount === contentNavigatorMaterial.checklist.length ? 'Публикация проверена' : 'Осталось проверить: ' + (contentNavigatorMaterial.checklist.length - checkedCount)}</span>
+        <p class="lead-section-copy">Сначала выберите площадку и формат. После этого останутся только те пункты, которые относятся к вашей публикации.</p>
+
+        <div class="content-checklist-setup">
+          <article class="selector-question">
+            <div class="selector-question-title">
+              <span>01</span>
+              <strong>Где вы публикуете?</strong>
+            </div>
+            <div class="selector-options content-checklist-options">
+              ${contentNavigatorMaterial.questions.find((question) => question.id === 'platform').options.map(([value, label, hint]) => `
+                <button class="selector-option ${checklistPlatform === value ? 'selected' : ''}" type="button" data-action="chooseContentChecklistPlatform" data-value="${value}" aria-pressed="${checklistPlatform === value ? 'true' : 'false'}">
+                  <span><strong>${label}</strong><small>${hint}</small></span>
+                </button>
+              `).join('')}
+            </div>
+          </article>
+
+          ${checklistPlatform ? `
+            <article class="selector-question">
+              <div class="selector-question-title">
+                <span>02</span>
+                <strong>Что вы публикуете?</strong>
+              </div>
+              <div class="selector-options content-checklist-options">
+                ${checklistFormats.map(([value, label, hint]) => `
+                  <button class="selector-option ${checklistFormat === value ? 'selected' : ''}" type="button" data-action="chooseContentChecklistFormat" data-value="${value}" aria-pressed="${checklistFormat === value ? 'true' : 'false'}">
+                    <span><strong>${label}</strong><small>${hint}</small></span>
+                  </button>
+                `).join('')}
+              </div>
+            </article>
+          ` : ''}
         </div>
-        <div class="content-checklist-list">
-          ${contentNavigatorMaterial.checklist.map((item, index) => `
-            <button class="content-checklist-item ${state.contentChecklist[index] ? 'checked' : ''}" type="button" data-action="toggleContentChecklist" data-check="${index}" aria-pressed="${state.contentChecklist[index] ? 'true' : 'false'}">
-              <span>${state.contentChecklist[index] ? '✓' : ''}</span>
-              <strong>${item}</strong>
-            </button>
-          `).join('')}
-        </div>
+
+        ${checklistItems.length ? `
+          <div class="content-checklist-status" aria-live="polite">
+            <strong>${checkedCount} из ${checklistItems.length}</strong>
+            <span>${checkedCount === checklistItems.length ? 'Публикация проверена' : 'Осталось проверить: ' + (checklistItems.length - checkedCount)}</span>
+          </div>
+          <div class="content-checklist-groups">
+            ${checklistGroups.map((group) => `
+              <section class="content-checklist-group">
+                <h3>${group.title}</h3>
+                <div class="content-checklist-list">
+                  ${group.items.map((item) => `
+                    <button class="content-checklist-item ${state.contentChecklist[item.id] ? 'checked' : ''}" type="button" data-action="toggleContentChecklist" data-check="${item.id}" aria-pressed="${state.contentChecklist[item.id] ? 'true' : 'false'}">
+                      <span>${state.contentChecklist[item.id] ? '✓' : ''}</span>
+                      <strong>${item.text}</strong>
+                    </button>
+                  `).join('')}
+                </div>
+              </section>
+            `).join('')}
+          </div>
+        ` : `
+          <p class="content-checklist-empty" aria-live="polite">${checklistPlatform ? 'Выберите формат публикации — и появится подходящий чек-лист.' : 'Выберите площадку, для которой хотите проверить публикацию.'}</p>
+        `}
       </section>
 
       <section class="lead-cta">
@@ -3830,13 +3973,39 @@
     }
 
     if (action === 'toggleContentChecklist') {
-      const index = target.getAttribute('data-check');
-      if (index === null) return;
+      const check = target.getAttribute('data-check');
+      if (!check) return;
       state.contentChecklist = {
         ...state.contentChecklist,
-        [index]: !state.contentChecklist[index]
+        [check]: !state.contentChecklist[check]
       };
+      const scrollYBeforeRender = window.scrollY;
       render({ scroll: false });
+      window.scrollTo({ top: scrollYBeforeRender, left: 0, behavior: 'auto' });
+      return;
+    }
+
+    if (action === 'chooseContentChecklistPlatform') {
+      const value = target.getAttribute('data-value');
+      if (!value) return;
+      const allowedFormats = contentChecklistFormats(value).map(([id]) => id);
+      const scrollYBeforeRender = window.scrollY;
+      state.contentChecklistPlatform = value;
+      if (!allowedFormats.includes(state.contentChecklistFormat)) {
+        state.contentChecklistFormat = '';
+      }
+      render({ scroll: false });
+      window.scrollTo({ top: scrollYBeforeRender, left: 0, behavior: 'auto' });
+      return;
+    }
+
+    if (action === 'chooseContentChecklistFormat') {
+      const value = target.getAttribute('data-value');
+      if (!value || !contentChecklistFormats().some(([id]) => id === value)) return;
+      const scrollYBeforeRender = window.scrollY;
+      state.contentChecklistFormat = value;
+      render({ scroll: false });
+      window.scrollTo({ top: scrollYBeforeRender, left: 0, behavior: 'auto' });
       return;
     }
 
