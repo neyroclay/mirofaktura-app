@@ -116,6 +116,11 @@ async function assertMaterialFooter(page, material) {
 
     await openMaterial(page, 'content-plan');
     assert(await page.locator('.content-platform-guides:not(.content-reference-guides) .content-platform-guide').count() === 4, 'Content platform guide is incomplete');
+    assert(await page.locator('.content-quick-actions [data-action="focusMaterialNavigator"]').count() === 2, 'Content navigator quick actions are missing');
+    await page.click('.content-quick-actions [data-target="content-checklist"]');
+    await page.waitForTimeout(1500);
+    const checklistAnchorTop = await page.locator('#content-checklist').evaluate((element) => element.getBoundingClientRect().top);
+    assert(checklistAnchorTop >= 0 && checklistAnchorTop <= 80, `Content checklist quick action misses its target: ${checklistAnchorTop}`);
     const contentAnswers = {
       goal: 'sales',
       platform: 'max',
@@ -127,8 +132,24 @@ async function assertMaterialFooter(page, material) {
     }
     assert(await page.locator('.material-outcome:not(.muted)').count() === 1, 'Content navigator result was not built');
     assert((await page.locator('.material-outcome').textContent()).includes('Три рубрики'), 'Content navigator rubrics are missing');
-    await page.click('[data-action="toggleContentChecklist"][data-check="0"]');
-    assert(await page.locator('[data-action="toggleContentChecklist"][data-check="0"]').getAttribute('aria-pressed') === 'true', 'Content checklist does not retain a checked item');
+    assert(await page.locator('[data-action="chooseContentNavigatorAnswer"][data-question="goal"][data-value="sales"]').getAttribute('aria-pressed') === 'true', 'Content navigator does not expose the selected answer');
+
+    const revisedGoal = page.locator('[data-action="chooseContentNavigatorAnswer"][data-question="goal"][data-value="trust"]');
+    await revisedGoal.evaluate((element) => window.scrollTo(0, element.getBoundingClientRect().top + window.scrollY - 120));
+    const beforeAnswerRevision = await page.evaluate(() => window.scrollY);
+    await revisedGoal.click();
+    await page.waitForTimeout(1500);
+    const afterAnswerRevision = await page.evaluate(() => window.scrollY);
+    assert(Math.abs(afterAnswerRevision - beforeAnswerRevision) <= 24, `Changing a completed content route moves the page: ${beforeAnswerRevision} -> ${afterAnswerRevision}`);
+
+    const deepChecklistItem = page.locator('[data-action="toggleContentChecklist"][data-check="11"]');
+    await deepChecklistItem.evaluate((element) => window.scrollTo(0, element.getBoundingClientRect().top + window.scrollY - 180));
+    const beforeChecklistToggle = await page.evaluate(() => window.scrollY);
+    await deepChecklistItem.click();
+    const afterChecklistToggle = await page.evaluate(() => window.scrollY);
+    assert(Math.abs(afterChecklistToggle - beforeChecklistToggle) <= 24, `Content checklist jumps after a choice: ${beforeChecklistToggle} -> ${afterChecklistToggle}`);
+    assert(await page.locator('[data-action="toggleContentChecklist"][data-check="11"]').getAttribute('aria-pressed') === 'true', 'Content checklist does not retain a checked item');
+    assert((await page.locator('.story-result-copy h3').textContent()).trim() === 'Сохраните совет Потапа', 'Potap name is not declined in the content result');
     await assertMaterialFooter(page, 'content-plan');
 
     await page.click('[data-action="startQuiz"]');

@@ -1831,13 +1831,14 @@
     if (!story) return '';
     const isPotap = key === 'content-plan';
     const mascotName = isPotap ? 'Потап' : 'Аристарх';
+    const mascotNameGenitive = isPotap ? 'Потапа' : 'Аристарха';
     const mascotImage = isPotap ? assets.potap : assets.aristarch;
 
     return `
       <section class="story-result">
         <div class="story-result-copy">
           <p class="brand-label">На что обратить внимание сейчас</p>
-          <h3>Сохраните совет ${mascotName}</h3>
+          <h3>Сохраните совет ${mascotNameGenitive}</h3>
         </div>
         <div class="story-card-preview story-card-preview-${key}" aria-label="Карточка с советом ${mascotName}">
           <img class="story-card-logo" src="${assets.logoStory}" alt="" aria-hidden="true">
@@ -2661,6 +2662,10 @@
           <p class="brand-label">Контент и продажи</p>
           <h1>Контент-навигатор 2026</h1>
           <p class="lead">Сравните площадки и форматы, а затем соберите контент-маршрут под задачу бизнеса и доступный ресурс. В результате вы получите три рубрики, тему первой публикации и чек-лист перед выпуском.</p>
+          <div class="content-quick-actions">
+            <button class="primary-btn" type="button" data-action="focusMaterialNavigator" data-target="content-navigator">Собрать маршрут</button>
+            <button class="soft-btn" type="button" data-action="focusMaterialNavigator" data-target="content-checklist">Проверить пост</button>
+          </div>
         </div>
       </article>
 
@@ -2758,7 +2763,7 @@
               </div>
               <div class="selector-options">
                 ${question.options.map(([value, label, hint]) => `
-                  <button class="selector-option ${state.contentNavigatorAnswers[question.id] === value ? 'selected' : ''}" type="button" data-action="chooseContentNavigatorAnswer" data-question="${question.id}" data-value="${value}">
+                  <button class="selector-option ${state.contentNavigatorAnswers[question.id] === value ? 'selected' : ''}" type="button" data-action="chooseContentNavigatorAnswer" data-question="${question.id}" data-value="${value}" aria-pressed="${state.contentNavigatorAnswers[question.id] === value ? 'true' : 'false'}">
                     <span><strong>${label}</strong><small>${hint}</small></span>
                   </button>
                 `).join('')}
@@ -3797,11 +3802,14 @@
       const question = target.getAttribute('data-question');
       const value = target.getAttribute('data-value');
       if (!question || !value) return;
+      const wasComplete = contentNavigatorComplete();
       const nextAnswers = { ...state.contentNavigatorAnswers, [question]: value };
       const complete = contentNavigatorComplete(nextAnswers);
+      const scrollYBeforeRender = window.scrollY;
       state.contentNavigatorAnswers = nextAnswers;
       render({ scroll: false });
-      if (complete) {
+      window.scrollTo({ top: scrollYBeforeRender, left: 0, behavior: 'auto' });
+      if (complete && !wasComplete) {
         window.setTimeout(() => {
           document.querySelector('.content-navigator-screen .material-outcome')?.scrollIntoView({ block: 'start', behavior: 'smooth' });
         }, 40);
@@ -3817,9 +3825,6 @@
         [index]: !state.contentChecklist[index]
       };
       render({ scroll: false });
-      window.setTimeout(() => {
-        document.getElementById('content-checklist')?.scrollIntoView({ block: 'start', behavior: 'smooth' });
-      }, 40);
       return;
     }
 
