@@ -1994,7 +1994,7 @@
       </article>
 
       <div class="result-actions result-actions-primary">
-        <button class="primary-btn accent-cta gift-open-btn" type="button" data-action="openMaterial" data-material="${key}">
+        <button class="primary-btn gift-open-btn" type="button" data-action="openMaterial" data-material="${key}">
           <span>Открыть подарок</span>
         </button>
       </div>
