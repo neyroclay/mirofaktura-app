@@ -154,6 +154,12 @@ function installProgressBackend(context, state) {
     await cardPage.mouse.click(centerX, centerY);
     await cardPage.waitForTimeout(900);
     assert(await cardPage.locator('.collection-hint').evaluate((hint) => getComputedStyle(hint).visibility === 'hidden'), 'Saved-card notice still covers the open-text action');
+    await cardPage.mouse.click(centerX, centerY);
+    await cardPage.waitForTimeout(900);
+    assert(await cardPage.locator('#read-trend-modal.visible').count() === 0, 'A tap outside the Open text button opened the text modal');
+    assert(await cardPage.locator('.collection-hint').evaluate((hint) => getComputedStyle(hint).visibility !== 'hidden'), 'A tap outside the Open text button did not flip the card back');
+    await cardPage.mouse.click(centerX, centerY);
+    await cardPage.waitForTimeout(900);
     const drawnButtonY = top + ((bottom - top) * 705) / 768;
     const buttonProbe = await cardPage.evaluate(({ x, y }) => ({
       point: { x, y },

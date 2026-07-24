@@ -1670,8 +1670,44 @@
             function unlockAudio() { if (!isAudioUnlocked) { winSound.muted=true; scratchSound.muted=true; const p1=scratchSound.play(); if(p1) p1.then(()=>{scratchSound.pause();scratchSound.muted=false;}).catch(()=>{}); const p2=winSound.play(); if(p2) p2.then(()=>{winSound.pause();winSound.currentTime=0;winSound.muted=false;}).catch(()=>{}); isAudioUnlocked=true; } }
             function onDown(e) { if (e.cancelable) e.preventDefault(); isDragging=true; isTap=true; unlockAudio(); touchStartX = e.touches?e.touches[0].clientX:e.clientX; touchStartY = e.touches?e.touches[0].clientY:e.clientY; interact(e); }
             function onMove(e) { updateParallax(e); if (isDragging) { if (e.cancelable) e.preventDefault(); const cx=e.touches?e.touches[0].clientX:e.clientX; const cy=e.touches?e.touches[0].clientY:e.clientY; if (Math.abs(cx-touchStartX)>15 || Math.abs(cy-touchStartY)>15) isTap=false; interact(e); } else { checkHover(e); } }
-            function onUp(e) { isDragging=false; if (isScratching) { scratchSound.pause(); isScratching=false; } clearTimeout(scratchTimeout); if (isTap) { if ((isDailyDone && appData.bonusCards <= 0) || !clayMesh) { const m = getMouse(e); if (!isNaN(m.x)) { mouse.set(m.x,m.y); raycaster.setFromCamera(mouse,camera); if (isFlipped) { const hits = raycaster.intersectObject(backMesh); if (hits.length) { window.app_openReadModal(currentCardData.id); isTap=false; return; } } const hits = raycaster.intersectObjects([frontMesh, backMesh]); if (hits.length) flipCard(); } } } isTap=false; }
-            function checkHover(e) { const m=getMouse(e); if(isNaN(m.x)) return; mouse.set(m.x,m.y); raycaster.setFromCamera(mouse,camera); if (!clayMesh) { let hov=false; if (isFlipped) { const h=raycaster.intersectObject(backMesh); if(h.length&&h[0].uv.y>0.04&&h[0].uv.y<0.12) hov=true; } if (hov!==isBtnHovered) { isBtnHovered=hov; updateBackSide(currentCardData); } canvas.style.cursor='pointer'; return; } const h=raycaster.intersectObject(clayMesh); canvas.style.cursor=h.length?'crosshair':'default'; }
+            function isBackButtonHit(hit) {
+                if (!hit?.uv) return false;
+                const buttonLeft = 40 / 512;
+                const buttonRight = (40 + 280) / 512;
+                const buttonBottom = 1 - ((675 + 60) / 768);
+                const buttonTop = 1 - (675 / 768);
+                return hit.uv.x >= buttonLeft
+                    && hit.uv.x <= buttonRight
+                    && hit.uv.y >= buttonBottom
+                    && hit.uv.y <= buttonTop;
+            }
+            function onUp(e) {
+                isDragging = false;
+                if (isScratching) {
+                    scratchSound.pause();
+                    isScratching = false;
+                }
+                clearTimeout(scratchTimeout);
+                if (isTap && ((isDailyDone && appData.bonusCards <= 0) || !clayMesh)) {
+                    const m = getMouse(e);
+                    if (!isNaN(m.x)) {
+                        mouse.set(m.x, m.y);
+                        raycaster.setFromCamera(mouse, camera);
+                        if (isFlipped) {
+                            const backHits = raycaster.intersectObject(backMesh);
+                            if (backHits.length && isBackButtonHit(backHits[0])) {
+                                window.app_openReadModal(currentCardData.id);
+                                isTap = false;
+                                return;
+                            }
+                        }
+                        const cardHits = raycaster.intersectObjects([frontMesh, backMesh]);
+                        if (cardHits.length) flipCard();
+                    }
+                }
+                isTap = false;
+            }
+            function checkHover(e) { const m=getMouse(e); if(isNaN(m.x)) return; mouse.set(m.x,m.y); raycaster.setFromCamera(mouse,camera); if (!clayMesh) { let hov=false; if (isFlipped) { const h=raycaster.intersectObject(backMesh); if(h.length&&isBackButtonHit(h[0])) hov=true; } if (hov!==isBtnHovered) { isBtnHovered=hov; updateBackSide(currentCardData); } canvas.style.cursor='pointer'; return; } const h=raycaster.intersectObject(clayMesh); canvas.style.cursor=h.length?'crosshair':'default'; }
             function interact(e) { if (document.getElementById('library-view').classList.contains('visible') || document.getElementById('authors-view').classList.contains('visible') || document.getElementById('onboarding-view').classList.contains('visible') || document.getElementById('read-trend-modal').classList.contains('visible') || document.getElementById('legal-text-modal').classList.contains('visible') ) return; const m=getMouse(e); if(isNaN(m.x)) return; mouse.set(m.x,m.y); raycaster.setFromCamera(mouse,camera); if (clayMesh && (!isDailyDone || appData.bonusCards > 0)) { const h=raycaster.intersectObject(clayMesh); if (h.length) dig(h[0].uv.x, h[0].uv.y); } }
             
             function recordScratchProgress(x, y) {
