@@ -164,6 +164,49 @@ function installProgressBackend(context, state) {
     }
     await cardPage.waitForSelector('.collection-hint', { state: 'visible', timeout: 10000 });
     await cardPage.waitForTimeout(1000);
+    await cardPage.evaluate(() => window.MirofacturaTrendDeck.showBonusAvailableDialog());
+    await cardPage.waitForSelector('#custom-dialog.visible .bonus-alert', { timeout: 5000 });
+    const bonusDialogGeometry = await cardPage.evaluate(() => {
+      const dialog = document.getElementById('custom-dialog');
+      const content = dialog.querySelector('.modal-content');
+      const tabs = document.querySelector('.trends-native-tabs').getBoundingClientRect();
+      const nav = document.querySelector('.bottom-nav').getBoundingClientRect();
+      const contentRect = content.getBoundingClientRect();
+      const targetCenter = (tabs.bottom + nav.top) / 2;
+      const contentCenter = (contentRect.top + contentRect.bottom) / 2;
+      const styles = getComputedStyle(content);
+      return {
+        tabsBottom: tabs.bottom,
+        navTop: nav.top,
+        contentTop: contentRect.top,
+        contentBottom: contentRect.bottom,
+        offset: contentCenter - targetCenter,
+        overflowY: styles.overflowY,
+        iconWidth: dialog.querySelector('.bonus-gift-mark svg').getBoundingClientRect().width
+      };
+    });
+    assert(Math.abs(bonusDialogGeometry.offset) <= 30, `Bonus dialog is not centered between navigation bars: ${JSON.stringify(bonusDialogGeometry)}`);
+    assert(
+      bonusDialogGeometry.contentTop >= bonusDialogGeometry.tabsBottom
+        && bonusDialogGeometry.contentBottom <= bonusDialogGeometry.navTop,
+      `Bonus dialog is covered by navigation: ${JSON.stringify(bonusDialogGeometry)}`
+    );
+    assert(bonusDialogGeometry.overflowY === 'auto', `Bonus dialog cannot scroll: ${JSON.stringify(bonusDialogGeometry)}`);
+    assert(bonusDialogGeometry.iconWidth >= 64, `Bonus dialog still uses an undersized gift mark: ${JSON.stringify(bonusDialogGeometry)}`);
+    const bonusScroll = await cardPage.evaluate(() => {
+      const content = document.querySelector('#custom-dialog .modal-content');
+      const copy = document.querySelector('.bonus-alert-copy');
+      copy.innerHTML += '<br><br>Дополнительное пояснение.<br><br>Ещё одна строка для проверки прокрутки.<br><br>И ещё одна строка.';
+      content.scrollTop = content.scrollHeight;
+      return { clientHeight: content.clientHeight, scrollHeight: content.scrollHeight, scrollTop: content.scrollTop };
+    });
+    assert(
+      bonusScroll.scrollHeight > bonusScroll.clientHeight && bonusScroll.scrollTop > 0,
+      `Bonus dialog does not scroll when its content grows: ${JSON.stringify(bonusScroll)}`
+    );
+    await cardPage.screenshot({ path: require('path').join(process.env.MIROFAKTURA_ARTIFACT_DIR || '.', 'bonus-dialog.png'), fullPage: true });
+    await cardPage.locator('#custom-dialog').evaluate((dialog) => dialog.click());
+    await cardPage.waitForSelector('#custom-dialog.visible', { state: 'hidden' });
     const centerX = (left + right) / 2;
     const centerY = (top + bottom) / 2;
     await cardPage.mouse.click(centerX, centerY);
@@ -217,7 +260,7 @@ function installProgressBackend(context, state) {
     await cardPage.screenshot({ path: require('path').join(process.env.MIROFAKTURA_ARTIFACT_DIR || '.', 'telegram-read-modal.png'), fullPage: true });
     await cardDevice.close();
 
-    console.log(JSON.stringify({ ok: true, restoredCards: 1, collectionCardWidth: cardWidth, dailyCardWidth, dailyCardLayout, dailyCardAction: true, modalGeometry }));
+    console.log(JSON.stringify({ ok: true, restoredCards: 1, collectionCardWidth: cardWidth, dailyCardWidth, dailyCardLayout, bonusDialogGeometry, dailyCardAction: true, modalGeometry }));
   } finally {
     await browser.close();
   }

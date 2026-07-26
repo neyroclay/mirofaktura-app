@@ -697,6 +697,14 @@
             #${CONTAINER_ID} .modal-content { background:rgba(255,255,255,0.85); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,0.6); width:85%; max-width:320px; border-radius:20px; padding:25px; position:relative; transform:scale(0.9); transition:transform 0.3s; box-shadow:0 15px 35px rgba(0,0,0,0.1); text-align:left; max-height:80vh; overflow:hidden; touch-action:pan-y; overscroll-behavior:contain; }
             #${CONTAINER_ID} .modal-overlay.visible .modal-content { transform:scale(1); }
             #${CONTAINER_ID} .modal-close { position:absolute; top:15px; right:15px; color:#8A9999; cursor:pointer; font-size:24px; z-index:10; padding:5px; }
+            #${CONTAINER_ID}.trend-native-embedded #custom-dialog { position:fixed; inset:0; width:100%; height:100dvh; padding:var(--custom-dialog-top, 16px) 16px var(--custom-dialog-bottom, calc(112px + env(safe-area-inset-bottom))); box-sizing:border-box; overflow-y:auto; overscroll-behavior:contain; touch-action:pan-y; }
+            #${CONTAINER_ID}.trend-native-embedded #custom-dialog .modal-content { flex:0 0 auto; width:min(100%, 320px); max-height:100%; margin:auto; box-sizing:border-box; overflow-y:auto; overscroll-behavior:contain; -webkit-overflow-scrolling:touch; scrollbar-width:thin; }
+            #${CONTAINER_ID}.trend-native-embedded #custom-dialog-text { margin-bottom:18px !important; }
+            #${CONTAINER_ID} .bonus-alert { display:grid; justify-items:center; gap:8px; }
+            #${CONTAINER_ID} .bonus-gift-mark { width:72px; height:72px; margin-bottom:2px; filter:drop-shadow(0 10px 16px rgba(7,126,122,0.16)); }
+            #${CONTAINER_ID} .bonus-gift-mark svg { display:block; width:100%; height:100%; overflow:visible; }
+            #${CONTAINER_ID} .bonus-alert-title { color:#1F2E2E; font-size:18px; font-weight:900; text-transform:uppercase; letter-spacing:0.06em; }
+            #${CONTAINER_ID} .bonus-alert-copy { color:#5C6B6B; font-size:14px; line-height:1.48; font-weight:650; }
             
            /* --- СТИЛИ ПРЕЛОАДЕРА И МОДАЛКИ С ТЕКСТОМ --- */
             #mrf-preloader { 
@@ -1801,13 +1809,7 @@
 
                 if (appData.bonusCards > 0) {
                     setTimeout(() => {
-                        showCustomAlert(`
-                            <div style="font-size:50px; margin-bottom:15px;">🎁</div>
-                            <div style="color:#1F2E2E; font-size:18px; font-weight:900; margin-bottom:10px; text-transform:uppercase; letter-spacing:1px;">Доступен бонус!</div>
-                            <div style="color:#5C6B6B; font-size:14px; line-height:1.5;">У вас есть доступная <b>бонусная карта</b> за приглашенного друга.</div>
-                        `, false, 'Открыть бонус', () => {
-                            document.getElementById('btn-next-bonus').click();
-                        });
+                        showBonusAvailableDialog();
                     }, 1500); 
                 }
             }
@@ -1850,6 +1852,30 @@
             function animate(t) { if (destroyed) return; rafId = requestAnimationFrame(animate); TWEEN.update(t); cardGroup.rotation.x+=(targetRotX-cardGroup.rotation.x)*0.1; cardGroup.rotation.y+=((targetRotY+baseRotationY)-cardGroup.rotation.y)*0.1; renderer.render(scene,camera); }
             function updateHint(text) { const el=document.getElementById('main-hint'); el.style.opacity=0; setTimeout(()=>{el.textContent=text; el.style.visibility='visible'; el.style.opacity=1;},200); }
 
+            const syncCustomDialogLayout = () => {
+                if (!nativeMode) return;
+                const dialog = document.getElementById('custom-dialog');
+                const nativeScreen = container.closest('.trends-native-screen');
+                const tabs = nativeScreen?.querySelector('.trends-native-tabs');
+                const appNav = nativeScreen?.querySelector('.bottom-nav');
+                if (!dialog || !tabs || !appNav) return;
+
+                const viewportHeight = window.innerHeight;
+                const tabsBottom = tabs.getBoundingClientRect().bottom;
+                const navTop = appNav.getBoundingClientRect().top;
+                const bottomInset = Math.max(12, viewportHeight - navTop + 12);
+                const desiredTop = tabsBottom + 12;
+                const topInset = Math.max(12, Math.min(desiredTop, viewportHeight - bottomInset - 220));
+                dialog.style.setProperty('--custom-dialog-top', `${Math.round(topInset)}px`);
+                dialog.style.setProperty('--custom-dialog-bottom', `${Math.round(bottomInset)}px`);
+            };
+            window.addEventListener('resize', syncCustomDialogLayout);
+            window.visualViewport?.addEventListener('resize', syncCustomDialogLayout);
+            addCleanup(() => {
+                window.removeEventListener('resize', syncCustomDialogLayout);
+                window.visualViewport?.removeEventListener('resize', syncCustomDialogLayout);
+            });
+
             function showCustomAlert(msgHTML, showCancel = false, okText = 'ПОНЯТНО', onOk = null) {
                 const d = document.getElementById('custom-dialog'); 
                 document.getElementById('custom-dialog-text').innerHTML = msgHTML; 
@@ -1869,8 +1895,43 @@
                 btnCancel.onclick = () => d.classList.remove('visible');
                 d.onclick = (e) => { if(e.target === d) d.classList.remove('visible'); }; 
                 
+                syncCustomDialogLayout();
                 d.classList.add('visible');
+                requestAnimationFrame(syncCustomDialogLayout);
             }
+
+            function showBonusAvailableDialog() {
+                showCustomAlert(`
+                    <div class="bonus-alert">
+                        <div class="bonus-gift-mark" aria-hidden="true">
+                            <svg viewBox="0 0 72 72" role="img">
+                                <defs>
+                                    <linearGradient id="mrf-gift-top" x1="0" y1="0" x2="1" y2="1">
+                                        <stop offset="0" stop-color="#7AF3EA"/>
+                                        <stop offset="1" stop-color="#18BDB7"/>
+                                    </linearGradient>
+                                    <linearGradient id="mrf-gift-side" x1="0" y1="0" x2="1" y2="1">
+                                        <stop offset="0" stop-color="#078B88"/>
+                                        <stop offset="1" stop-color="#075854"/>
+                                    </linearGradient>
+                                </defs>
+                                <circle cx="36" cy="36" r="34" fill="#F1FFFB" stroke="#BDEDE5" stroke-width="1.5"/>
+                                <path d="M13 28 36 16l23 12-23 13z" fill="url(#mrf-gift-top)"/>
+                                <path d="M13 28v25l23 13V41z" fill="url(#mrf-gift-side)"/>
+                                <path d="M59 28v25L36 66V41z" fill="#12AAA5"/>
+                                <path d="m31 19 5-3 5 3v44l-5 3-5-3z" fill="#FFD84A"/>
+                                <path d="M13 34 36 47l23-13v7L36 54 13 41z" fill="#FFE680" opacity=".92"/>
+                                <path d="M35 16c-7-10-15-5-11 1 2 3 7 4 11 4M37 16c7-10 15-5 11 1-2 3-7 4-11 4" fill="none" stroke="#FFD84A" stroke-width="4" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                        <div class="bonus-alert-title">Доступен бонус!</div>
+                        <div class="bonus-alert-copy">У вас есть доступная <b>бонусная карта</b> за приглашённого друга.</div>
+                    </div>
+                `, false, 'Открыть бонус', () => {
+                    document.getElementById('btn-next-bonus').click();
+                });
+            }
+            instance.showBonusAvailableDialog = showBonusAvailableDialog;
 
             document.getElementById('btn-close-read').addEventListener('click', closeReadTrendModal);
 
@@ -2158,6 +2219,9 @@
         },
         isReady() {
             return typeof activeDeckInstance?.showTab === 'function';
+        },
+        showBonusAvailableDialog() {
+            return activeDeckInstance?.showBonusAvailableDialog?.();
         },
         preloadLibraries() {
             return preloadDeckLibraries();
