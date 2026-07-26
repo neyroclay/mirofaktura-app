@@ -598,16 +598,16 @@ html.native-legal-open body {
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: 100%;
+  height: auto;
   max-width: 520px;
   max-height: 100%;
   box-sizing: border-box;
 }
 
 .trends-native-screen #c37.trend-native-embedded #read-trend-modal .read-scroll-area {
-  flex: 1 1 auto;
-  min-height: 0;
-  max-height: none;
+  flex: 0 1 auto;
+  min-height: 48px;
+  max-height: min(54dvh, 560px);
 }
 
 .trends-native-screen #c37.trend-native-embedded #read-trend-source {

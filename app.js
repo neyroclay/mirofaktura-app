@@ -11,7 +11,7 @@
   const URL_PARAMS = new URLSearchParams(window.location.search);
   const TELEGRAM_LAUNCH_PARAMS = new URLSearchParams(window.location.hash.replace(/^#/, ''));
   const NATIVE_TRENDS_MODE = URL_PARAMS.get('trends_native');
-  const NATIVE_TRENDS_ASSET_VERSION = '20260724-referral-share-42';
+  const NATIVE_TRENDS_ASSET_VERSION = '20260726-adaptive-layout-44';
   const APP_PLATFORM = platformAdapter.key;
   document.documentElement.dataset.mirofacturaPlatform = APP_PLATFORM;
   const USE_NATIVE_TRENDS = NATIVE_TRENDS_MODE !== '0';
@@ -1503,16 +1503,16 @@
     return `
       <nav class="bottom-nav" aria-label="Навигация">
         <button class="nav-item ${state.page === 'home' ? 'active' : ''}" type="button" data-page="home" ${state.page === 'home' ? 'aria-current="page"' : ''}>
-          ${icons.home}<span>Главная</span>
+          ${icons.home}<span class="nav-label">Главная</span>
         </button>
         <button class="nav-item ${['library', 'material'].includes(state.page) ? 'active' : ''}" type="button" data-action="openLibrary" ${['library', 'material'].includes(state.page) ? 'aria-current="page"' : ''}>
-          ${icons.library}<span>Кладовая</span>
+          ${icons.library}<span class="nav-label">Кладовая</span>
         </button>
         <button class="nav-item ${state.page === 'trends' ? 'active' : ''}" type="button" data-action="openTrends" ${state.page === 'trends' ? 'aria-current="page"' : ''}>
-          ${icons.trends}<span>Тренды</span>
+          ${icons.trends}<span class="nav-label">Тренды</span>
         </button>
         <button class="nav-item ${state.page === 'contacts' ? 'active' : ''}" type="button" data-page="contacts" ${state.page === 'contacts' ? 'aria-current="page"' : ''}>
-          ${icons.contacts}<span>Услуги</span>
+          ${icons.contacts}<span class="nav-label">Услуги</span>
         </button>
       </nav>
     `;
@@ -3964,6 +3964,9 @@
       state.contentNavigatorAnswers = nextAnswers;
       render({ scroll: false });
       window.scrollTo({ top: scrollYBeforeRender, left: 0, behavior: 'auto' });
+      window.requestAnimationFrame(() => {
+        window.scrollTo({ top: scrollYBeforeRender, left: 0, behavior: 'auto' });
+      });
       if (complete && !wasComplete) {
         window.setTimeout(() => {
           document.querySelector('.content-navigator-screen .material-outcome')?.scrollIntoView({ block: 'start', behavior: 'smooth' });
@@ -3982,6 +3985,9 @@
       const scrollYBeforeRender = window.scrollY;
       render({ scroll: false });
       window.scrollTo({ top: scrollYBeforeRender, left: 0, behavior: 'auto' });
+      window.requestAnimationFrame(() => {
+        window.scrollTo({ top: scrollYBeforeRender, left: 0, behavior: 'auto' });
+      });
       return;
     }
 
@@ -3996,6 +4002,9 @@
       }
       render({ scroll: false });
       window.scrollTo({ top: scrollYBeforeRender, left: 0, behavior: 'auto' });
+      window.requestAnimationFrame(() => {
+        window.scrollTo({ top: scrollYBeforeRender, left: 0, behavior: 'auto' });
+      });
       return;
     }
 
@@ -4006,6 +4015,9 @@
       state.contentChecklistFormat = value;
       render({ scroll: false });
       window.scrollTo({ top: scrollYBeforeRender, left: 0, behavior: 'auto' });
+      window.requestAnimationFrame(() => {
+        window.scrollTo({ top: scrollYBeforeRender, left: 0, behavior: 'auto' });
+      });
       return;
     }
 

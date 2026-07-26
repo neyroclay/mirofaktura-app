@@ -54,6 +54,12 @@ async function assertReadModalClearance(page, name) {
   assert(geometry.sourceVisible && geometry.source.bottom <= geometry.nav.top - 8, `${name}: trend source is hidden by navigation: ${JSON.stringify(geometry)}`);
   assert(geometry.actionVisible && geometry.action.bottom <= geometry.nav.top - 8, `${name}: trend action is hidden by navigation: ${JSON.stringify(geometry)}`);
   assert(geometry.text.clientHeight >= 48 && geometry.text.overflowY === 'auto', `${name}: trend text has no usable scroll area: ${JSON.stringify(geometry)}`);
+  if (geometry.text.scrollHeight <= geometry.text.clientHeight + 1) {
+    assert(
+      geometry.content.height <= geometry.modal.height * 0.86,
+      `${name}: short trend text stretches into an almost full-height empty card: ${JSON.stringify(geometry)}`
+    );
+  }
   assert(!geometry.tabsObscureDialog, `${name}: top tabs cover the trend dialog: ${JSON.stringify(geometry)}`);
   await page.locator('#read-trend-text').evaluate((element) => { element.scrollTop = element.scrollHeight; });
   const fixedFooter = await page.evaluate(() => {

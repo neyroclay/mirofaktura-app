@@ -3160,12 +3160,41 @@ h3 {
   line-height: 1.25;
 }
 
-.content-selector .selector-option > span {
+.content-selector .selector-option,
+.content-checklist-options .selector-option {
   display: grid;
-  gap: 4px;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
 }
 
-.content-selector .selector-option small {
+.content-selector .selector-option::before,
+.content-checklist-options .selector-option::before {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.content-selector .selector-option > span,
+.content-checklist-options .selector-option > span {
+  display: grid;
+  grid-column: 2;
+  grid-row: 1;
+  gap: 4px;
+  min-width: 0;
+}
+
+.content-selector .selector-option strong,
+.content-selector .selector-option small,
+.content-checklist-options .selector-option strong,
+.content-checklist-options .selector-option small {
+  display: block;
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+.content-selector .selector-option small,
+.content-checklist-options .selector-option small {
   color: rgba(9, 38, 35, 0.58);
   font-size: 12px;
   line-height: 1.35;
@@ -3671,6 +3700,7 @@ h3 {
 }
 
 .nav-item {
+  min-width: 0;
   min-height: 58px;
   display: grid;
   place-items: center;
@@ -3684,6 +3714,35 @@ h3 {
   font-weight: 700;
   cursor: pointer;
   transition: color var(--motion-fast) ease, background var(--motion-fast) var(--ease-out), transform var(--motion-fast) var(--ease-out);
+}
+
+.nav-label {
+  white-space: nowrap;
+}
+
+/* MAX WebView can enlarge short navigation labels beyond their grid cells
+   when the phone uses a larger system font. Keep only the navigation at its
+   designed scale; all page content continues to follow the user's setting. */
+html[data-mirofactura-platform="max"] .bottom-nav {
+  -webkit-text-size-adjust: none;
+  text-size-adjust: none;
+}
+
+html[data-mirofactura-platform="max"] .bottom-nav .nav-item {
+  padding-inline: 1px;
+}
+
+html[data-mirofactura-platform="max"] .bottom-nav .nav-label {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  width: 100%;
+  font-size: clamp(10.5px, 3.2vw, 12px);
+  line-height: 1.08;
+  overflow-wrap: anywhere;
+  text-align: center;
+  text-overflow: clip;
+  white-space: normal;
 }
 
 .nav-item svg {

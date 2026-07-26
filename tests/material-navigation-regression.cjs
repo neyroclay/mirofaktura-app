@@ -117,6 +117,17 @@ async function assertMaterialFooter(page, material) {
     await openMaterial(page, 'content-plan');
     assert(await page.locator('.content-platform-guides:not(.content-reference-guides) .content-platform-guide').count() === 4, 'Content platform guide is incomplete');
     assert(await page.locator('.content-quick-actions [data-action="focusMaterialNavigator"]').count() === 2, 'Content navigator quick actions are missing');
+    const checklistOptionLayout = await page.locator('.content-checklist-options .selector-option').evaluateAll((buttons) => buttons.map((button) => {
+      const strong = button.querySelector('strong').getBoundingClientRect();
+      const small = button.querySelector('small').getBoundingClientRect();
+      return {
+        separated: small.top >= strong.bottom,
+        contained: button.scrollWidth <= button.clientWidth + 1
+          && strong.right <= button.getBoundingClientRect().right
+          && small.right <= button.getBoundingClientRect().right
+      };
+    }));
+    assert(checklistOptionLayout.every(({ separated, contained }) => separated && contained), `Content checklist labels overlap or leave their cards: ${JSON.stringify(checklistOptionLayout)}`);
     await page.click('.content-quick-actions [data-target="content-checklist"]');
     await page.waitForTimeout(1500);
     const checklistAnchorTop = await page.locator('#content-checklist').evaluate((element) => element.getBoundingClientRect().top);
@@ -146,7 +157,7 @@ async function assertMaterialFooter(page, material) {
     const revisedGoal = page.locator('[data-action="chooseContentNavigatorAnswer"][data-question="goal"][data-value="trust"]');
     await revisedGoal.evaluate((element) => window.scrollTo(0, element.getBoundingClientRect().top + window.scrollY - 120));
     const beforeAnswerRevision = await page.evaluate(() => window.scrollY);
-    await revisedGoal.click();
+    await revisedGoal.evaluate((element) => element.click());
     await page.waitForTimeout(1500);
     const afterAnswerRevision = await page.evaluate(() => window.scrollY);
     assert(Math.abs(afterAnswerRevision - beforeAnswerRevision) <= 24, `Changing a completed content route moves the page: ${beforeAnswerRevision} -> ${afterAnswerRevision}`);
