@@ -220,6 +220,29 @@ async function testMax(browser, viewport, suffix) {
     await page.waitForTimeout(40);
     assert(await page.locator('.screen').count(), `Screen ${target} did not render`);
     await assertPageBottomClearance(page, `max-${suffix}-${target}`);
+    if (target === 'contacts' && suffix === 'phone-portrait') {
+      await page.evaluate(() => {
+        document.documentElement.style.webkitTextSizeAdjust = '200%';
+        document.documentElement.style.textSizeAdjust = '200%';
+      });
+      const spectrumGeometry = await page.evaluate(() => {
+        const spectrum = document.querySelector('.solution-spectrum');
+        return {
+          textSizeAdjust: getComputedStyle(spectrum).webkitTextSizeAdjust,
+          cards: [...spectrum.querySelectorAll('article')].map((card) => ({
+            clientWidth: card.clientWidth,
+            scrollWidth: card.scrollWidth,
+            titleSize: parseFloat(getComputedStyle(card.querySelector('h3')).fontSize),
+            bodySize: parseFloat(getComputedStyle(card.querySelector('p')).fontSize)
+          }))
+        };
+      });
+      assert(spectrumGeometry.textSizeAdjust !== '200%', `Service spectrum still follows MAX text zoom: ${JSON.stringify(spectrumGeometry)}`);
+      assert(
+        spectrumGeometry.cards.every((card) => card.scrollWidth <= card.clientWidth + 1 && card.titleSize <= 18 && card.bodySize <= 14),
+        `Service spectrum overflows with larger MAX text: ${JSON.stringify(spectrumGeometry)}`
+      );
+    }
   }
 
   await page.click('[data-action="openTrends"]');
@@ -374,6 +397,10 @@ async function testMaxPersistence(browser) {
     }));
   });
   await page.reload({ waitUntil: 'domcontentloaded', timeout: 60000 });
+  await page.evaluate(() => {
+    document.documentElement.style.webkitTextSizeAdjust = '200%';
+    document.documentElement.style.textSizeAdjust = '200%';
+  });
   await page.click('[data-action="openTrends"]');
   await page.waitForFunction(() => window.MirofacturaTrendDeck?.isReady?.() === true, null, { timeout: 15000 });
   assert(await page.locator('#onboarding-view.visible').count() === 0, 'Saved onboarding state was not restored');
@@ -389,6 +416,28 @@ async function testMaxPersistence(browser) {
   await page.waitForTimeout(700);
   assert(await maxCollectionCard.evaluate((card) => card.classList.contains('flipped')), 'Saved MAX collection card did not flip');
   assert(await maxCollectionCard.locator('.lib-card-inner').evaluate((inner) => getComputedStyle(inner).transform !== 'none'), 'Saved MAX collection card has no flip transform');
+  const readButtonGeometry = await maxCollectionCard.locator('.lib-read-btn').evaluate((button) => {
+    const rect = button.getBoundingClientRect();
+    const card = button.closest('.lib-card-container').getBoundingClientRect();
+    const styles = getComputedStyle(button);
+    return {
+      width: rect.width,
+      height: rect.height,
+      cardWidth: card.width,
+      fontSize: parseFloat(styles.fontSize),
+      textSizeAdjust: styles.webkitTextSizeAdjust,
+      whiteSpace: styles.whiteSpace
+    };
+  });
+  assert(
+    readButtonGeometry.height <= 37
+      && readButtonGeometry.width < readButtonGeometry.cardWidth - 30
+      && readButtonGeometry.fontSize === 12
+      && readButtonGeometry.textSizeAdjust !== '200%'
+      && readButtonGeometry.whiteSpace === 'nowrap',
+    `Collection read button grows with MAX text zoom: ${JSON.stringify(readButtonGeometry)}`
+  );
+  await page.screenshot({ path: path.join(screenshotArtifacts, 'max-collection-large-text.png'), fullPage: true });
   await maxCollectionCard.locator('.lib-read-btn').click();
   await page.waitForSelector('#read-trend-modal.visible');
   await assertReadModalClearance(page, 'max-read-modal');

@@ -1708,6 +1708,20 @@ h3 {
   font-weight: 600;
 }
 
+html[data-mirofactura-platform="max"] .solution-spectrum {
+  -webkit-text-size-adjust: none;
+  text-size-adjust: none;
+}
+
+html[data-mirofactura-platform="max"] .solution-spectrum article {
+  overflow: hidden;
+}
+
+html[data-mirofactura-platform="max"] .solution-spectrum h3,
+html[data-mirofactura-platform="max"] .solution-spectrum p {
+  overflow-wrap: anywhere;
+}
+
 .solution-spectrum-note {
   padding: 18px 20px;
   border: 1px solid rgba(255, 255, 255, 0.76);
