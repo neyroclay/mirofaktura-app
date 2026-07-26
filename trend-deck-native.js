@@ -1495,17 +1495,39 @@
            const getSceneLayout = (sceneWidth, sceneHeight) => {
                const sceneAspect = sceneWidth / sceneHeight;
                const maxWaiting = trendPlatform === 'max' && isDailyDone && !justFinished && appData.bonusCards <= 0;
-               if (maxWaiting && window.innerWidth > window.innerHeight) return { cameraZ: 8.5, cardY: 1.2, cardX: -4 };
-               if (maxWaiting && window.innerWidth >= 560) return { cameraZ: 10.5, cardY: 2.5, cardX: 0 };
-               if (maxWaiting && window.innerHeight <= 900) return { cameraZ: 12, cardY: 2.4, cardX: 0 };
-               if (maxWaiting) return { cameraZ: 10.5, cardY: 1.5, cardX: 0 };
-               if (usesTallPortraitLayout()) return { cameraZ: 8.6, cardY: trendPlatform === 'max' ? 1.35 : 1.0, cardX: 0 };
-               if (nativeMode && sceneWidth <= 620 && sceneHeight >= 440) return { cameraZ: 6.2, cardY: 0.45, cardX: 0 };
-               if (nativeMode && sceneAspect > 0.6) return { cameraZ: 7.8, cardY: 0.8, cardX: 0 };
-               if (sceneAspect > 0.6) return { cameraZ: 8.2, cardY: 0.9, cardX: 0 };
-               if (isIPad) return { cameraZ: 7.5, cardY: 0.7, cardX: 0 };
-               if (sceneWidth < 768) return { cameraZ: 7.5, cardY: 0.4, cardX: 0 };
-               return { cameraZ: 6, cardY: 0.3, cardX: 0 };
+               let layout;
+               if (maxWaiting && window.innerWidth > window.innerHeight) layout = { cameraZ: 8.5, cardY: 1.2, cardX: -4 };
+               else if (maxWaiting && window.innerWidth >= 560) layout = { cameraZ: 10.5, cardY: 2.5, cardX: 0 };
+               else if (maxWaiting && window.innerHeight <= 900) layout = { cameraZ: 12, cardY: 2.4, cardX: 0 };
+               else if (maxWaiting) layout = { cameraZ: 10.5, cardY: 1.5, cardX: 0 };
+               else if (usesTallPortraitLayout()) layout = { cameraZ: 8.6, cardY: trendPlatform === 'max' ? 1.35 : 1.0, cardX: 0 };
+               else if (nativeMode && sceneWidth <= 620 && sceneHeight >= 440) layout = { cameraZ: 6.2, cardY: 0.45, cardX: 0 };
+               else if (nativeMode && sceneAspect > 0.6) layout = { cameraZ: 7.8, cardY: 0.8, cardX: 0 };
+               else if (sceneAspect > 0.6) layout = { cameraZ: 8.2, cardY: 0.9, cardX: 0 };
+               else if (isIPad) layout = { cameraZ: 7.5, cardY: 0.7, cardX: 0 };
+               else if (sceneWidth < 768) layout = { cameraZ: 7.5, cardY: 0.4, cardX: 0 };
+               else layout = { cameraZ: 6, cardY: 0.3, cardX: 0 };
+
+               if (!nativeMode || maxWaiting) return layout;
+
+               const nativeScreen = container.closest('.trends-native-screen');
+               const tabs = nativeScreen?.querySelector('.trends-native-tabs');
+               const appNav = nativeScreen?.querySelector('.bottom-nav');
+               if (!tabs || !appNav || sceneHeight <= 0) return layout;
+
+               const hostRect = container.getBoundingClientRect();
+               const tabsRect = tabs.getBoundingClientRect();
+               const navRect = appNav.getBoundingClientRect();
+               const freeTop = tabsRect.bottom;
+               const freeBottom = navRect.top;
+               if (freeBottom - freeTop < 180) return layout;
+
+               const targetCenterInScene = ((freeTop + freeBottom) / 2) - hostRect.top;
+               const pixelsPerWorldUnit = sceneHeight / (2 * Math.tan(Math.PI / 6) * layout.cameraZ);
+               return {
+                   ...layout,
+                   cardY: (sceneHeight / 2 - targetCenterInScene) / pixelsPerWorldUnit
+               };
            };
            const initialSceneLayout = getSceneLayout(width, height);
            let cameraZ = initialSceneLayout.cameraZ, cardY = initialSceneLayout.cardY;

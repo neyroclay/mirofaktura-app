@@ -136,6 +136,21 @@ function installProgressBackend(context, state) {
     const bottom = Math.max(...hitPoints.map((point) => point.y));
     const dailyCardWidth = right - left + 20;
     assert(dailyCardWidth >= 215, `Daily card is unexpectedly small: ${dailyCardWidth}`);
+    const dailyCardLayout = await cardPage.evaluate(({ top, bottom }) => {
+      const tabs = document.querySelector('.trends-native-tabs').getBoundingClientRect();
+      const nav = document.querySelector('.bottom-nav').getBoundingClientRect();
+      const targetCenter = (tabs.bottom + nav.top) / 2;
+      const cardCenter = (top + bottom) / 2;
+      return {
+        targetCenter,
+        cardCenter,
+        offset: cardCenter - targetCenter,
+        topGap: top - tabs.bottom,
+        bottomGap: nav.top - bottom
+      };
+    }, { top, bottom });
+    assert(Math.abs(dailyCardLayout.offset) <= 30, `Daily card is not centered between navigation bars: ${JSON.stringify(dailyCardLayout)}`);
+    assert(dailyCardLayout.topGap >= 16 && dailyCardLayout.bottomGap >= 16, `Daily card touches navigation: ${JSON.stringify(dailyCardLayout)}`);
 
     for (let row = 0; row < 10; row += 1) {
       for (let column = 0; column < 12; column += 1) {
@@ -160,7 +175,7 @@ function installProgressBackend(context, state) {
     assert(await cardPage.locator('.collection-hint').evaluate((hint) => getComputedStyle(hint).visibility !== 'hidden'), 'A tap outside the Open text button did not flip the card back');
     await cardPage.mouse.click(centerX, centerY);
     await cardPage.waitForTimeout(900);
-    const drawnButtonY = top + ((bottom - top) * 705) / 768;
+    const drawnButtonY = bottom - 6;
     const buttonProbe = await cardPage.evaluate(({ x, y }) => ({
       point: { x, y },
       stack: document.elementsFromPoint(x, y).slice(0, 6).map((element) => ({
@@ -202,7 +217,7 @@ function installProgressBackend(context, state) {
     await cardPage.screenshot({ path: require('path').join(process.env.MIROFAKTURA_ARTIFACT_DIR || '.', 'telegram-read-modal.png'), fullPage: true });
     await cardDevice.close();
 
-    console.log(JSON.stringify({ ok: true, restoredCards: 1, collectionCardWidth: cardWidth, dailyCardWidth, dailyCardAction: true, modalGeometry }));
+    console.log(JSON.stringify({ ok: true, restoredCards: 1, collectionCardWidth: cardWidth, dailyCardWidth, dailyCardLayout, dailyCardAction: true, modalGeometry }));
   } finally {
     await browser.close();
   }
