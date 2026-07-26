@@ -1264,6 +1264,8 @@ h3 {
 .story-card-preview {
   position: relative;
   isolation: isolate;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
   width: min(274px, 84vw);
   aspect-ratio: 9 / 16;
   overflow: hidden;
@@ -1322,7 +1324,7 @@ h3 {
 
 .story-card-cta strong {
   color: #fffbea;
-  font-size: 8.2px;
+  font-size: 8.2px !important;
   line-height: 1.28;
   font-weight: 850;
 }
@@ -1332,7 +1334,7 @@ h3 {
   z-index: 2;
   margin: 58px 0 0;
   color: #fffbea;
-  font-size: 19px;
+  font-size: 19px !important;
   line-height: 1.01;
   font-weight: 850;
   letter-spacing: -0.035em;
@@ -1343,7 +1345,7 @@ h3 {
   z-index: 2;
   margin: 7px 0 0;
   color: #7af3e8;
-  font-size: 8px;
+  font-size: 8px !important;
   line-height: 1.2;
   font-weight: 900;
   letter-spacing: 0.08em;
@@ -1351,12 +1353,17 @@ h3 {
 }
 
 .story-card-preview-products blockquote {
-  font-size: 18px;
+  font-size: 18px !important;
 }
 
 .story-card-preview-traffic blockquote {
-  font-size: 17px;
+  font-size: 17px !important;
   line-height: 1;
+}
+
+.story-card-preview-content-plan blockquote {
+  font-size: 16px !important;
+  line-height: 1.03;
 }
 
 .story-card-mascot {

@@ -150,9 +150,30 @@ async function assertMaterialFooter(page, material) {
     for (const [question, value] of Object.entries(contentAnswers)) {
       await page.click(`[data-action="chooseContentNavigatorAnswer"][data-question="${question}"][data-value="${value}"]`);
     }
+    await page.waitForTimeout(100);
     assert(await page.locator('.material-outcome:not(.muted)').count() === 1, 'Content navigator result was not built');
     assert((await page.locator('.material-outcome').textContent()).includes('Три рубрики'), 'Content navigator rubrics are missing');
     assert(await page.locator('[data-action="chooseContentNavigatorAnswer"][data-question="goal"][data-value="sales"]').getAttribute('aria-pressed') === 'true', 'Content navigator does not expose the selected answer');
+
+    const storyCardLayout = await page.locator('.story-card-preview-content-plan').evaluate((preview) => {
+      const quote = preview.querySelector('blockquote');
+      const mascot = preview.querySelector('.story-card-mascot');
+      const quoteRect = quote.getBoundingClientRect();
+      const mascotRect = mascot.getBoundingClientRect();
+      const previewStyle = getComputedStyle(preview);
+      const quoteStyle = getComputedStyle(quote);
+      return {
+        textSizeAdjust: previewStyle.webkitTextSizeAdjust,
+        quoteFontSize: quoteStyle.fontSize,
+        clearance: mascotRect.top - quoteRect.bottom
+      };
+    });
+    assert(
+      storyCardLayout.textSizeAdjust === '100%'
+        && storyCardLayout.quoteFontSize === '16px'
+        && storyCardLayout.clearance >= 8,
+      `Potap story card text can grow over the mascot: ${JSON.stringify(storyCardLayout)}`
+    );
 
     const revisedGoal = page.locator('[data-action="chooseContentNavigatorAnswer"][data-question="goal"][data-value="trust"]');
     await revisedGoal.evaluate((element) => window.scrollTo(0, element.getBoundingClientRect().top + window.scrollY - 120));
