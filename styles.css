@@ -3737,12 +3737,12 @@ html[data-mirofactura-platform="max"] .bottom-nav .nav-label {
   max-width: 100%;
   overflow: hidden;
   width: 100%;
-  font-size: clamp(10.5px, 3.2vw, 12px);
+  font-size: 11px !important;
   line-height: 1.08;
-  overflow-wrap: anywhere;
+  overflow-wrap: normal;
   text-align: center;
   text-overflow: clip;
-  white-space: normal;
+  white-space: nowrap;
 }
 
 .nav-item svg {

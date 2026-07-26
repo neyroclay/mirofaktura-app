@@ -262,10 +262,21 @@ async function testMax(browser, viewport, suffix) {
     bodyWidth: document.body.scrollWidth,
     viewportWidth: window.innerWidth,
     bottomNav: Boolean(document.querySelector('.bottom-nav')),
+    navLabels: [...document.querySelectorAll('.bottom-nav .nav-label')].map((label) => ({
+      text: label.textContent,
+      clientWidth: label.clientWidth,
+      scrollWidth: label.scrollWidth,
+      height: label.getBoundingClientRect().height,
+      whiteSpace: getComputedStyle(label).whiteSpace
+    })),
     platform: document.documentElement.dataset.mirofacturaPlatform
   }));
   assert(geometry.bodyWidth <= geometry.viewportWidth + 1, `Horizontal overflow: ${geometry.bodyWidth}/${geometry.viewportWidth}`);
   assert(geometry.bottomNav, 'Bottom navigation is missing');
+  assert(
+    geometry.navLabels.every((label) => label.whiteSpace === 'nowrap' && label.scrollWidth <= label.clientWidth + 1 && label.height <= 14),
+    `MAX navigation label wraps or leaves its cell: ${JSON.stringify(geometry.navLabels)}`
+  );
 
   await page.screenshot({ path: path.join(screenshotArtifacts, `max-${suffix}.png`), fullPage: true });
   await context.close();
