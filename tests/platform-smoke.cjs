@@ -430,9 +430,9 @@ async function testMaxPersistence(browser) {
     };
   });
   assert(
-    readButtonGeometry.height <= 37
+    readButtonGeometry.height <= 31
       && readButtonGeometry.width < readButtonGeometry.cardWidth - 30
-      && readButtonGeometry.fontSize === 12
+      && readButtonGeometry.fontSize === 10
       && readButtonGeometry.textSizeAdjust !== '200%'
       && readButtonGeometry.whiteSpace === 'nowrap',
     `Collection read button grows with MAX text zoom: ${JSON.stringify(readButtonGeometry)}`
