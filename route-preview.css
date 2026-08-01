@@ -1,0 +1,44 @@
+.route-preview-note {
+  margin: 0 0 18px;
+  padding: 12px 14px;
+  border: 1px solid rgba(16, 22, 18, 0.12);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--text, #171a18);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.result-context {
+  margin-top: 18px;
+  padding: 18px;
+  border: 1px solid rgba(16, 22, 18, 0.12);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.68);
+}
+
+.result-context ul {
+  display: grid;
+  gap: 10px;
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.result-context li {
+  position: relative;
+  margin: 0;
+  padding-left: 19px;
+  line-height: 1.45;
+}
+
+.result-context li::before {
+  position: absolute;
+  top: 0.55em;
+  left: 0;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #12b886;
+  content: '';
+}
