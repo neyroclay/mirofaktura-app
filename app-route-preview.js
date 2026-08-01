@@ -1636,7 +1636,6 @@
   function renderHome() {
     return screen(`
       <div class="hero">
-        <p class="route-preview-note"><strong>Тестовая версия.</strong> Проверяем более ясный вход и персональный результат квиза. Основная Мирофактура не изменена.</p>
         <div class="mascot-zone">
           <img class="mascot" src="${assets.stepanStart}" alt="Степан, Цветок-Критик Мирофактуры" decoding="async" fetchpriority="high">
         </div>
@@ -1647,10 +1646,10 @@
         </div>
 
         <div class="home-copy">
-          <p class="brand-label">Короткий навигатор Мирофактуры</p>
-          <h1 class="home-title">Найдите, с чего начать работу над маркетингом</h1>
-          <p class="lead">Ответьте на четыре вопроса. Мы подберём один интерактивный материал под вашу текущую задачу и предложим первое действие для работы с ней.</p>
-          <button class="primary-btn" type="button" data-action="startQuiz">Подобрать материал</button>
+          <p class="brand-label">Квиз Мирофактуры</p>
+          <h1 class="home-title">Какой материал поможет решить вашу задачу</h1>
+          <p class="lead">Ответьте на четыре вопроса про продукт, клиентов и задачу, которую хотите решить первой. По ответам мы предложим один материал и конкретное действие, которое можно выполнить сразу.</p>
+          <button class="primary-btn" type="button" data-action="startQuiz">Начать квиз</button>
         </div>
 
         <div class="home-links">
@@ -1740,41 +1739,44 @@
     return 'traffic';
   }
 
-  function resultContextLines() {
+  function resultContextCopy() {
     const product = {
-      one: 'У вас есть один основной продукт.',
-      many: 'У вас несколько продуктов или направлений.',
-      idea: 'Вы пока проверяете идею будущего продукта.'
+      one: 'У вас есть один основной продукт',
+      many: 'У вас несколько продуктов или направлений',
+      idea: 'Вы пока проверяете идею будущего продукта'
     }[state.answers[0]];
 
     const source = state.answers[0] === 'idea'
       ? {
-          word: 'Первый интерес вы планируете проверить через знакомых и рекомендации.',
-          content: 'Первый интерес вы планируете проверить через контент.',
-          ads: 'Первый интерес вы планируете проверить с помощью рекламы.',
-          random: 'Способ проверки спроса пока не выбран.'
+          word: 'Первый интерес вы планируете проверить через знакомых и рекомендации',
+          content: 'Первый интерес вы планируете проверить через контент',
+          ads: 'Первый интерес вы планируете проверить с помощью рекламы',
+          random: 'Способ проверки спроса пока не выбран'
         }[state.answers[1]]
       : {
-          word: 'Основной источник клиентов сейчас — рекомендации.',
-          content: 'Основной источник клиентов сейчас — контент.',
-          ads: 'Основной источник клиентов сейчас — реклама.',
-          random: 'Клиенты приходят из разных источников, устойчивого канала пока нет.'
+          word: 'клиенты чаще приходят по рекомендациям',
+          content: 'клиенты чаще приходят через контент',
+          ads: 'клиенты чаще приходят через рекламу',
+          random: 'клиенты приходят из разных источников, а устойчивого канала пока нет'
         }[state.answers[1]];
 
     const task = {
-      traffic: 'Сейчас важнее всего выбрать канал для поиска новой аудитории.',
-      sales: 'Сейчас важнее всего выбрать подходящий канал продаж.',
-      'content-plan': 'Сейчас важнее всего связать контент с продажами.',
-      products: 'Сейчас важнее всего показать клиенту, чем отличаются продукты и что можно предложить после первой покупки.'
+      traffic: 'Сейчас вы хотите выбрать канал для поиска новой аудитории',
+      sales: 'Сейчас вы хотите выбрать подходящий канал продаж',
+      'content-plan': 'Сейчас вы хотите понять, какие темы приводят читателя к продукту',
+      products: 'Сейчас вы хотите показать клиенту, чем отличаются продукты и что можно предложить после первой покупки'
     }[state.answers[2]];
 
     const format = {
-      recommendation: 'Вам нужна короткая рекомендация и одно действие, которое можно выполнить сразу.',
-      map: 'Вам нужна карта вариантов решения задачи и понятные критерии сравнения.',
-      draft: 'Вам нужна последовательность вопросов, по которой можно собрать рабочий черновик.'
+      recommendation: 'Поэтому предлагаем короткую рекомендацию и одно действие, которое можно выполнить сразу',
+      map: 'Поэтому сначала полезно сравнить варианты по одинаковым критериям',
+      draft: 'Поэтому предлагаем последовательность вопросов, по которой можно собрать рабочий черновик'
     }[state.answers[3]];
 
-    return [product, source, task, format].filter(Boolean);
+    const situation = state.answers[0] === 'idea'
+      ? [product, source].filter(Boolean).join('. ')
+      : [product, source].filter(Boolean).join(', и ');
+    return [situation, task, format].filter(Boolean).join('. ');
   }
 
   function resultIntentCopy(key) {
@@ -2057,9 +2059,9 @@
     const key = resultKey();
     const material = materials[key];
     const help = relatedHelp(key);
-    const contextLines = resultContextLines();
+    const contextCopy = resultContextCopy();
     return screen(`
-      <button class="back-link" type="button" data-action="startQuiz">← Пройти навигатор заново</button>
+      <button class="back-link" type="button" data-action="startQuiz">← Пройти квиз ещё раз</button>
       <div class="result-mascot">
         <img src="${assets.aristarch}" alt="Аристарх показывает рекомендацию" decoding="async">
         <p class="result-mascot-intro">
@@ -2069,14 +2071,10 @@
       </div>
 
       <article class="result-card">
-        <p class="brand-label">Ваш маршрут</p>
-        <h1>Вот с чего стоит начать работу над задачей</h1>
+        <p class="brand-label">Результат квиза</p>
+        <h1>Вам подойдёт материал «${material.title}»</h1>
         <p class="lead">${resultIntentCopy(key)}</p>
-
-        <div class="result-context">
-          <p class="brand-label">Что мы учли</p>
-          <ul>${contextLines.map((line) => `<li>${line}</li>`).join('')}</ul>
-        </div>
+        <p>${contextCopy}.</p>
 
         <div class="result-panel">
           <h2>${material.title}</h2>
