@@ -141,7 +141,7 @@
       title: 'Что сейчас мешает заняться этой задачей?',
       hint: 'Выберите вариант, который точнее описывает вашу ситуацию.',
       image: assets.stepanFinal,
-      note: 'Готово. Аристарх сопоставит ответы и подберёт материал для выбранной задачи.',
+      note: 'Готово. Аристарх сопоставит ответы и предложит подходящий инструмент.',
       answers: [
         ['recommendation', 'Непонятно, с чего начать', 'Нужна короткая рекомендация и первый шаг.', 'Тогда нужен один конкретный шаг, который можно сделать сразу.'],
         ['map', 'Слишком много вариантов', 'Хочу сравнить варианты по понятным критериям.', 'Тогда сравним варианты по одинаковым критериям.'],
@@ -1580,7 +1580,7 @@
 
   async function openMaterialWithGate(material) {
     if (!['traffic', 'products', 'sales', 'content-plan'].includes(material)) {
-      showToast('Этот материал еще готовим');
+      showToast('Этот инструмент ещё готовим');
       return;
     }
 
@@ -1647,8 +1647,8 @@
 
         <div class="home-copy">
           <p class="brand-label">Квиз Мирофактуры</p>
-          <h1 class="home-title">Какой материал поможет решить вашу задачу</h1>
-          <p class="lead">Ответьте на четыре вопроса про продукт, клиентов и задачу, которую хотите решить первой. По ответам мы предложим один материал и конкретное действие, которое можно выполнить сразу.</p>
+          <h1 class="home-title">Какой интерактивный инструмент подойдёт для вашей задачи</h1>
+          <p class="lead">Ответьте на четыре вопроса про продукт, клиентов и задачу, которую хотите решить первой. По ответам мы предложим подходящий инструмент и конкретное действие, которое можно выполнить сразу.</p>
           <button class="primary-btn" type="button" data-action="startQuiz">Начать квиз</button>
         </div>
 
@@ -1794,7 +1794,7 @@
     if (intent === 'draft') {
       return key === 'products'
         ? 'Ответьте на вопросы, соберите черновик продуктовой линейки и скопируйте итог в заметки или рабочий чат.'
-        : 'Ответьте на вопросы внутри материала, получите короткий список вариантов и скопируйте итог в заметки или рабочий чат.';
+        : 'Ответьте на вопросы, получите короткий список вариантов и скопируйте итог в заметки или рабочий чат.';
     }
     return key === 'products'
       ? 'Начните с короткого подбора: он покажет, какая модель продуктовой линейки лучше подходит вашей ситуации.'
@@ -2066,13 +2066,13 @@
         <img src="${assets.aristarch}" alt="Аристарх показывает рекомендацию" decoding="async">
         <p class="result-mascot-intro">
           <strong>Аристарх</strong>
-          <span>Аксолотль-Профессор, ещё один маскот Мирофактуры. Он сопоставляет ответы и подбирает материал под вашу ситуацию.</span>
+          <span>Аксолотль-Профессор, ещё один маскот Мирофактуры. Он сопоставляет ответы и предлагает подходящий инструмент.</span>
         </p>
       </div>
 
       <article class="result-card">
         <p class="brand-label">Результат квиза</p>
-        <h1>Вам подойдёт материал «${material.title}»</h1>
+        <h1>Попробуйте «${material.title}»</h1>
         <p class="lead">${resultIntentCopy(key)}</p>
         <p>${contextCopy}.</p>
 
@@ -2084,7 +2084,7 @@
 
       <div class="result-actions result-actions-primary">
         <button class="primary-btn gift-open-btn" type="button" data-action="openMaterial" data-material="${key}">
-          <span>Открыть подобранный материал</span>
+          <span>Открыть инструмент</span>
         </button>
       </div>
 
@@ -2130,7 +2130,7 @@
             <p>${isLibraryGate ? 'Выберите нужный материал или пройдите квиз, если пока не знаете, с чего начать.' : material.text}</p>
           </div>
 
-          <button class="primary-btn" type="button" data-action="${isLibraryGate ? 'openLibrary' : 'openMaterial'}" ${isLibraryGate ? '' : `data-material="${state.pendingMaterial || resultKey()}"`}>${isLibraryGate ? 'Открыть кладовую' : 'Открыть материал'}</button>
+          <button class="primary-btn" type="button" data-action="${isLibraryGate ? 'openLibrary' : 'openMaterial'}" ${isLibraryGate ? '' : `data-material="${state.pendingMaterial || resultKey()}"`}>${isLibraryGate ? 'Открыть кладовую' : 'Открыть инструмент'}</button>
           <button class="soft-btn" type="button" data-action="openMax">Подписаться на канал</button>
           <button class="soft-btn" type="button" data-page="home">На главную</button>
         </article>
