@@ -164,9 +164,15 @@ async function completeQuiz(page, { product = 'one', source = 'content', task = 
     await page.goto(`${BASE_URL}/next/max/`, { waitUntil: 'domcontentloaded' });
     await page.waitForURL(/\/max\/\?variant=route-v2/);
     await page.waitForSelector('.route-v2-home-screen');
+    assert(await page.locator('script[src*="route-v2-story-03"]').count() === 1, 'MAX preview loaded the cached main app script');
     assert((await page.locator('.share-btn').innerText()).trim() === 'Канал в MAX', 'MAX preview did not replace the top share button');
     await page.click('.share-btn');
     assert(await page.evaluate(() => window.__openedMaxLink) === 'https://max.ru/channel_mirofactura', 'MAX channel button opened the wrong URL');
+
+    await page.goto(`${BASE_URL}/max/`, { waitUntil: 'domcontentloaded' });
+    await page.waitForSelector('.home-screen');
+    assert(await page.locator('script[src*="product-line-result-01"]').count() === 1, 'The main MAX page stopped using its stable app script');
+    assert(await page.locator('.route-v2-home-screen').count() === 0, 'The main MAX page unexpectedly enabled route-v2');
 
     for (const viewport of [{ width: 768, height: 1024 }, { width: 1024, height: 600 }]) {
       await page.setViewportSize(viewport);

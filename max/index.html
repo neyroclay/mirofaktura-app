@@ -42,6 +42,14 @@
       }, 220);
     </script>
     <div id="app"></div>
-    <script src="./app.js?v=20260806-product-line-result-01"></script>
+    <script>
+      (function () {
+        const appScript = document.createElement('script');
+        appScript.src = window.MIROFAKTURA_VARIANT === 'route-v2'
+          ? './app.js?v=20260806-route-v2-story-03'
+          : './app.js?v=20260806-product-line-result-01';
+        document.body.appendChild(appScript);
+      }());
+    </script>
   </body>
 </html>
