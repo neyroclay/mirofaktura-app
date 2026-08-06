@@ -90,6 +90,8 @@ async function completeQuiz(page, { product = 'one', source = 'content', task = 
     assert(await page.locator('[data-action="openMaterial"][data-material="content-plan"]').count() === 1, 'Content navigator was not selected for the content task');
     assert(await page.locator('.route-v2-advice-step').count() >= 3, 'Potap advice is still rendered as one long paragraph');
     assert(await page.locator('.route-v2-help-copy p').count() >= 2, 'Mirofactura help copy is still rendered as one long paragraph');
+    assert(await page.locator('.route-v2-contact-card').count() === 1, 'The final Mirofactura contact card is missing');
+    assert((await page.locator('.route-v2-contact-card [data-action="openElenaContact"]').innerText()).trim() === 'Написать нам', 'The final contact card uses the wrong action');
     await page.click('[data-action="copyQuizResult"]');
     const copied = await page.evaluate(() => window.__copiedText);
     for (const expected of ['Ресурсы для продвижения', 'Бюджет на месяц', 'Инструмент: Контент-навигатор', 'Первый шаг']) {
@@ -164,7 +166,7 @@ async function completeQuiz(page, { product = 'one', source = 'content', task = 
     await page.goto(`${BASE_URL}/next/max/`, { waitUntil: 'domcontentloaded' });
     await page.waitForURL(/\/max\/\?variant=route-v2/);
     await page.waitForSelector('.route-v2-home-screen');
-    assert(await page.locator('script[src*="route-v2-story-03"]').count() === 1, 'MAX preview loaded the cached main app script');
+    assert(await page.locator('script[src*="route-v2-contact-04"]').count() === 1, 'MAX preview loaded the cached main app script');
     assert((await page.locator('.share-btn').innerText()).trim() === 'Канал в MAX', 'MAX preview did not replace the top share button');
     await page.click('.share-btn');
     assert(await page.evaluate(() => window.__openedMaxLink) === 'https://max.ru/channel_mirofactura', 'MAX channel button opened the wrong URL');

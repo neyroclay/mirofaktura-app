@@ -15,7 +15,7 @@
   if (IS_ROUTE_V2 && !document.querySelector('link[data-mirofactura-variant="route-v2"]')) {
     const variantStyles = document.createElement('link');
     variantStyles.rel = 'stylesheet';
-    variantStyles.href = new URL('./route-v2.css?v=20260806-route-v2-story-03', document.baseURI).href;
+    variantStyles.href = new URL('./route-v2.css?v=20260806-route-v2-contact-04', document.baseURI).href;
     variantStyles.dataset.mirofacturaVariant = 'route-v2';
     document.head.appendChild(variantStyles);
   }
@@ -2294,16 +2294,16 @@
         </div>
       </article>
 
-      <article class="potap-panel result-help-note">
+      <article class="potap-panel result-help-note route-v2-contact-card">
         <p class="brand-label">Мирофактура может помочь</p>
         <h2>${help.title}</h2>
         <div class="route-v2-help-copy">
           ${routeV2TextSteps(help.text).map((paragraph) => `<p>${paragraph}</p>`).join('')}
         </div>
+        <button class="primary-btn accent-cta" type="button" data-action="openElenaContact">Написать нам</button>
       </article>
 
-      <div class="result-actions">
-        <button class="primary-btn" type="button" data-action="openContacts">Посмотреть, что мы делаем</button>
+      <div class="result-actions route-v2-result-home-actions">
         <button class="soft-btn" type="button" data-page="home">На главную</button>
       </div>
     `, 'result-screen route-v2-result-screen');
