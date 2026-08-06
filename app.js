@@ -15,7 +15,7 @@
   if (IS_ROUTE_V2 && !document.querySelector('link[data-mirofactura-variant="route-v2"]')) {
     const variantStyles = document.createElement('link');
     variantStyles.rel = 'stylesheet';
-    variantStyles.href = new URL('./route-v2.css?v=20260806-route-v2-01', document.baseURI).href;
+    variantStyles.href = new URL('./route-v2.css?v=20260806-route-v2-story-03', document.baseURI).href;
     variantStyles.dataset.mirofacturaVariant = 'route-v2';
     document.head.appendChild(variantStyles);
   }
@@ -99,6 +99,8 @@
     stepanProduct: './assets/stepan-product-question.webp',
     stepanChannels: './assets/stepan-clients-channels.webp',
     stepanRegularity: './assets/stepan-sales-regularity.webp',
+    stepanResources: './assets/stepan-resources-question.webp',
+    stepanBudget: './assets/stepan-budget-question.webp',
     stepanFinal: './assets/stepan-final-map.webp',
     aristarch: './assets/aristarch-library-soft-glow.webp?v=20260721-aristarch-everywhere-29',
     aristarchLibrary: './assets/aristarch-library-soft-glow.webp?v=20260721-aristarch-everywhere-29',
@@ -165,7 +167,7 @@
       kicker: 'Теперь — ресурсы',
       title: 'Что у вас уже есть для продвижения?',
       hint: 'Отметьте всё, на что вы можете опереться сейчас.',
-      image: assets.stepanRegularity,
+      image: assets.stepanResources,
       note: 'Даже небольшого запаса времени, помощи коллег или одной готовой идеи достаточно, чтобы начать.',
       multiple: true,
       answers: [
@@ -180,7 +182,7 @@
       kicker: 'Уточняем масштаб',
       title: 'Какой бюджет вы готовы выделять на маркетинг и рекламу каждый месяц?',
       hint: 'Выберите ближайший диапазон. Он поможет понять, насколько большой тест стоит планировать.',
-      image: assets.stepanFinal,
+      image: assets.stepanBudget,
       note: 'От бюджета зависит объём первого теста, но сам по себе бюджет не подсказывает, какой способ продвижения выбрать.',
       answers: [
         ['under-100', 'До 100 000 ₽', 'Лучше сосредоточиться на одном тесте и использовать уже доступные ресурсы.', 'Начните с одного небольшого теста и заранее решите, какой результат покажет, что его стоит продолжать.'],
@@ -2114,6 +2116,51 @@
     return scenarios[key]?.[intent] || scenarios.traffic.recommendation;
   }
 
+  let routeV2AdviceObserver = null;
+
+  function prepareRouteV2AdviceReveals() {
+    routeV2AdviceObserver?.disconnect();
+    routeV2AdviceObserver = null;
+    const steps = [...app.querySelectorAll('.route-v2-advice-step')];
+    if (!steps.length) return;
+
+    const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    if (!('IntersectionObserver' in window) || reducedMotion) {
+      steps.forEach((step) => step.classList.add('is-visible'));
+      return;
+    }
+
+    steps.forEach((step) => step.classList.add('is-scroll-reveal'));
+    routeV2AdviceObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('is-visible');
+        routeV2AdviceObserver?.unobserve(entry.target);
+      });
+    }, { threshold: 0.18, rootMargin: '0px 0px -8% 0px' });
+    steps.forEach((step) => routeV2AdviceObserver.observe(step));
+  }
+
+  function routeV2TextSteps(text) {
+    return String(text || '')
+      .match(/[^.!?]+(?:[.!?]+(?:[»”)]*)|$)/g)
+      ?.map((item) => item.trim())
+      .filter(Boolean) || [];
+  }
+
+  function renderRouteV2AdviceSteps(text) {
+    return `
+      <ol class="route-v2-advice-steps">
+        ${routeV2TextSteps(text).map((step, index) => `
+          <li class="route-v2-advice-step">
+            <span aria-hidden="true">${String(index + 1).padStart(2, '0')}</span>
+            <p>${step}</p>
+          </li>
+        `).join('')}
+      </ol>
+    `;
+  }
+
   function quizAnswerTitle(step, value) {
     if (!value) return '';
     const item = quizItemForStep(step);
@@ -2233,7 +2280,7 @@
       <article class="potap-panel result-potap-advice route-v2-advice-card">
         <p class="brand-label">Что можно сделать сначала</p>
         <h2>Совет Потапа</h2>
-        <p>${potapAdvice(key)}</p>
+        ${renderRouteV2AdviceSteps(potapAdvice(key))}
       </article>
 
       <article class="result-card route-v2-tool-card">
@@ -2250,7 +2297,9 @@
       <article class="potap-panel result-help-note">
         <p class="brand-label">Мирофактура может помочь</p>
         <h2>${help.title}</h2>
-        <p>${help.text}</p>
+        <div class="route-v2-help-copy">
+          ${routeV2TextSteps(help.text).map((paragraph) => `<p>${paragraph}</p>`).join('')}
+        </div>
       </article>
 
       <div class="result-actions">
@@ -3833,6 +3882,7 @@
       loadNativeTrendDeckStyles().catch(() => {});
     }
     prepareImageReveals();
+    prepareRouteV2AdviceReveals();
     prepareTrendsFrame();
     if (options.scroll !== false) {
       window.scrollTo({ top: 0, behavior: 'instant' });

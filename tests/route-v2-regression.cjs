@@ -88,6 +88,8 @@ async function completeQuiz(page, { product = 'one', source = 'content', task = 
     assert(insight && advice && tool && insight.top < advice.top && advice.top < tool.top, `Result blocks are in the wrong order: ${JSON.stringify(blocks)}`);
     assert((await page.locator('.route-v2-resource-note').innerText()).includes('одной небольшой проверки'), 'Budget did not adjust the first-test scale');
     assert(await page.locator('[data-action="openMaterial"][data-material="content-plan"]').count() === 1, 'Content navigator was not selected for the content task');
+    assert(await page.locator('.route-v2-advice-step').count() >= 3, 'Potap advice is still rendered as one long paragraph');
+    assert(await page.locator('.route-v2-help-copy p').count() >= 2, 'Mirofactura help copy is still rendered as one long paragraph');
     await page.click('[data-action="copyQuizResult"]');
     const copied = await page.evaluate(() => window.__copiedText);
     for (const expected of ['Ресурсы для продвижения', 'Бюджет на месяц', 'Инструмент: Контент-навигатор', 'Первый шаг']) {
