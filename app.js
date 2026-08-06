@@ -10,10 +10,20 @@
   const telegramWebApp = window.Telegram?.WebApp || null;
   const URL_PARAMS = new URLSearchParams(window.location.search);
   const TELEGRAM_LAUNCH_PARAMS = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+  const APP_VARIANT = String(window.MIROFAKTURA_VARIANT || '').trim().toLowerCase();
+  const IS_ROUTE_V2 = APP_VARIANT === 'route-v2';
+  if (IS_ROUTE_V2 && !document.querySelector('link[data-mirofactura-variant="route-v2"]')) {
+    const variantStyles = document.createElement('link');
+    variantStyles.rel = 'stylesheet';
+    variantStyles.href = new URL('./route-v2.css?v=20260806-route-v2-01', document.baseURI).href;
+    variantStyles.dataset.mirofacturaVariant = 'route-v2';
+    document.head.appendChild(variantStyles);
+  }
   const NATIVE_TRENDS_MODE = URL_PARAMS.get('trends_native');
   const NATIVE_TRENDS_ASSET_VERSION = '20260726-bonus-dialog-50';
   const APP_PLATFORM = platformAdapter.key;
   document.documentElement.dataset.mirofacturaPlatform = APP_PLATFORM;
+  if (IS_ROUTE_V2) document.documentElement.dataset.mirofacturaVariant = APP_VARIANT;
   const USE_NATIVE_TRENDS = NATIVE_TRENDS_MODE !== '0';
   const PLATFORM = {
     key: platformAdapter.key,
@@ -150,8 +160,47 @@
     }
   ];
 
+  const routeV2QuizAdditions = [
+    {
+      kicker: 'Теперь — ресурсы',
+      title: 'Что у вас уже есть для продвижения?',
+      hint: 'Отметьте всё, на что вы можете опереться сейчас.',
+      image: assets.stepanRegularity,
+      note: 'Даже небольшого запаса времени, помощи коллег или одной готовой идеи достаточно, чтобы начать.',
+      multiple: true,
+      answers: [
+        ['budget', 'Бюджет', 'Можно оплачивать рекламу, размещения, подрядчиков или инструменты.', 'Бюджет поможет проверить гипотезу быстрее, если заранее определить цель и показатель результата.'],
+        ['time', 'Время', 'Вы или коллеги можете регулярно заниматься продвижением.', 'Время можно вложить в разговоры с клиентами, контент и ручную проверку первых гипотез.'],
+        ['team', 'Команда или сотрудники', 'Есть люди, между которыми можно распределить задачи.', 'Команда позволит разделить подготовку материалов, запуск и проверку результатов.'],
+        ['partners', 'Партнёры', 'Есть компании, эксперты или сообщества для совместных проектов.', 'Партнёры могут помочь выйти к подходящей аудитории через совместный материал, мероприятие или рекомендацию.'],
+        ['ideas', 'Идеи для продвижения', 'Есть темы, форматы или гипотезы, которые хочется проверить.', 'Идеи уже есть. Следующий шаг — выбрать одну гипотезу и заранее решить, по какому результату вы будете её оценивать.']
+      ]
+    },
+    {
+      kicker: 'Уточняем масштаб',
+      title: 'Какой бюджет вы готовы выделять на маркетинг и рекламу каждый месяц?',
+      hint: 'Выберите ближайший диапазон. Он поможет понять, насколько большой тест стоит планировать.',
+      image: assets.stepanFinal,
+      note: 'От бюджета зависит объём первого теста, но сам по себе бюджет не подсказывает, какой способ продвижения выбрать.',
+      answers: [
+        ['under-100', 'До 100 000 ₽', 'Лучше сосредоточиться на одном тесте и использовать уже доступные ресурсы.', 'Начните с одного небольшого теста и заранее решите, какой результат покажет, что его стоит продолжать.'],
+        ['100-300', '100 000–300 000 ₽', 'Можно подробно проверить одну гипотезу и подготовить всё необходимое для запуска.', 'Запланируйте один основной тест и не делите бюджет между несколькими каналами без общих критериев оценки.'],
+        ['300-500', '300 000–500 000 ₽', 'Можно сравнить несколько вариантов при одинаковых условиях оценки.', 'Можно сравнить основной и контрольный тест, если команда заранее определила сроки и показатели результата.'],
+        ['over-500', 'Более 500 000 ₽ в месяц', 'Сначала определите, какой результат должно принести каждое направление, и только потом распределяйте деньги.', 'Сначала задайте общие показатели для всех проверок, а затем распределяйте бюджет между направлениями.']
+      ]
+    }
+  ];
+
+  const activeQuiz = IS_ROUTE_V2
+    ? [quiz[0], quiz[1], quiz[2], ...routeV2QuizAdditions, quiz[3]]
+    : quiz;
+  const QUIZ_TASK_STEP = 2;
+  const QUIZ_RESOURCES_STEP = IS_ROUTE_V2 ? 3 : -1;
+  const QUIZ_BUDGET_STEP = IS_ROUTE_V2 ? 4 : -1;
+  const QUIZ_INTENT_STEP = IS_ROUTE_V2 ? 5 : 3;
+
   function quizItemForStep(step = state.step) {
-    const item = quiz[step];
+    const item = activeQuiz[step];
     if (state.answers[0] !== 'idea') return item;
 
     if (step === 1) {
@@ -203,7 +252,7 @@
 
   function warmQuizImages() {
     warmImages([
-      ...quiz.map((item) => item.image),
+      ...activeQuiz.map((item) => item.image),
       assets.aristarch,
       assets.logoStory,
     ]);
@@ -221,7 +270,7 @@
       assets.logo,
       assets.logoStory,
       assets.stepanStart,
-      ...quiz.map((item) => item.image),
+      ...activeQuiz.map((item) => item.image),
       assets.aristarch,
       assets.potap,
       assets.authors,
@@ -1411,6 +1460,9 @@
     trafficAtlasAnswers: {},
     trafficAtlasFocus: '',
     contentNavigatorAnswers: {},
+    contentNavigatorMode: '',
+    contentNavigatorStep: 0,
+    contentNavigatorGuide: '',
     contentChecklistPlatform: '',
     contentChecklistFormat: '',
     contentChecklist: {},
@@ -1489,12 +1541,13 @@
   };
 
   function header() {
+    const maxChannelButton = IS_ROUTE_V2 && APP_PLATFORM === 'max';
     return `
       <header class="topbar">
         <button class="logo-button" type="button" data-page="home" aria-label="На главную">
           <img class="logo" src="${assets.logo}" alt="Мирофактура" decoding="async" fetchpriority="high">
         </button>
-        <button class="share-btn" type="button" data-action="share">Поделиться</button>
+        <button class="share-btn" type="button" data-action="${maxChannelButton ? 'openMax' : 'share'}">${maxChannelButton ? 'Канал в MAX' : 'Поделиться'}</button>
       </header>
     `;
   }
@@ -1522,7 +1575,7 @@
     const hasBottomNav = PAGES_WITH_BOTTOM_NAV.has(state.page) || (USE_NATIVE_TRENDS && state.page === 'trends');
     const hasNativeTrendsShell = USE_NATIVE_TRENDS && state.page === 'trends';
     return `
-      <main class="app-shell ${hasNativeTrendsShell ? 'trends-native-shell' : ''}">
+      <main class="app-shell ${IS_ROUTE_V2 ? 'route-v2' : ''} ${hasNativeTrendsShell ? 'trends-native-shell' : ''}">
         <section class="screen ${hasBottomNav ? 'has-bottom-nav' : ''} ${cls}">
           ${header()}
           ${content}
@@ -1586,6 +1639,10 @@
 
     state.pendingMaterial = material;
     state.pendingGateTarget = 'material';
+    if (IS_ROUTE_V2 && material === 'content-plan' && state.page === 'result') {
+      state.contentNavigatorMode = 'route';
+      state.contentNavigatorStep = 0;
+    }
 
     if (IS_OPEN_ACCESS || isLocalPreview()) {
       state.material = material;
@@ -1634,6 +1691,42 @@
   }
 
   function renderHome() {
+    if (IS_ROUTE_V2) {
+      return screen(`
+        <div class="hero route-v2-home">
+          <div class="mascot-zone">
+            <img class="mascot" src="${assets.stepanStart}" alt="Степан, Цветок-Критик Мирофактуры" decoding="async" fetchpriority="high">
+          </div>
+
+          <div class="mascot-note">
+            <div><span class="mascot-name">Степан</span> <span class="mascot-role">Цветок-Критик · маскот Мирофактуры</span></div>
+            <p class="quote">«Посмотрим, какая часть маркетинга сейчас требует внимания»</p>
+          </div>
+
+          <div class="home-copy route-v2-home-copy">
+            <p class="brand-label">Квиз Мирофактуры</p>
+            <h1 class="home-title">С чего начать</h1>
+            <p class="lead">За несколько минут разберите текущую ситуацию: что вы продаёте, откуда приходят клиенты, чего хотите добиться и на какие ресурсы можете опереться. В конце вы получите короткий вывод и подходящий интерактивный инструмент.</p>
+            <button class="primary-btn" type="button" data-action="startQuiz">Начать квиз</button>
+          </div>
+
+          <button class="day-card" type="button" data-action="openTrends">
+            <span class="day-card-copy">
+              <span class="day-card-kicker">Мирофактура · 2026</span>
+              <span class="day-card-title">Колода трендов для бизнеса</span>
+              <span class="day-card-text">Найдите новую идею для продукта, маркетинга или продаж.</span>
+              <span class="day-card-action">Открыть колоду</span>
+            </span>
+            <span class="day-card-cards" aria-hidden="true">
+              <span class="day-card-cover"><img src="./assets/home-trend-creator.jpg" alt="" loading="eager" decoding="async"></span>
+              <span class="day-card-cover"><img src="./assets/home-trend-ai-fatigue.jpg" alt="" loading="eager" decoding="async"></span>
+              <span class="day-card-cover"><img src="./assets/home-trend-end-normal.jpg" alt="" loading="eager" decoding="async"></span>
+            </span>
+          </button>
+        </div>
+      `, 'home-screen route-v2-home-screen');
+    }
+
     return screen(`
       <div class="hero">
         <div class="mascot-zone">
@@ -1684,13 +1777,17 @@
   function renderQuiz() {
     const item = quizItemForStep(state.step);
     const selected = state.answers[state.step];
-    const selectedAnswer = item.answers.find(([id]) => id === selected);
-    const selectedNote = selectedAnswer?.[3] || item.note;
-    const progress = Math.round(((state.step + 1) / quiz.length) * 100);
+    const selectedValues = item.multiple && Array.isArray(selected) ? selected : [];
+    const hasSelection = item.multiple ? selectedValues.length > 0 : Boolean(selected);
+    const selectedAnswer = item.multiple ? null : item.answers.find(([id]) => id === selected);
+    const selectedNote = item.multiple && hasSelection
+      ? `Вы отметили: ${item.answers.filter(([id]) => selectedValues.includes(id)).map(([, title]) => title.toLowerCase()).join(', ')}.`
+      : selectedAnswer?.[3] || item.note;
+    const progress = Math.round(((state.step + 1) / activeQuiz.length) * 100);
     return screen(`
       <div class="quiz-head">
         <div class="quiz-meta">
-          <span>Вопрос ${state.step + 1} из ${quiz.length}</span>
+          <span>Вопрос ${state.step + 1} из ${activeQuiz.length}</span>
           <span>${progress}%</span>
         </div>
         <div class="progress" role="progressbar" aria-label="Прогресс квиза" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${progress}"><span style="width:${progress}%"></span></div>
@@ -1706,22 +1803,24 @@
         <p class="hint">${item.hint}</p>
 
         <div class="answers">
-          ${item.answers.map(([id, title, text], index) => `
-            <button class="answer ${selected === id ? 'selected' : ''}" type="button" data-answer="${id}" aria-pressed="${selected === id}">
+          ${item.answers.map(([id, title, text], index) => {
+            const isSelected = item.multiple ? selectedValues.includes(id) : selected === id;
+            return `
+            <button class="answer ${isSelected ? 'selected' : ''}" type="button" data-answer="${id}" aria-pressed="${isSelected}">
               <b class="answer-number">${index + 1}</b>
               <span class="answer-copy"><strong>${title}</strong><small>${text}</small></span>
               <i class="check">✓</i>
             </button>
-          `).join('')}
+          `; }).join('')}
         </div>
 
-        <div class="stepan-comment ${selected ? 'visible' : ''}" id="stepan-comment" role="status" aria-live="polite">
+        <div class="stepan-comment ${hasSelection ? 'visible' : ''}" id="stepan-comment" role="status" aria-live="polite">
           <b>Степан</b>
           <span>${selectedNote}</span>
         </div>
 
         <div class="quiz-actions">
-          <button class="primary-btn" type="button" data-action="nextQuestion" ${selected ? '' : 'disabled'}>${state.step === quiz.length - 1 ? 'Показать результат' : 'Дальше'}</button>
+          <button class="primary-btn" type="button" data-action="nextQuestion" ${hasSelection ? '' : 'disabled'}>${state.step === activeQuiz.length - 1 ? 'Показать результат' : 'Дальше'}</button>
           ${state.step === 0
             ? '<button class="soft-btn" type="button" data-action="exitQuiz">Выйти из квиза</button>'
             : '<button class="soft-btn" type="button" data-action="prevQuestion">Назад</button>'}
@@ -1731,7 +1830,7 @@
   }
 
   function resultKey() {
-    const selectedTask = state.answers[2];
+    const selectedTask = state.answers[QUIZ_TASK_STEP];
     if (selectedTask === 'products') return 'products';
     if (selectedTask === 'sales') return 'sales';
     if (selectedTask === 'traffic') return 'traffic';
@@ -1740,7 +1839,7 @@
   }
 
   function resultIntentCopy(key) {
-    const intent = state.answers[3];
+    const intent = state.answers[QUIZ_INTENT_STEP];
     if (key === 'content-plan') {
       if (intent === 'map') return 'Внутри есть гид по площадкам и короткий навигатор. Сначала сравните форматы, затем соберите план под свою задачу.';
       if (intent === 'draft') return 'Ответьте на четыре вопроса, получите рубрики и тему первой публикации, а затем скопируйте результат в заметки или рабочий чат.';
@@ -1994,7 +2093,7 @@
   }
 
   function potapAdvice(key) {
-    const intent = state.answers[3] || 'recommendation';
+    const intent = state.answers[QUIZ_INTENT_STEP] || 'recommendation';
     const scenarios = {
       traffic: {
         recommendation: 'Сделайте три версии одного поста или объявления. В каждой рассказывайте об одном и том же продукте, но начинайте с разной ситуации клиента: выросла команда, перестал справляться старый способ, появилось новое направление. Проведите тесты в одинаковых условиях и сравните переходы, вопросы и заявки. Начните продвижение с версии, которая привлекла больше заинтересованных людей.',
@@ -2015,7 +2114,154 @@
     return scenarios[key]?.[intent] || scenarios.traffic.recommendation;
   }
 
+  function quizAnswerTitle(step, value) {
+    if (!value) return '';
+    const item = quizItemForStep(step);
+    return item?.answers.find(([id]) => id === value)?.[1] || '';
+  }
+
+  function routeV2ResourceTitles() {
+    const values = Array.isArray(state.answers[QUIZ_RESOURCES_STEP])
+      ? state.answers[QUIZ_RESOURCES_STEP]
+      : [];
+    return values.map((value) => quizAnswerTitle(QUIZ_RESOURCES_STEP, value)).filter(Boolean);
+  }
+
+  function routeV2TestScale() {
+    const budget = state.answers[QUIZ_BUDGET_STEP];
+    const copies = {
+      'under-100': 'Начните с одной небольшой проверки. Ограничьте срок и заранее решите, какой результат покажет, что гипотезу стоит развивать.',
+      '100-300': 'Этого бюджета достаточно, чтобы проверить одну гипотезу целиком: подготовить материалы, провести запуск и оценить результат.',
+      '300-500': 'Можно сравнить два варианта одной гипотезы, если выделить им одинаковое время и оценивать по одним показателям.',
+      'over-500': 'С таким бюджетом особенно важно заранее решить, что будет считаться результатом каждого направления и как вы сравните их между собой.'
+    };
+    return copies[budget] || '';
+  }
+
+  function routeV2ResourceCopy() {
+    const resources = Array.isArray(state.answers[QUIZ_RESOURCES_STEP])
+      ? state.answers[QUIZ_RESOURCES_STEP]
+      : [];
+    const parts = [];
+    if (resources.includes('team')) parts.push('Команда поможет разделить подготовку, запуск и проверку результатов.');
+    if (resources.includes('partners')) parts.push('С партнёрами можно провести совместный тест и выйти к их аудитории.');
+    if (resources.includes('time')) parts.push('Если есть время, сначала поговорите с клиентами и проверьте гипотезу вручную.');
+    if (resources.includes('ideas')) parts.push('Из готовых идей выберите одну и проверьте её первой.');
+    if (resources.includes('budget')) parts.push('Бюджет лучше направить на подготовку и продвижение одного выбранного теста.');
+    return parts.slice(0, 2).join(' ');
+  }
+
+  function routeV2SourceCopy() {
+    const source = state.answers[1];
+    const ideaCopies = {
+      word: 'Первые разговоры можно начать со знакомых и людей, которые уже знают вашу работу.',
+      content: 'Интерес к идее можно сначала проверить через несколько публикаций.',
+      ads: 'Платный тест имеет смысл вести на конкретное действие: заявку, запись в лист ожидания или разговор о задаче.',
+      random: 'Перед выбором канала поговорите с несколькими будущими клиентами и уточните, где они ищут похожие решения.'
+    };
+    const existingCopies = {
+      word: 'Рекомендации уже приводят клиентов, но пока не дают предсказуемого потока.',
+      content: 'Контент уже приводит обращения — можно сравнить темы, после которых люди задают вопросы или оставляют заявку.',
+      ads: 'Реклама уже даёт данные: можно сравнить объявления, стоимость обращения и качество заявок.',
+      random: 'Заявки приходят из разных мест. Сначала запишите их источники хотя бы за месяц и посмотрите, что повторяется.'
+    };
+    return (state.answers[0] === 'idea' ? ideaCopies : existingCopies)[source] || '';
+  }
+
+  function routeV2AristarchCopy(key) {
+    const copies = {
+      traffic: 'Вам не нужен длинный список каналов. Сейчас полезнее выбрать один способ привлечения и провести небольшой тест.',
+      sales: 'Сейчас полезнее выбрать один способ продаж и проверить весь путь: как человек узнаёт о предложении, где задаёт вопросы и как переходит к покупке.',
+      'content-plan': 'Контент стоит собирать вокруг задачи клиента и следующего действия, а не вокруг количества публикаций.',
+      products: 'Сначала стоит связать существующие предложения с ситуациями клиента: что он покупает сейчас, какой результат получает и какой продукт уместно предложить после этого.'
+    };
+    return `${copies[key] || copies.traffic} ${routeV2SourceCopy()}`.trim();
+  }
+
+  function routeV2QuizSummaryText() {
+    const key = resultKey();
+    const material = materials[key];
+    const resources = routeV2ResourceTitles();
+    return [
+      'Мирофактура — итог квиза',
+      '',
+      `Что уже есть для продажи: ${quizAnswerTitle(0, state.answers[0])}`,
+      `${state.answers[0] === 'idea' ? 'Где планируется искать первых клиентов' : 'Откуда приходят клиенты'}: ${quizAnswerTitle(1, state.answers[1])}`,
+      `Главная задача: ${quizAnswerTitle(QUIZ_TASK_STEP, state.answers[QUIZ_TASK_STEP])}`,
+      `Ресурсы для продвижения: ${resources.join(', ')}`,
+      `Бюджет на месяц: ${quizAnswerTitle(QUIZ_BUDGET_STEP, state.answers[QUIZ_BUDGET_STEP])}`,
+      `Что мешает заняться задачей: ${quizAnswerTitle(QUIZ_INTENT_STEP, state.answers[QUIZ_INTENT_STEP])}`,
+      '',
+      `Инструмент: ${material.title}`,
+      `Первый шаг: ${potapAdvice(key)}`
+    ].join('\n');
+  }
+
+  function renderResultV2() {
+    const key = resultKey();
+    const material = materials[key];
+    const help = relatedHelp(key);
+    return screen(`
+      <button class="back-link" type="button" data-action="startQuiz">← Пройти заново</button>
+
+      <div class="result-mascot route-v2-result-mascot">
+        <img src="${assets.aristarch}" alt="Аристарх показывает вывод по ответам" decoding="async">
+        <p class="result-mascot-intro">
+          <strong>Аристарх</strong>
+          <span>Аксолотль-Профессор Мирофактуры. Он сопоставил ваши ответы и выделил главное.</span>
+        </p>
+      </div>
+
+      <article class="result-card route-v2-insight-card">
+        <p class="brand-label">Что видно по вашим ответам</p>
+        <h1>${quizAnswerTitle(QUIZ_TASK_STEP, state.answers[QUIZ_TASK_STEP])}</h1>
+        <p class="lead">${routeV2AristarchCopy(key)}</p>
+        <div class="route-v2-resource-note">
+          <p>${routeV2ResourceCopy()}</p>
+          <p>${routeV2TestScale()}</p>
+        </div>
+      </article>
+
+      <div class="potap-figure route-v2-potap-figure">
+        <img src="${assets.potap}" alt="Потап, Манул-Творец Мирофактуры" decoding="async">
+        <p class="result-mascot-intro">
+          <strong>Потап</strong>
+          <span>Манул-Творец Мирофактуры. Он предлагает конкретный первый шаг.</span>
+        </p>
+      </div>
+
+      <article class="potap-panel result-potap-advice route-v2-advice-card">
+        <p class="brand-label">Что можно сделать сначала</p>
+        <h2>Совет Потапа</h2>
+        <p>${potapAdvice(key)}</p>
+      </article>
+
+      <article class="result-card route-v2-tool-card">
+        <p class="brand-label">Инструмент для вашей задачи</p>
+        <h2>${material.title}</h2>
+        <p>${material.text}</p>
+        <p class="route-v2-tool-note">${resultIntentCopy(key)}</p>
+        <div class="result-actions result-actions-primary">
+          <button class="primary-btn" type="button" data-action="openMaterial" data-material="${key}">Открыть инструмент</button>
+          <button class="soft-btn" type="button" data-action="copyQuizResult">Скопировать итог</button>
+        </div>
+      </article>
+
+      <article class="potap-panel result-help-note">
+        <p class="brand-label">Мирофактура может помочь</p>
+        <h2>${help.title}</h2>
+        <p>${help.text}</p>
+      </article>
+
+      <div class="result-actions">
+        <button class="primary-btn" type="button" data-action="openContacts">Посмотреть, что мы делаем</button>
+        <button class="soft-btn" type="button" data-page="home">На главную</button>
+      </div>
+    `, 'result-screen route-v2-result-screen');
+  }
+
   function renderResult() {
+    if (IS_ROUTE_V2) return renderResultV2();
     const key = resultKey();
     const material = materials[key];
     const help = relatedHelp(key);
@@ -2755,7 +3001,200 @@
     return contentChecklistGroups(platform, format).flatMap((group) => group.items);
   }
 
+  function renderContentNavigatorModeV2() {
+    const modes = [
+      ['route', 'Собрать контент-маршрут', 'Ответить на вопросы по одному и получить темы, формат и первый шаг.'],
+      ['checklist', 'Проверить публикацию', 'Выбрать площадку и формат, а затем пройти подходящий чек-лист.'],
+      ['reference', 'Сравнить площадки и форматы', 'Открыть справку только по интересующей площадке.']
+    ];
+    return `
+      <section class="lead-section route-v2-content-entry" aria-labelledby="content-entry-title">
+        <p class="brand-label">Выберите задачу</p>
+        <h2 id="content-entry-title">Что хотите сделать?</h2>
+        <div class="route-v2-content-modes">
+          ${modes.map(([id, title, text]) => `
+            <button class="route-v2-content-mode ${state.contentNavigatorMode === id ? 'selected' : ''}" type="button" data-action="chooseContentNavigatorMode" data-mode="${id}" aria-pressed="${state.contentNavigatorMode === id}">
+              <strong>${title}</strong>
+              <span>${text}</span>
+            </button>
+          `).join('')}
+        </div>
+      </section>
+    `;
+  }
+
+  function renderContentNavigatorRouteV2() {
+    const questions = contentNavigatorMaterial.questions;
+    const step = Math.max(0, Math.min(state.contentNavigatorStep, questions.length - 1));
+    const question = questions[step];
+    const complete = contentNavigatorComplete();
+    const answered = questions.slice(0, step).filter((item) => state.contentNavigatorAnswers[item.id]);
+    return `
+      <section class="lead-section route-v2-content-branch route-v2-content-route" id="content-navigator">
+        <p class="brand-label">Контент-маршрут</p>
+        <h2>Вопрос ${step + 1} из ${questions.length}</h2>
+        ${answered.length ? `
+          <div class="route-v2-route-summary" aria-label="Предыдущие ответы">
+            ${answered.map((item) => `
+              <p><strong>${item.title}</strong><span>${questionOptionLabel(questions, item.id, state.contentNavigatorAnswers[item.id])}</span></p>
+            `).join('')}
+          </div>
+        ` : ''}
+        <article class="selector-question route-v2-route-question">
+          <div class="selector-question-title">
+            <span>${String(step + 1).padStart(2, '0')}</span>
+            <strong>${question.title}</strong>
+          </div>
+          <div class="selector-options">
+            ${question.options.map(([value, label, hint]) => `
+              <button class="selector-option ${state.contentNavigatorAnswers[question.id] === value ? 'selected' : ''}" type="button" data-action="chooseContentNavigatorAnswer" data-question="${question.id}" data-value="${value}" aria-pressed="${state.contentNavigatorAnswers[question.id] === value}">
+                <span><strong>${label}</strong><small>${hint}</small></span>
+              </button>
+            `).join('')}
+          </div>
+        </article>
+        ${step > 0 ? '<button class="soft-btn route-v2-route-back" type="button" data-action="prevContentNavigatorQuestion">Назад к предыдущему вопросу</button>' : ''}
+      </section>
+      ${complete ? renderMaterialOutcome('content-plan', 'content-navigator') : ''}
+    `;
+  }
+
+  function renderContentNavigatorChecklistV2() {
+    const platform = contentChecklistPlatform();
+    const format = contentChecklistFormat(platform);
+    const formats = contentChecklistFormats(platform);
+    const groups = contentChecklistGroups(platform, format);
+    const items = contentChecklistItems(platform, format);
+    const checkedCount = items.filter((item) => state.contentChecklist[item.id]).length;
+    const platformQuestion = contentNavigatorMaterial.questions.find((question) => question.id === 'platform');
+    return `
+      <section class="lead-section content-checklist route-v2-content-branch" id="content-checklist">
+        <p class="brand-label">Перед публикацией</p>
+        <h2>Проверьте публикацию</h2>
+        <p class="lead-section-copy">Сначала выберите площадку и формат. После этого останутся только те пункты, которые относятся к вашей публикации.</p>
+        <div class="content-checklist-setup">
+          <article class="selector-question">
+            <div class="selector-question-title"><span>01</span><strong>Где вы публикуете?</strong></div>
+            <div class="selector-options content-checklist-options">
+              ${platformQuestion.options.map(([value, label, hint]) => `
+                <button class="selector-option ${platform === value ? 'selected' : ''}" type="button" data-action="chooseContentChecklistPlatform" data-value="${value}" aria-pressed="${platform === value}">
+                  <span><strong>${label}</strong><small>${hint}</small></span>
+                </button>
+              `).join('')}
+            </div>
+          </article>
+          ${platform ? `
+            <article class="selector-question">
+              <div class="selector-question-title"><span>02</span><strong>Что вы публикуете?</strong></div>
+              <div class="selector-options content-checklist-options">
+                ${formats.map(([value, label, hint]) => `
+                  <button class="selector-option ${format === value ? 'selected' : ''}" type="button" data-action="chooseContentChecklistFormat" data-value="${value}" aria-pressed="${format === value}">
+                    <span><strong>${label}</strong><small>${hint}</small></span>
+                  </button>
+                `).join('')}
+              </div>
+            </article>
+          ` : ''}
+        </div>
+        ${items.length ? `
+          <div class="content-checklist-status" aria-live="polite">
+            <strong>${checkedCount} из ${items.length}</strong>
+            <span>${checkedCount === items.length ? 'Публикация проверена' : `Осталось проверить: ${items.length - checkedCount}`}</span>
+          </div>
+          <div class="content-checklist-groups">
+            ${groups.map((group) => `
+              <section class="content-checklist-group">
+                <h3>${group.title}</h3>
+                <div class="content-checklist-list">
+                  ${group.items.map((item) => `
+                    <button class="content-checklist-item ${state.contentChecklist[item.id] ? 'checked' : ''}" type="button" data-action="toggleContentChecklist" data-check="${item.id}" aria-pressed="${Boolean(state.contentChecklist[item.id])}">
+                      <span>${state.contentChecklist[item.id] ? '✓' : ''}</span><strong>${item.text}</strong>
+                    </button>
+                  `).join('')}
+                </div>
+              </section>
+            `).join('')}
+          </div>
+        ` : `<p class="content-checklist-empty" aria-live="polite">${platform ? 'Выберите формат публикации — и появится подходящий чек-лист.' : 'Выберите площадку, для которой хотите проверить публикацию.'}</p>`}
+      </section>
+    `;
+  }
+
+  function renderContentNavigatorReferenceV2() {
+    const platformQuestion = contentNavigatorMaterial.questions.find((question) => question.id === 'platform');
+    const selected = contentNavigatorMaterial.platformGuides.find((item) => item.id === state.contentNavigatorGuide);
+    return `
+      <section class="lead-section route-v2-content-branch route-v2-content-reference" id="content-reference">
+        <p class="brand-label">Площадки и форматы</p>
+        <h2>Какую площадку вы хотите посмотреть?</h2>
+        <div class="selector-options route-v2-guide-options">
+          ${platformQuestion.options.map(([value, label, hint]) => `
+            <button class="selector-option ${state.contentNavigatorGuide === value ? 'selected' : ''}" type="button" data-action="chooseContentNavigatorGuide" data-value="${value}" aria-pressed="${state.contentNavigatorGuide === value}">
+              <span><strong>${label}</strong><small>${hint}</small></span>
+            </button>
+          `).join('')}
+        </div>
+        ${selected ? `
+          <article class="route-v2-platform-card">
+            <p class="brand-label">${selected.subtitle}</p>
+            <h2>${selected.title}</h2>
+            <p>${selected.intro}</p>
+            <div class="support-list">
+              ${selected.formats.map(([title, text]) => `<article><strong>${title}</strong><p>${text}</p></article>`).join('')}
+            </div>
+            <div class="content-reach-note"><strong>Как работают охваты</strong><p>${selected.reach}</p></div>
+          </article>
+          <section class="route-v2-reference-section">
+            <p class="brand-label">Структура публикации</p>
+            <h2>Как выстроить материал</h2>
+            <div class="support-list content-structure-list">
+              ${contentNavigatorMaterial.postStructure.map(([title, text], index) => `<article><strong>${String(index + 1).padStart(2, '0')} ${title}</strong><p>${text}</p></article>`).join('')}
+            </div>
+          </section>
+          <section class="route-v2-reference-section">
+            <p class="brand-label">Тип контента</p>
+            <h2>Какую задачу решает публикация</h2>
+            <div class="content-type-grid">
+              ${contentNavigatorMaterial.contentTypes.map(([title, text]) => `<article><strong>${title}</strong><p>${text}</p></article>`).join('')}
+            </div>
+          </section>
+        ` : ''}
+      </section>
+    `;
+  }
+
+  function renderContentNavigatorMaterialV2() {
+    const branch = state.contentNavigatorMode === 'route'
+      ? renderContentNavigatorRouteV2()
+      : state.contentNavigatorMode === 'checklist'
+        ? renderContentNavigatorChecklistV2()
+        : state.contentNavigatorMode === 'reference'
+          ? renderContentNavigatorReferenceV2()
+          : '';
+    return screen(`
+      <button class="back-link" type="button" data-page="library">← В кладовую</button>
+      <article class="lead-hero content-navigator-hero">
+        <div>
+          <p class="brand-label">Контент и продажи</p>
+          <h1>Контент-навигатор 2026</h1>
+          <p class="lead">Выберите одну задачу. Навигатор покажет только нужные вопросы, чек-лист или справку по площадке.</p>
+        </div>
+      </article>
+      ${renderContentNavigatorModeV2()}
+      ${branch}
+      ${state.contentNavigatorMode ? `
+        <section class="lead-cta">
+          <h2>Нужна контент-система под ваш продукт?</h2>
+          <p>Свяжем темы, форматы и площадки с задачами бизнеса, подготовим контент и настроим регулярную работу.</p>
+          <button class="primary-btn accent-cta" type="button" data-action="openElenaContact">Написать нам</button>
+        </section>
+      ` : ''}
+      ${renderMaterialHomeReturn()}
+    `, 'material-screen product-lines-screen content-navigator-screen route-v2-content-screen');
+  }
+
   function renderContentNavigatorMaterial() {
+    if (IS_ROUTE_V2) return renderContentNavigatorMaterialV2();
     const complete = contentNavigatorComplete();
     const answeredCount = contentNavigatorMaterial.questions.filter((question) => state.contentNavigatorAnswers[question.id]).length;
     const checklistPlatform = contentChecklistPlatform();
@@ -3788,17 +4227,32 @@
     }
 
     if (answer) {
+      const item = quizItemForStep(state.step);
       const previousAnswer = state.answers[state.step];
-      if (previousAnswer !== answer) {
+      let nextAnswer = answer;
+      if (item?.multiple) {
+        const selected = Array.isArray(previousAnswer) ? [...previousAnswer] : [];
+        nextAnswer = selected.includes(answer)
+          ? selected.filter((value) => value !== answer)
+          : [...selected, answer];
+      }
+      const changed = JSON.stringify(previousAnswer) !== JSON.stringify(nextAnswer);
+      if (changed) {
         Object.keys(state.answers).forEach((step) => {
           if (Number(step) > state.step) delete state.answers[step];
         });
       }
-      state.answers[state.step] = answer;
+      if (item?.multiple && nextAnswer.length === 0) {
+        delete state.answers[state.step];
+      } else {
+        state.answers[state.step] = nextAnswer;
+      }
       render({ scroll: false });
-      window.setTimeout(() => {
-        document.getElementById('stepan-comment')?.scrollIntoView({ block: 'center', behavior: 'smooth' });
-      }, 40);
+      if (!item?.multiple || nextAnswer.length) {
+        window.setTimeout(() => {
+          document.getElementById('stepan-comment')?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        }, 40);
+      }
       return;
     }
 
@@ -3953,12 +4407,63 @@
       return;
     }
 
+    if (action === 'chooseContentNavigatorMode') {
+      const mode = target.getAttribute('data-mode');
+      if (!['route', 'checklist', 'reference'].includes(mode)) return;
+      state.contentNavigatorMode = mode;
+      render({ scroll: false });
+      window.setTimeout(() => {
+        document.querySelector('.route-v2-content-branch')?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+      }, 40);
+      return;
+    }
+
+    if (action === 'chooseContentNavigatorGuide') {
+      const value = target.getAttribute('data-value');
+      if (!contentNavigatorMaterial.platformGuides.some((item) => item.id === value)) return;
+      state.contentNavigatorGuide = value;
+      render({ scroll: false });
+      window.setTimeout(() => {
+        document.querySelector('.route-v2-platform-card')?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+      }, 40);
+      return;
+    }
+
+    if (action === 'prevContentNavigatorQuestion') {
+      if (state.contentNavigatorStep > 0) {
+        state.contentNavigatorStep -= 1;
+        render({ scroll: false });
+        window.setTimeout(() => {
+          document.querySelector('.route-v2-route-question')?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        }, 40);
+      }
+      return;
+    }
+
     if (action === 'chooseContentNavigatorAnswer') {
       const question = target.getAttribute('data-question');
       const value = target.getAttribute('data-value');
       if (!question || !value) return;
       const wasComplete = contentNavigatorComplete();
       const nextAnswers = { ...state.contentNavigatorAnswers, [question]: value };
+      if (IS_ROUTE_V2) {
+        const questionIndex = contentNavigatorMaterial.questions.findIndex((item) => item.id === question);
+        if (questionIndex < 0) return;
+        contentNavigatorMaterial.questions.slice(questionIndex + 1).forEach((item) => {
+          delete nextAnswers[item.id];
+        });
+        state.contentNavigatorAnswers = nextAnswers;
+        state.contentNavigatorStep = Math.min(questionIndex + 1, contentNavigatorMaterial.questions.length - 1);
+        const complete = contentNavigatorComplete(nextAnswers);
+        render({ scroll: false });
+        window.setTimeout(() => {
+          const selector = complete
+            ? '.content-navigator-screen .material-outcome'
+            : '.route-v2-route-question';
+          document.querySelector(selector)?.scrollIntoView({ block: complete ? 'start' : 'center', behavior: 'smooth' });
+        }, 40);
+        return;
+      }
       const complete = contentNavigatorComplete(nextAnswers);
       const scrollYBeforeRender = window.scrollY;
       state.contentNavigatorAnswers = nextAnswers;
@@ -4052,6 +4557,12 @@
       return;
     }
 
+    if (action === 'copyQuizResult') {
+      const copied = await copyPlainText(routeV2QuizSummaryText());
+      showToast(copied ? 'Итог скопирован' : 'Не удалось скопировать итог');
+      return;
+    }
+
     if (action === 'copyStoryLink') {
       const copied = await copyPlainText(STORY_DESTINATION_URL);
       showToast(copied ? 'Ссылка скопирована' : 'Не удалось скопировать ссылку');
@@ -4097,7 +4608,7 @@
 
     if (action === 'nextQuestion') {
       if (!state.answers[state.step]) return;
-      if (state.step < quiz.length - 1) {
+      if (state.step < activeQuiz.length - 1) {
         state.step += 1;
         render();
       } else {

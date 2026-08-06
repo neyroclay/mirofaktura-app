@@ -10,6 +10,9 @@
     <script>
       window.MIROFAKTURA_PLATFORM = 'max';
       window.MIROFAKTURA_ACCESS_MODE = 'open';
+      if (new URLSearchParams(window.location.search).get('variant') === 'route-v2') {
+        window.MIROFAKTURA_VARIANT = 'route-v2';
+      }
       window.MIROFAKTURA_MAX_BOT_URL = 'https://max.ru/id590417093305_bot';
       window.MIROFAKTURA_MAX_CHANNEL_URL = 'https://max.ru/channel_mirofactura';
       window.MIROFAKTURA_MAX_LOAD_PROGRESS_URL = 'https://cb.multy.ai/api/v1/hook/app/b9c89cbdf0f21aa63c6111487770196a';

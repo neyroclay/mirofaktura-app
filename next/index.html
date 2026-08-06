@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <base href="../">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Мирофактура — тестовый маршрут</title>
+    <meta name="description" content="Тестовый маршрут Мирофактуры: квиз, рекомендации и интерактивные инструменты для маркетинга.">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script>
+      window.MIROFAKTURA_PLATFORM = 'telegram';
+      window.MIROFAKTURA_ACCESS_MODE = 'open';
+      window.MIROFAKTURA_VARIANT = 'route-v2';
+    </script>
+    <script src="./platform/platform-core.js?v=20260717-max-adapter-35"></script>
+    <script src="./platform/telegram-adapter.js?v=20260721-progress-card-15"></script>
+    <link rel="preload" href="./assets/logo-black-yellow.webp" as="image" type="image/webp">
+    <link rel="preload" href="./assets/stepan-start.webp" as="image" type="image/webp">
+    <link rel="preload" href="./assets/stepan-product-question.webp" as="image" type="image/webp">
+    <link rel="prefetch" href="./trend-deck-native.js?v=20260726-bonus-dialog-50" as="script">
+    <link rel="prefetch" href="./trends-native.css?v=20260726-bonus-dialog-50" as="style">
+    <link rel="stylesheet" href="./styles.css?v=20260726-bonus-dialog-50">
+    <link rel="stylesheet" href="./route-v2.css?v=20260806-route-v2-01" data-mirofactura-variant="route-v2">
+  </head>
+  <body>
+    <div class="app-loader" id="app-loader" role="status" aria-label="Загрузка Мирофактуры">
+      <div class="app-loader__content">
+        <img src="./assets/logo-black-yellow.webp" alt="" aria-hidden="true">
+        <span class="app-loader__line" aria-hidden="true"></span>
+      </div>
+    </div>
+    <script>
+      window.__mirofakturaLoaderTimer = window.setTimeout(function () {
+        document.getElementById('app-loader')?.classList.add('is-visible');
+      }, 220);
+    </script>
+    <div id="app"></div>
+    <script src="./app.js?v=20260806-route-v2-01"></script>
+  </body>
+</html>

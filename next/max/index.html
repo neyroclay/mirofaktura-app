@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Мирофактура — тестовый маршрут MAX</title>
+    <script>
+      (function () {
+        const target = new URL('../../max/', window.location.href);
+        new URLSearchParams(window.location.search).forEach(function (value, key) {
+          target.searchParams.set(key, value);
+        });
+        target.searchParams.set('variant', 'route-v2');
+        window.location.replace(target.href);
+      }());
+    </script>
+  </head>
+  <body></body>
+</html>
