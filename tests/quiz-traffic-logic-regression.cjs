@@ -106,6 +106,18 @@ async function focusTrafficChannel(page, channelId) {
     const geoCopy = await focusTrafficChannel(page, 'geo');
     assert(geoCopy.includes('больше переходов и обращений'), 'Map-platform copy was not corrected');
 
+    await page.goto(`${BASE_URL}/max/`, { waitUntil: 'domcontentloaded' });
+    await page.click('[data-action="openLibrary"]');
+    await page.click('[data-action="openMaterial"][data-material="products"]');
+    await page.click('[data-action="chooseProductLineSelector"][data-question="portfolio"][data-value="one-main"]');
+    await page.click('[data-action="chooseProductLineSelector"][data-question="relationship"][data-value="launch"]');
+    await page.click('[data-action="chooseProductLineSelector"][data-question="driver"][data-value="core-sale"]');
+    assert(
+      (await page.locator('.material-outcome h2').innerText()) === 'Подбор модели продуктовой линейки',
+      'The product-line result is still blocked by the optional quick diagnostic'
+    );
+    assert(await page.locator('.story-result').count() === 1, 'Aristarch advice did not appear after all three selector answers');
+
     const appSource = readFileSync('app.js', 'utf8');
     assert(appSource.includes('схема продуктовой воронки'), 'Product-line gift still uses the unclear constructor wording');
 

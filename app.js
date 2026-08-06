@@ -1906,7 +1906,7 @@
       const repeat = productLinesMaterial.diagnostic.find((item) => item.id === state.productLineRepeat);
 
       return {
-        complete: Boolean(repeat) && productLineSelectorComplete(),
+        complete: productLineSelectorComplete(),
         title: 'Подбор модели продуктовой линейки',
         lines: [
           repeat ? ['Текущая ситуация', repeat.title] : null,
