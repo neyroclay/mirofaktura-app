@@ -150,6 +150,7 @@ async function completeQuiz(page, { product = 'one', source = 'content', task = 
     await answer(page, 'one');
     await answer(page, 'content');
     await answer(page, 'traffic');
+    assert((await page.locator('.quiz-mascot img').getAttribute('src')).includes('stepan-resources-question-v2.webp'), 'Route-v2 still uses the old resources illustration');
     await page.click('[data-answer="time"]');
     await page.click('[data-answer="ideas"]');
     await page.click('[data-answer="time"]');
@@ -166,7 +167,7 @@ async function completeQuiz(page, { product = 'one', source = 'content', task = 
     await page.goto(`${BASE_URL}/next/max/`, { waitUntil: 'domcontentloaded' });
     await page.waitForURL(/\/max\/\?variant=route-v2/);
     await page.waitForSelector('.route-v2-home-screen');
-    assert(await page.locator('script[src*="route-v2-contact-04"]').count() === 1, 'MAX preview loaded the cached main app script');
+    assert(await page.locator('script[src*="route-v2-resources-05"]').count() === 1, 'MAX preview loaded the cached main app script');
     assert((await page.locator('.share-btn').innerText()).trim() === 'Канал в MAX', 'MAX preview did not replace the top share button');
     await page.click('.share-btn');
     assert(await page.evaluate(() => window.__openedMaxLink) === 'https://max.ru/channel_mirofactura', 'MAX channel button opened the wrong URL');

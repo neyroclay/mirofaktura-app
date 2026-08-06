@@ -15,7 +15,7 @@
   if (IS_ROUTE_V2 && !document.querySelector('link[data-mirofactura-variant="route-v2"]')) {
     const variantStyles = document.createElement('link');
     variantStyles.rel = 'stylesheet';
-    variantStyles.href = new URL('./route-v2.css?v=20260806-route-v2-contact-04', document.baseURI).href;
+    variantStyles.href = new URL('./route-v2.css?v=20260806-route-v2-resources-05', document.baseURI).href;
     variantStyles.dataset.mirofacturaVariant = 'route-v2';
     document.head.appendChild(variantStyles);
   }
@@ -99,7 +99,9 @@
     stepanProduct: './assets/stepan-product-question.webp',
     stepanChannels: './assets/stepan-clients-channels.webp',
     stepanRegularity: './assets/stepan-sales-regularity.webp',
-    stepanResources: './assets/stepan-resources-question.webp',
+    stepanResources: IS_ROUTE_V2
+      ? './assets/stepan-resources-question-v2.webp'
+      : './assets/stepan-resources-question.webp',
     stepanBudget: './assets/stepan-budget-question.webp',
     stepanFinal: './assets/stepan-final-map.webp',
     aristarch: './assets/aristarch-library-soft-glow.webp?v=20260721-aristarch-everywhere-29',
