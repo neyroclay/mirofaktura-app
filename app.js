@@ -15,7 +15,7 @@
   if (IS_ROUTE_V2 && !document.querySelector('link[data-mirofactura-variant="route-v2"]')) {
     const variantStyles = document.createElement('link');
     variantStyles.rel = 'stylesheet';
-    variantStyles.href = new URL('./route-v2.css?v=20260806-route-v2-resources-05', document.baseURI).href;
+    variantStyles.href = new URL('./route-v2.css?v=20260809-route-v2-result-nav-06', document.baseURI).href;
     variantStyles.dataset.mirofacturaVariant = 'route-v2';
     document.head.appendChild(variantStyles);
   }
@@ -100,7 +100,7 @@
     stepanChannels: './assets/stepan-clients-channels.webp',
     stepanRegularity: './assets/stepan-sales-regularity.webp',
     stepanResources: IS_ROUTE_V2
-      ? './assets/stepan-resources-question-v2.webp'
+      ? './assets/stepan-resources-question-v3.webp'
       : './assets/stepan-resources-question.webp',
     stepanBudget: './assets/stepan-budget-question.webp',
     stepanFinal: './assets/stepan-final-map.webp',
@@ -1576,7 +1576,9 @@
   }
 
   function screen(content, cls = '') {
-    const hasBottomNav = PAGES_WITH_BOTTOM_NAV.has(state.page) || (USE_NATIVE_TRENDS && state.page === 'trends');
+    const hasBottomNav = PAGES_WITH_BOTTOM_NAV.has(state.page)
+      || (IS_ROUTE_V2 && state.page === 'result')
+      || (USE_NATIVE_TRENDS && state.page === 'trends');
     const hasNativeTrendsShell = USE_NATIVE_TRENDS && state.page === 'trends';
     return `
       <main class="app-shell ${IS_ROUTE_V2 ? 'route-v2' : ''} ${hasNativeTrendsShell ? 'trends-native-shell' : ''}">
