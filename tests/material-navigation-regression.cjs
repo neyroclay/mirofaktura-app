@@ -150,7 +150,7 @@ async function assertMaterialFooter(page, material) {
     for (const [question, value] of Object.entries(contentAnswers)) {
       await page.click(`[data-action="chooseContentNavigatorAnswer"][data-question="${question}"][data-value="${value}"]`);
     }
-    await page.waitForTimeout(100);
+    await page.waitForTimeout(700);
     assert(await page.locator('.material-outcome:not(.muted)').count() === 1, 'Content navigator result was not built');
     assert((await page.locator('.material-outcome').textContent()).includes('Три рубрики'), 'Content navigator rubrics are missing');
     assert(await page.locator('[data-action="chooseContentNavigatorAnswer"][data-question="goal"][data-value="sales"]').getAttribute('aria-pressed') === 'true', 'Content navigator does not expose the selected answer');

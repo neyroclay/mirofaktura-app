@@ -85,7 +85,7 @@ async function completeQuiz(page, { product = 'one', source = 'content', task = 
     const blocks = await page.locator('.route-v2-result-screen .brand-label').evaluateAll((nodes) => nodes.map((node) => ({ text: node.textContent.trim(), top: node.getBoundingClientRect().top + scrollY })));
     const insight = blocks.find((item) => item.text === 'Что видно по вашим ответам');
     const advice = blocks.find((item) => item.text === 'Что можно сделать сначала');
-    const tool = blocks.find((item) => item.text === 'Инструмент для вашей задачи');
+    const tool = blocks.find((item) => item.text === 'Материал для вашей задачи');
     assert(insight && advice && tool && insight.top < advice.top && advice.top < tool.top, `Result blocks are in the wrong order: ${JSON.stringify(blocks)}`);
     assert((await page.locator('.route-v2-resource-note').innerText()).includes('одной небольшой проверки'), 'Budget did not adjust the first-test scale');
     assert(await page.locator('[data-action="openMaterial"][data-material="content-plan"]').count() === 1, 'Content navigator was not selected for the content task');
@@ -95,7 +95,7 @@ async function completeQuiz(page, { product = 'one', source = 'content', task = 
     assert((await page.locator('.route-v2-contact-card [data-action="openElenaContact"]').innerText()).trim() === 'Написать нам', 'The final contact card uses the wrong action');
     await page.click('[data-action="copyQuizResult"]');
     const copied = await page.evaluate(() => window.__copiedText);
-    for (const expected of ['Ресурсы для продвижения', 'Бюджет на месяц', 'Инструмент: Контент-навигатор', 'Первый шаг']) {
+    for (const expected of ['Ресурсы для продвижения', 'Бюджет на месяц', 'Материал: Контент-навигатор', 'Первый шаг']) {
       assert(copied.includes(expected), `Copied result misses: ${expected}`);
     }
 
@@ -168,7 +168,7 @@ async function completeQuiz(page, { product = 'one', source = 'content', task = 
     await page.goto(`${BASE_URL}/next/max/`, { waitUntil: 'domcontentloaded' });
     await page.waitForURL(/\/max\/\?variant=route-v2/);
     await page.waitForSelector('.route-v2-home-screen');
-    assert(await page.locator('script[src*="route-v2-transparent-stepan-07"]').count() === 1, 'MAX preview loaded the cached main app script');
+    assert(await page.locator('script[src*="route-v2-copy-review-08"]').count() === 1, 'MAX preview loaded the cached main app script');
     assert((await page.locator('.share-btn').innerText()).trim() === 'Канал в MAX', 'MAX preview did not replace the top share button');
     await page.click('.share-btn');
     assert(await page.evaluate(() => window.__openedMaxLink) === 'https://max.ru/channel_mirofactura', 'MAX channel button opened the wrong URL');
