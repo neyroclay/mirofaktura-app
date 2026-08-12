@@ -1789,6 +1789,7 @@
     const selectedNote = item.multiple && hasSelection
       ? `Вы отметили: ${item.answers.filter(([id]) => selectedValues.includes(id)).map(([, title]) => title.toLowerCase()).join(', ')}.`
       : selectedAnswer?.[3] || item.note;
+    const hideStepanComment = IS_ROUTE_V2 && state.step === QUIZ_RESOURCES_STEP;
     const progress = Math.round(((state.step + 1) / activeQuiz.length) * 100);
     return screen(`
       <div class="quiz-head">
@@ -1820,10 +1821,12 @@
           `; }).join('')}
         </div>
 
-        <div class="stepan-comment ${hasSelection ? 'visible' : ''}" id="stepan-comment" role="status" aria-live="polite">
-          <b>Степан</b>
-          <span>${selectedNote}</span>
-        </div>
+        ${hideStepanComment ? '' : `
+          <div class="stepan-comment ${hasSelection ? 'visible' : ''}" id="stepan-comment" role="status" aria-live="polite">
+            <b>Степан</b>
+            <span>${selectedNote}</span>
+          </div>
+        `}
 
         <div class="quiz-actions">
           <button class="primary-btn" type="button" data-action="nextQuestion" ${hasSelection ? '' : 'disabled'}>${state.step === activeQuiz.length - 1 ? 'Показать результат' : 'Дальше'}</button>
@@ -4310,7 +4313,8 @@
         state.answers[state.step] = nextAnswer;
       }
       render({ scroll: false });
-      if (!item?.multiple || nextAnswer.length) {
+      const hideStepanComment = IS_ROUTE_V2 && state.step === QUIZ_RESOURCES_STEP;
+      if (!hideStepanComment && (!item?.multiple || nextAnswer.length)) {
         window.setTimeout(() => {
           document.getElementById('stepan-comment')?.scrollIntoView({ block: 'center', behavior: 'smooth' });
         }, 40);

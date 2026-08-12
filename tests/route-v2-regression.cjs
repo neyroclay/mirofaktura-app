@@ -150,10 +150,16 @@ async function completeQuiz(page, { product = 'one', source = 'content', task = 
     await page.click('[data-action="startQuiz"]');
     await answer(page, 'one');
     await answer(page, 'content');
-    await answer(page, 'traffic');
+    await page.click('[data-answer="traffic"]');
+    assert(await page.locator('#stepan-comment').count() === 1, 'A useful Stepan comment disappeared from another quiz question');
+    assert(await page.locator('#stepan-comment').isVisible(), 'The Stepan comment is not visible after choosing an answer');
+    await page.click('[data-action="nextQuestion"]');
     assert((await page.locator('.quiz-mascot img').getAttribute('src')).includes('stepan-resources-question-v4.webp'), 'Route-v2 still uses the old resources illustration');
+    assert(await page.locator('.answer-copy small').count() === 5, 'Resource answer explanations disappeared');
+    assert((await page.locator('[data-answer="budget"] .answer-copy small').innerText()).trim().length > 0, 'The budget explanation is empty');
     await page.click('[data-answer="time"]');
     await page.click('[data-answer="ideas"]');
+    assert(await page.locator('#stepan-comment').count() === 0, 'Resource question still renders a redundant Stepan comment');
     await page.click('[data-answer="time"]');
     assert(await page.locator('[data-answer="time"]').getAttribute('aria-pressed') === 'false', 'Resource multi-select cannot remove an answer');
     assert(await page.locator('[data-answer="ideas"]').getAttribute('aria-pressed') === 'true', 'Resource multi-select lost another selected answer');
@@ -168,7 +174,7 @@ async function completeQuiz(page, { product = 'one', source = 'content', task = 
     await page.goto(`${BASE_URL}/next/max/`, { waitUntil: 'domcontentloaded' });
     await page.waitForURL(/\/max\/\?variant=route-v2/);
     await page.waitForSelector('.route-v2-home-screen');
-    assert(await page.locator('script[src*="route-v2-copy-review-08"]').count() === 1, 'MAX preview loaded the cached main app script');
+    assert(await page.locator('script[src*="route-v2-resource-comment-09"]').count() === 1, 'MAX preview loaded the cached main app script');
     assert((await page.locator('.share-btn').innerText()).trim() === 'Канал в MAX', 'MAX preview did not replace the top share button');
     await page.click('.share-btn');
     assert(await page.evaluate(() => window.__openedMaxLink) === 'https://max.ru/channel_mirofactura', 'MAX channel button opened the wrong URL');
