@@ -196,17 +196,23 @@ async function testMax(browser, viewport, suffix) {
   await page.click('.share-btn');
   await page.waitForTimeout(50);
   const calls = await page.evaluate(() => window.__maxCalls);
-  const shareCall = calls.find(([name]) => name === 'shareMaxContent');
-  assert(shareCall, 'MAX shareMaxContent was not called');
-  assert(shareCall[1].link === 'https://max.ru/id590417093305_bot?startapp', 'MAX share outside Trends unexpectedly became a referral link');
+  const channelCall = calls.find(([name]) => name === 'openMaxLink');
+  assert(channelCall, 'The main MAX channel button did not use openMaxLink');
+  assert(channelCall[1] === 'https://max.ru/channel_mirofactura', 'The main MAX channel button opened the wrong URL');
 
   if (suffix === 'phone-portrait') {
     await page.click('[data-action="startQuiz"]');
-    for (let question = 0; question < 4; question += 1) {
-      await page.locator('[data-answer]').first().click();
+    for (const answer of ['one', 'content', 'traffic']) {
+      await page.click(`[data-answer="${answer}"]`);
       await page.click('[data-action="nextQuestion"]');
     }
-    assert(await page.locator('.result-screen').count() === 1, 'Full quiz did not reach its result');
+    await page.click('[data-answer="budget"]');
+    await page.click('[data-action="nextQuestion"]');
+    for (const answer of ['under-100', 'draft']) {
+      await page.click(`[data-answer="${answer}"]`);
+      await page.click('[data-action="nextQuestion"]');
+    }
+    assert(await page.locator('.route-v2-result-screen').count() === 1, 'Full route-v2 quiz did not reach its result');
     await page.click('[data-page="home"]');
   }
 
@@ -407,10 +413,10 @@ async function testMaxPersistence(browser) {
   await page.click('[data-trends-tab="collection"]');
   await page.waitForTimeout(100);
   assert(await page.locator('#lib-grid-content .lib-card-container').count() >= 1, 'Saved card was not restored in the collection');
-  await page.click('.share-btn');
+  await page.evaluate(() => document.getElementById('btn-invite-friend')?.click());
   await page.waitForTimeout(50);
   const referralShare = await page.evaluate(() => window.__maxCalls.filter(([name]) => name === 'shareMaxContent').at(-1));
-  assert(referralShare[1].link === 'https://max.ru/id590417093305_bot?start=777', 'MAX Trends share did not become referral after an opened card');
+  assert(referralShare?.[1].link === 'https://max.ru/id590417093305_bot?start=777', 'MAX Trends invite did not become referral after an opened card');
   const maxCollectionCard = page.locator('#lib-grid-content .lib-card-container').first();
   await maxCollectionCard.click();
   await page.waitForTimeout(700);

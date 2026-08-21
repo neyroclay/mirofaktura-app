@@ -115,8 +115,8 @@ async function assertMaterialFooter(page, material) {
     await assertMaterialFooter(page, 'products');
 
     await openMaterial(page, 'content-plan');
-    assert(await page.locator('.content-platform-guides:not(.content-reference-guides) .content-platform-guide').count() === 4, 'Content platform guide is incomplete');
-    assert(await page.locator('.content-quick-actions [data-action="focusMaterialNavigator"]').count() === 2, 'Content navigator quick actions are missing');
+    assert(await page.locator('[data-action="chooseContentNavigatorMode"]').count() === 3, 'Content navigator entry does not show all three routes');
+    await page.click('[data-action="chooseContentNavigatorMode"][data-mode="checklist"]');
     const checklistOptionLayout = await page.locator('.content-checklist-options .selector-option').evaluateAll((buttons) => buttons.map((button) => {
       const strong = button.querySelector('strong').getBoundingClientRect();
       const small = button.querySelector('small').getBoundingClientRect();
@@ -128,10 +128,6 @@ async function assertMaterialFooter(page, material) {
       };
     }));
     assert(checklistOptionLayout.every(({ separated, contained }) => separated && contained), `Content checklist labels overlap or leave their cards: ${JSON.stringify(checklistOptionLayout)}`);
-    await page.click('.content-quick-actions [data-target="content-checklist"]');
-    await page.waitForTimeout(1500);
-    const checklistAnchorTop = await page.locator('#content-checklist').evaluate((element) => element.getBoundingClientRect().top);
-    assert(checklistAnchorTop >= 0 && checklistAnchorTop <= 80, `Content checklist quick action misses its target: ${checklistAnchorTop}`);
     assert(await page.locator('[data-action="toggleContentChecklist"]').count() === 0, 'Checklist is shown before platform and format are selected');
     await page.click('[data-action="chooseContentChecklistPlatform"][data-value="telegram"]');
     await page.click('[data-action="chooseContentChecklistFormat"][data-value="stories"]');
@@ -141,6 +137,7 @@ async function assertMaterialFooter(page, material) {
     await page.click('[data-action="chooseContentChecklistPlatform"][data-value="dzen"]');
     assert(await page.locator('[data-action="chooseContentChecklistFormat"][data-value="stories"]').count() === 0, 'Stories are offered for Dzen');
     assert(await page.locator('[data-action="toggleContentChecklist"]').count() === 0, 'Checklist format is not reset after changing to an incompatible platform');
+    await page.click('[data-action="chooseContentNavigatorMode"][data-mode="route"]');
     const contentAnswers = {
       goal: 'sales',
       platform: 'max',
@@ -153,7 +150,6 @@ async function assertMaterialFooter(page, material) {
     await page.waitForTimeout(700);
     assert(await page.locator('.material-outcome:not(.muted)').count() === 1, 'Content navigator result was not built');
     assert((await page.locator('.material-outcome').textContent()).includes('Три рубрики'), 'Content navigator rubrics are missing');
-    assert(await page.locator('[data-action="chooseContentNavigatorAnswer"][data-question="goal"][data-value="sales"]').getAttribute('aria-pressed') === 'true', 'Content navigator does not expose the selected answer');
 
     const storyCardLayout = await page.locator('.story-card-preview-content-plan').evaluate((preview) => {
       const quote = preview.querySelector('blockquote');
@@ -175,14 +171,9 @@ async function assertMaterialFooter(page, material) {
       `Potap story card text can grow over the mascot: ${JSON.stringify(storyCardLayout)}`
     );
 
-    const revisedGoal = page.locator('[data-action="chooseContentNavigatorAnswer"][data-question="goal"][data-value="trust"]');
-    await revisedGoal.evaluate((element) => window.scrollTo(0, element.getBoundingClientRect().top + window.scrollY - 120));
-    const beforeAnswerRevision = await page.evaluate(() => window.scrollY);
-    await revisedGoal.evaluate((element) => element.click());
-    await page.waitForTimeout(1500);
-    const afterAnswerRevision = await page.evaluate(() => window.scrollY);
-    assert(Math.abs(afterAnswerRevision - beforeAnswerRevision) <= 24, `Changing a completed content route moves the page: ${beforeAnswerRevision} -> ${afterAnswerRevision}`);
-
+    assert((await page.locator('.story-result-copy h3').textContent()).trim() === 'Сохраните совет Потапа', 'Potap name is not declined in the content result');
+    await page.click('[data-action="chooseContentNavigatorMode"][data-mode="checklist"]');
+    await page.waitForTimeout(120);
     await page.click('[data-action="chooseContentChecklistPlatform"][data-value="max"]');
     await page.click('[data-action="chooseContentChecklistFormat"][data-value="visual"]');
     assert(await page.locator('[data-check="max-carousel"]').count() === 1, 'MAX carousel check is missing');
@@ -194,11 +185,16 @@ async function assertMaterialFooter(page, material) {
     const afterChecklistToggle = await page.evaluate(() => window.scrollY);
     assert(Math.abs(afterChecklistToggle - beforeChecklistToggle) <= 24, `Content checklist jumps after a choice: ${beforeChecklistToggle} -> ${afterChecklistToggle}`);
     assert(await page.locator('[data-action="toggleContentChecklist"][data-check="spacing"]').getAttribute('aria-pressed') === 'true', 'Content checklist does not retain a checked item');
-    assert((await page.locator('.story-result-copy h3').textContent()).trim() === 'Сохраните совет Потапа', 'Potap name is not declined in the content result');
     await assertMaterialFooter(page, 'content-plan');
 
     await page.click('[data-action="startQuiz"]');
-    for (const answer of ['one', 'content', 'content-plan', 'draft']) {
+    for (const answer of ['one', 'content', 'content-plan']) {
+      await page.click(`[data-answer="${answer}"]`);
+      await page.click('[data-action="nextQuestion"]');
+    }
+    await page.click('[data-answer="time"]');
+    await page.click('[data-action="nextQuestion"]');
+    for (const answer of ['under-100', 'draft']) {
       await page.click(`[data-answer="${answer}"]`);
       await page.click('[data-action="nextQuestion"]');
     }

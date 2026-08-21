@@ -67,13 +67,13 @@ async function completeQuiz(page, { product = 'one', source = 'content', task = 
     page.on('pageerror', (error) => errors.push(error.message));
 
     await page.goto(`${BASE_URL}/index.html`, { waitUntil: 'domcontentloaded' });
-    assert(await page.locator('.home-links .home-link').count() === 3, 'The main Telegram home screen changed');
-    assert((await page.locator('.share-btn').innerText()).trim() === 'Поделиться', 'The main Telegram share button changed');
-    assert(await page.locator('.route-v2').count() === 0, 'The main Telegram page received the test variant');
+    assert(await page.locator('.route-v2-home-screen').count() === 1, 'The main Telegram page did not enable route-v2');
+    assert(await page.locator('.home-links').count() === 0, 'Old home cards are visible on the main Telegram page');
+    assert((await page.locator('.share-btn').innerText()).trim() === 'Поделиться', 'The main Telegram page lost the share button');
 
     await page.goto(`${BASE_URL}/max/`, { waitUntil: 'domcontentloaded' });
-    assert((await page.locator('.share-btn').innerText()).trim() === 'Поделиться', 'The main MAX share button changed');
-    assert(await page.locator('.route-v2').count() === 0, 'The main MAX page received the test variant');
+    assert(await page.locator('.route-v2-home-screen').count() === 1, 'The main MAX page did not enable route-v2');
+    assert((await page.locator('.share-btn').innerText()).trim() === 'Канал в MAX', 'The main MAX page did not enable the channel button');
 
     await page.goto(`${BASE_URL}/next/`, { waitUntil: 'domcontentloaded' });
     assert(await page.locator('.route-v2-home-screen').count() === 1, 'Telegram preview did not enable route-v2');
@@ -174,15 +174,20 @@ async function completeQuiz(page, { product = 'one', source = 'content', task = 
     await page.goto(`${BASE_URL}/next/max/`, { waitUntil: 'domcontentloaded' });
     await page.waitForURL(/\/max\/\?variant=route-v2/);
     await page.waitForSelector('.route-v2-home-screen');
-    assert(await page.locator('script[src*="route-v2-resource-comment-09"]').count() === 1, 'MAX preview loaded the cached main app script');
+    assert(await page.locator('script[src*="route-v2-primary-10"]').count() === 1, 'MAX preview loaded an outdated app script');
     assert((await page.locator('.share-btn').innerText()).trim() === 'Канал в MAX', 'MAX preview did not replace the top share button');
     await page.click('.share-btn');
     assert(await page.evaluate(() => window.__openedMaxLink) === 'https://max.ru/channel_mirofactura', 'MAX channel button opened the wrong URL');
 
     await page.goto(`${BASE_URL}/max/`, { waitUntil: 'domcontentloaded' });
-    await page.waitForSelector('.home-screen');
-    assert(await page.locator('script[src*="product-line-result-01"]').count() === 1, 'The main MAX page stopped using its stable app script');
-    assert(await page.locator('.route-v2-home-screen').count() === 0, 'The main MAX page unexpectedly enabled route-v2');
+    await page.waitForSelector('.route-v2-home-screen');
+    assert(await page.locator('script[src*="route-v2-primary-10"]').count() === 1, 'The main MAX page did not load the promoted route-v2 script');
+    assert((await page.locator('.share-btn').innerText()).trim() === 'Канал в MAX', 'The main MAX page did not enable the route-v2 channel button');
+
+    await page.goto(`${BASE_URL}/`, { waitUntil: 'domcontentloaded' });
+    await page.waitForSelector('.route-v2-home-screen');
+    assert(await page.locator('script[src*="route-v2-primary-10"]').count() === 1, 'The main Telegram page did not load the promoted route-v2 script');
+    assert((await page.locator('.share-btn').innerText()).trim() === 'Поделиться', 'The main Telegram page lost its share button');
 
     for (const viewport of [{ width: 768, height: 1024 }, { width: 1024, height: 600 }]) {
       await page.setViewportSize(viewport);
