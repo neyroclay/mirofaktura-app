@@ -93,11 +93,7 @@ async function completeQuiz(page, { product = 'one', source = 'content', task = 
     assert(await page.locator('.route-v2-help-copy p').count() >= 2, 'Mirofactura help copy is still rendered as one long paragraph');
     assert(await page.locator('.route-v2-contact-card').count() === 1, 'The final Mirofactura contact card is missing');
     assert((await page.locator('.route-v2-contact-card [data-action="openElenaContact"]').innerText()).trim() === 'Написать нам', 'The final contact card uses the wrong action');
-    await page.click('[data-action="copyQuizResult"]');
-    const copied = await page.evaluate(() => window.__copiedText);
-    for (const expected of ['Ресурсы для продвижения', 'Бюджет на месяц', 'Материал: Контент-навигатор', 'Первый шаг']) {
-      assert(copied.includes(expected), `Copied result misses: ${expected}`);
-    }
+    assert(await page.locator('[data-action="copyQuizResult"]').count() === 0, 'The distracting copy-result button is still visible in the material card');
 
     await page.click('[data-action="openMaterial"][data-material="content-plan"]');
     await page.waitForSelector('.route-v2-content-screen');
