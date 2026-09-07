@@ -52,6 +52,24 @@
     return ['gated', 'closed', 'protected'].includes(mode) ? 'gated' : 'open';
   })();
   const IS_OPEN_ACCESS = ACCESS_MODE === 'open';
+  const MATERIAL_ALIASES = {
+    traffic: 'traffic',
+    atlas: 'traffic',
+    'traffic-atlas': 'traffic',
+    traffic_atlas: 'traffic',
+    products: 'products',
+    'product-lines': 'products',
+    product_lines: 'products',
+    sales: 'sales',
+    channels: 'sales',
+    'sales-channels': 'sales',
+    sales_channels: 'sales',
+    content: 'content-plan',
+    'content-plan': 'content-plan',
+    content_plan: 'content-plan',
+    'content-navigator': 'content-plan',
+    content_navigator: 'content-plan'
+  };
   const getLaunchPage = () => {
     const maxStartParam = window.WebApp?.start_param
       || window.WebApp?.initDataUnsafe?.start_param
@@ -90,6 +108,25 @@
 
     return pageAliases[normalized] || 'home';
   };
+  const getLaunchMaterial = () => {
+    const directMaterial = String(URL_PARAMS.get('material') || '').toLowerCase().trim();
+    const platformStartParam = String(
+      URL_PARAMS.get('startapp')
+      || URL_PARAMS.get('start_param')
+      || URL_PARAMS.get('start')
+      || TELEGRAM_LAUNCH_PARAMS.get('tgWebAppStartParam')
+      || window.WebApp?.start_param
+      || window.WebApp?.initDataUnsafe?.start_param
+      || telegramWebApp?.initDataUnsafe?.start_param
+      || ''
+    ).toLowerCase().trim();
+    const normalize = (value) => value.replace(/^\/+/, '').split(/[?&#]/)[0];
+
+    return MATERIAL_ALIASES[normalize(directMaterial)]
+      || MATERIAL_ALIASES[normalize(platformStartParam)]
+      || '';
+  };
+  const LAUNCH_MATERIAL = getLaunchMaterial();
 
   platformAdapter.init({ useNativeTrends: USE_NATIVE_TRENDS });
   const assets = {
@@ -1449,11 +1486,11 @@
   };
 
   const state = {
-    page: getLaunchPage(),
+    page: LAUNCH_MATERIAL ? 'material' : getLaunchPage(),
     step: 0,
     answers: {},
     contactTask: 'strategy',
-    material: 'products',
+    material: LAUNCH_MATERIAL || 'products',
     pendingMaterial: '',
     pendingGateTarget: 'material',
     gateStatus: 'idle',

@@ -75,6 +75,21 @@ async function completeQuiz(page, { product = 'one', source = 'content', task = 
     assert(await page.locator('.route-v2-home-screen').count() === 1, 'The main MAX page did not enable route-v2');
     assert((await page.locator('.share-btn').innerText()).trim() === 'Канал в MAX', 'The main MAX page did not enable the channel button');
 
+    const materialLinks = [
+      ['traffic', '.traffic-atlas-screen'],
+      ['products', '.material-screen:not(.traffic-atlas-screen):not(.sales-channels-screen):not(.content-navigator-screen)'],
+      ['sales', '.sales-channels-screen'],
+      ['content', '.content-navigator-screen']
+    ];
+    for (const platformPath of ['/index.html', '/max/']) {
+      for (const [material, selector] of materialLinks) {
+        await page.goto(`${BASE_URL}${platformPath}?material=${material}`, { waitUntil: 'domcontentloaded' });
+        assert(await page.locator(selector).count() === 1, `${platformPath} did not open material=${material}`);
+      }
+    }
+    await page.goto(`${BASE_URL}/index.html?startapp=traffic_atlas`, { waitUntil: 'domcontentloaded' });
+    assert(await page.locator('.traffic-atlas-screen').count() === 1, 'Telegram start payload did not open the traffic atlas');
+
     await page.goto(`${BASE_URL}/next/`, { waitUntil: 'domcontentloaded' });
     assert(await page.locator('.route-v2-home-screen').count() === 1, 'Telegram preview did not enable route-v2');
     assert(await page.locator('.home-links').count() === 0, 'Old home cards are visible in route-v2');
