@@ -3,6 +3,10 @@
   if (!platformCore) throw new Error('Mirofactura platform core is not loaded');
 
   const BOT_URL = 'https://t.me/mirofactura_bot';
+  const CHANNEL_PREVIEW = window.MIROFAKTURA_TELEGRAM_CHANNEL_PREVIEW === true;
+  const CHANNEL_URL = CHANNEL_PREVIEW
+    ? String(window.MIROFAKTURA_TELEGRAM_CHANNEL_URL || 'https://t.me/mirofactura')
+    : BOT_URL;
   const webApp = window.Telegram?.WebApp || null;
   let progressCachePromise = null;
   let progressRefreshPromise = null;
@@ -99,10 +103,10 @@
     messenger: 'Telegram',
     entryUrl: BOT_URL,
     botUrl: BOT_URL,
-    channelUrl: BOT_URL,
+    channelUrl: CHANNEL_URL,
     authorUrls: {
-      elizaveta: 'https://t.me/gameneurons',
-      elena: 'https://t.me/adviceperm',
+      elizaveta: CHANNEL_PREVIEW ? '' : 'https://t.me/gameneurons',
+      elena: CHANNEL_PREVIEW ? '' : 'https://t.me/adviceperm',
       elenaContact: 'https://t.me/PopovaE'
     },
     progress: {

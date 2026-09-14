@@ -73,12 +73,33 @@ function createContext(platform, extraWindow = {}) {
   assert.equal(adapter.key, 'telegram');
   assert.equal(adapter.messenger, 'Telegram');
   assert.equal(adapter.entryUrl, 'https://t.me/mirofactura_bot');
+  assert.equal(adapter.channelUrl, 'https://t.me/mirofactura_bot');
+  assert.equal(adapter.authorUrls.elizaveta, 'https://t.me/gameneurons');
+  assert.equal(adapter.authorUrls.elena, 'https://t.me/adviceperm');
   assert.equal(adapter.getReferralLink('12345'), 'https://t.me/mirofactura_bot?start=12345');
   assert.equal(adapter.progress.followupItem, 'trend_deck_started_telegram');
   assert.equal(typeof adapter.prefetchProgress, 'function');
   assert.equal(typeof adapter.loadProgress, 'function');
   assert.equal(typeof adapter.refreshProgress, 'function');
   assert.equal(typeof adapter.saveProgress, 'function');
+}
+
+{
+  const context = createContext('telegram', {
+    MIROFAKTURA_TELEGRAM_CHANNEL_PREVIEW: true,
+    MIROFAKTURA_TELEGRAM_CHANNEL_URL: 'https://t.me/mirofactura',
+    Telegram: {
+      WebApp: {
+        initData: '',
+        initDataUnsafe: {},
+      },
+    },
+  });
+  vm.runInContext(telegramSource, context);
+  const adapter = context.window.MirofacturaPlatforms.current();
+  assert.equal(adapter.channelUrl, 'https://t.me/mirofactura');
+  assert.equal(adapter.authorUrls.elizaveta, '');
+  assert.equal(adapter.authorUrls.elena, '');
 }
 
 assert.match(telegramEntry, /platform\/telegram-adapter\.js/);

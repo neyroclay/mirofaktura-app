@@ -12,6 +12,9 @@
   const TELEGRAM_LAUNCH_PARAMS = new URLSearchParams(window.location.hash.replace(/^#/, ''));
   const APP_VARIANT = String(window.MIROFAKTURA_VARIANT || '').trim().toLowerCase();
   const IS_ROUTE_V2 = APP_VARIANT === 'route-v2';
+  const APP_PLATFORM = platformAdapter.key;
+  const TELEGRAM_CHANNEL_PREVIEW = APP_PLATFORM === 'telegram'
+    && window.MIROFAKTURA_TELEGRAM_CHANNEL_PREVIEW === true;
   if (IS_ROUTE_V2 && !document.querySelector('link[data-mirofactura-variant="route-v2"]')) {
     const variantStyles = document.createElement('link');
     variantStyles.rel = 'stylesheet';
@@ -21,7 +24,6 @@
   }
   const NATIVE_TRENDS_MODE = URL_PARAMS.get('trends_native');
   const NATIVE_TRENDS_ASSET_VERSION = '20260726-bonus-dialog-50';
-  const APP_PLATFORM = platformAdapter.key;
   document.documentElement.dataset.mirofacturaPlatform = APP_PLATFORM;
   if (IS_ROUTE_V2) document.documentElement.dataset.mirofacturaVariant = APP_VARIANT;
   const USE_NATIVE_TRENDS = NATIVE_TRENDS_MODE !== '0';
@@ -30,7 +32,11 @@
     messenger: platformAdapter.messenger,
     entryUrl: platformAdapter.entryUrl,
     channelUrl: platformAdapter.channelUrl,
-    channelLabel: APP_PLATFORM === 'max' ? 'Канал в MAX' : 'Карманная Вселенная',
+    channelLabel: APP_PLATFORM === 'max'
+      ? 'Канал в MAX'
+      : TELEGRAM_CHANNEL_PREVIEW
+        ? 'Наш канал'
+        : 'Карманная Вселенная',
     channelText: APP_PLATFORM === 'max'
       ? 'Материалы о маркетинге, продуктах и цифровых мирах.'
       : 'Бот Мирофактуры с приложением, новыми материалами и напоминаниями.',
@@ -1583,12 +1589,13 @@
 
   function header() {
     const maxChannelButton = IS_ROUTE_V2 && APP_PLATFORM === 'max';
+    const telegramChannelButton = IS_ROUTE_V2 && TELEGRAM_CHANNEL_PREVIEW;
     return `
       <header class="topbar">
         <button class="logo-button" type="button" data-page="home" aria-label="На главную">
           <img class="logo" src="${assets.logo}" alt="Мирофактура" decoding="async" fetchpriority="high">
         </button>
-        <button class="share-btn" type="button" data-action="${maxChannelButton ? 'openMax' : 'share'}">${maxChannelButton ? 'Канал в MAX' : 'Поделиться'}</button>
+        <button class="share-btn" type="button" data-action="${maxChannelButton ? 'openMax' : telegramChannelButton ? 'openChannel' : 'share'}">${maxChannelButton || telegramChannelButton ? PLATFORM.channelLabel : 'Поделиться'}</button>
       </header>
     `;
   }
@@ -3512,6 +3519,9 @@
     const elenaChannelButton = platformAdapter.authorUrls?.elena
       ? `<button class="author-channel-link" type="button" data-action="openExternalLink" data-url="${platformAdapter.authorUrls.elena}">Канал «Воронки впечатлений»</button>`
       : '';
+    const telegramChannelButton = TELEGRAM_CHANNEL_PREVIEW && PLATFORM.channelUrl
+      ? `<button class="author-channel-link" type="button" data-action="openChannel">Канал Мирофактуры в Telegram</button>`
+      : '';
     const nativeDocumentsLink = USE_NATIVE_TRENDS
       ? `
         <section class="native-legal-access" aria-label="Документы">
@@ -3600,6 +3610,7 @@
             </span>
           </div>
         </div>
+        ${telegramChannelButton}
       </section>
 
       <section class="contacts-cta">
@@ -4383,7 +4394,7 @@
       return;
     }
 
-    if (action === 'openMax') {
+    if (action === 'openMax' || action === 'openChannel') {
       openExternalUrl(PLATFORM.channelUrl);
       return;
     }

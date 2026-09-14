@@ -69,7 +69,13 @@ async function completeQuiz(page, { product = 'one', source = 'content', task = 
     await page.goto(`${BASE_URL}/index.html`, { waitUntil: 'domcontentloaded' });
     assert(await page.locator('.route-v2-home-screen').count() === 1, 'The main Telegram page did not enable route-v2');
     assert(await page.locator('.home-links').count() === 0, 'Old home cards are visible on the main Telegram page');
-    assert((await page.locator('.share-btn').innerText()).trim() === 'Поделиться', 'The main Telegram page lost the share button');
+    assert((await page.locator('.share-btn').innerText()).trim() === 'Наш канал', 'The main Telegram page did not enable the channel button');
+    await page.click('.share-btn');
+    assert(await page.evaluate(() => window.__openedTelegramLink) === 'https://t.me/mirofactura', 'The main Telegram channel button opened the wrong URL');
+    await page.click('[data-page="contacts"]');
+    assert(await page.locator('[data-url="https://t.me/gameneurons"]').count() === 0, 'The main Telegram page kept the Elizaveta personal channel');
+    assert(await page.locator('[data-url="https://t.me/adviceperm"]').count() === 0, 'The main Telegram page kept the Elena personal channel');
+    assert(await page.getByRole('button', { name: 'Канал Мирофактуры в Telegram', exact: true }).count() === 1, 'The main Telegram page is missing the shared channel button in contacts');
 
     await page.goto(`${BASE_URL}/max/`, { waitUntil: 'domcontentloaded' });
     assert(await page.locator('.route-v2-home-screen').count() === 1, 'The main MAX page did not enable route-v2');
@@ -198,7 +204,7 @@ async function completeQuiz(page, { product = 'one', source = 'content', task = 
     await page.goto(`${BASE_URL}/`, { waitUntil: 'domcontentloaded' });
     await page.waitForSelector('.route-v2-home-screen');
     assert(await page.locator('script[src*="route-v2-primary-10"]').count() === 1, 'The main Telegram page did not load the promoted route-v2 script');
-    assert((await page.locator('.share-btn').innerText()).trim() === 'Поделиться', 'The main Telegram page lost its share button');
+    assert((await page.locator('.share-btn').innerText()).trim() === 'Наш канал', 'The main Telegram page lost its channel button');
 
     for (const viewport of [{ width: 768, height: 1024 }, { width: 1024, height: 600 }]) {
       await page.setViewportSize(viewport);

@@ -108,6 +108,15 @@ async function testPlatform(browser, platform) {
   await page.click('[data-page="contacts"]');
   await page.waitForSelector('#marketing-task-map');
 
+  if (platform === 'telegram') {
+    assert(await page.locator('[data-url="https://t.me/gameneurons"]').count() === 0, 'Telegram: Elizaveta personal channel link is visible');
+    assert(await page.locator('[data-url="https://t.me/adviceperm"]').count() === 0, 'Telegram: Elena personal channel link is visible');
+    assert(await page.getByRole('button', { name: 'Канал Мирофактуры в Telegram', exact: true }).count() === 1, 'Telegram: shared Mirofactura channel button is missing');
+  } else {
+    assert(await page.locator('[data-url="https://t.me/gameneurons"]').count() === 0, 'MAX: Elizaveta Telegram channel link is visible');
+    assert(await page.locator('[data-url="https://t.me/adviceperm"]').count() === 0, 'MAX: Elena Telegram channel link is visible');
+  }
+
   const labels = await page.locator('.task-node').allTextContents();
   assert(JSON.stringify(labels.map((value) => value.trim())) === JSON.stringify(tasks.map(({ label }) => label)), `${platform}: task labels do not match the workbook`);
 
