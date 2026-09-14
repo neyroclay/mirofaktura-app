@@ -79,7 +79,7 @@ async function completeQuiz(page, { product = 'one', source = 'content', task = 
 
     await page.goto(`${BASE_URL}/max/`, { waitUntil: 'domcontentloaded' });
     assert(await page.locator('.route-v2-home-screen').count() === 1, 'The main MAX page did not enable route-v2');
-    assert((await page.locator('.share-btn').innerText()).trim() === 'Канал в MAX', 'The main MAX page did not enable the channel button');
+    assert((await page.locator('.share-btn').innerText()).trim() === 'Наш канал', 'The main MAX page did not enable the channel button');
 
     const materialLinks = [
       ['traffic', '.traffic-atlas-screen'],
@@ -192,14 +192,14 @@ async function completeQuiz(page, { product = 'one', source = 'content', task = 
     await page.waitForURL(/\/max\/\?variant=route-v2/);
     await page.waitForSelector('.route-v2-home-screen');
     assert(await page.locator('script[src*="route-v2-primary-10"]').count() === 1, 'MAX preview loaded an outdated app script');
-    assert((await page.locator('.share-btn').innerText()).trim() === 'Канал в MAX', 'MAX preview did not replace the top share button');
+    assert((await page.locator('.share-btn').innerText()).trim() === 'Наш канал', 'MAX preview did not replace the top share button');
     await page.click('.share-btn');
     assert(await page.evaluate(() => window.__openedMaxLink) === 'https://max.ru/channel_mirofactura', 'MAX channel button opened the wrong URL');
 
     await page.goto(`${BASE_URL}/max/`, { waitUntil: 'domcontentloaded' });
     await page.waitForSelector('.route-v2-home-screen');
     assert(await page.locator('script[src*="route-v2-primary-10"]').count() === 1, 'The main MAX page did not load the promoted route-v2 script');
-    assert((await page.locator('.share-btn').innerText()).trim() === 'Канал в MAX', 'The main MAX page did not enable the route-v2 channel button');
+    assert((await page.locator('.share-btn').innerText()).trim() === 'Наш канал', 'The main MAX page did not enable the route-v2 channel button');
 
     await page.goto(`${BASE_URL}/`, { waitUntil: 'domcontentloaded' });
     await page.waitForSelector('.route-v2-home-screen');

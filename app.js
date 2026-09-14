@@ -33,7 +33,7 @@
     entryUrl: platformAdapter.entryUrl,
     channelUrl: platformAdapter.channelUrl,
     channelLabel: APP_PLATFORM === 'max'
-      ? 'Канал в MAX'
+      ? 'Наш канал'
       : TELEGRAM_CHANNEL_PREVIEW
         ? 'Наш канал'
         : 'Карманная Вселенная',
